@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "Please cite this software and identify the commit or tagged version used."
+type: software
+title: "Federated DDoS Research"
+authors:
+  - family-names: "Oliabak"
+    given-names: "Hossein"
+version: "0.1.0"
+license: MIT
+repository-code: "https://github.com/hosseinoliabak/federated-ddos-research"
+url: "https://github.com/hosseinoliabak/federated-ddos-research"
+keywords:
+  - federated learning
+  - DDoS detection
+  - reproducible research
+  - formal verification

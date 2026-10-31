@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-31",
+  "scope": "Portable prototype; no real-data rerun or confirmatory result",
+  "python_installation": "uv sync --locked passed in a separate macOS arm64 environment",
+  "python_unit_tests": 7,
+  "engineering_self_test": "passed",
+  "synthetic_integration": "passed on 225 synthetic records and ten clients, with SGD and local Adam",
+  "lean_theorems_checked": 8,
+  "lean_record": "lean-verification.json",
+  "github_actions": "See the workflow run for the commit; remote CI is separate from these local checks"
+}

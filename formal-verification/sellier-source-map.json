@@ -1,0 +1,46 @@
+{
+  "source": {
+    "author": "Jean Michel Sellier",
+    "year": 2023,
+    "title": "On a quantum inspired approach to train machine learning models",
+    "doi": "10.1002/ail2.89",
+    "pdf_sha256": "8b041faad8c2acb49dd26b4a863cf1b7c3cff8e04619f55b283a2dea11cfc1d7",
+    "pdf_pages": 16,
+    "checked_locations": [
+      "Section 4.3, equation (7), PDF page 7",
+      "Section 4.4, equations (8) and (9), PDF page 8",
+      "Section 4.5, best-solution recording step, PDF page 10"
+    ],
+    "visual_transcription_check": true,
+    "publisher_html_checked": "https://onlinelibrary.wiley.com/doi/10.1002/ail2.89"
+  },
+  "formal_scope": "Pointwise complex algebra and a mathematical model of best-observed-loss recording, not PDE solution theory or an implementation audit.",
+  "mapping": {
+    "schrodinger_split": {
+      "source": "Equations (7) and (8)",
+      "meaning": "Equivalent real/imaginary component equations, retaining h on the left-hand side.",
+      "assumptions": "All scalar inputs and potential are real. Complex component values and derivatives are supplied pointwise. Physically m>0; algebraic equivalence also holds for the totalized division convention of real fields."
+    },
+    "schrodinger_derivatives": {
+      "source": "Equations (7) and (8)",
+      "meaning": "Equivalent derivative-isolated form.",
+      "assumptions": "The same pointwise setup, with h nonzero."
+    },
+    "printed_eq9_counterexample": {
+      "source": "Printed equation (9) versus (7)",
+      "meaning": "With h=m=1, U=0, R=I=dtR=dxxI=0, dtI=-1, dxxR=2, the printed system holds but the complex equation fails.",
+      "scope": "Algebraic counterexample to the claimed component equivalence, not a counterexample to the full training algorithm or a supplied PDE solution."
+    },
+    "best_loss_antitone": {
+      "source": "Section 4.5, page 10, best-solution recording step",
+      "meaning": "A running minimum of observed real scores never increases.",
+      "assumptions": "The recorder is modeled by b0=loss0 and b(n+1)=min(bn,loss(n+1)). No candidate generator is modeled."
+    },
+    "best_loss_attained": {
+      "source": "Section 4.5, page 10, best-solution recording step",
+      "meaning": "The recorded score belongs to a candidate evaluated at or before the current step.",
+      "assumptions": "The same running-minimum model. A fixed comparable evaluation criterion is needed to interpret scores as progress on one objective."
+    }
+  },
+  "finding_status": "Printed equation (9) is algebraically inconsistent with (7)-(8) under the transcribed conventions; the intended implementation and any author clarification are unverified."
+}

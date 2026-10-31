@@ -1,0 +1,59 @@
+{
+  "checked_at_utc": "2026-10-31T18:12:27.375768+00:00",
+  "lean": "Lean (version 4.35.0, arm64-apple-darwin24.6.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
+  "lake": "Lake version 5.0.0-src+eb6cafb (Lean version 4.35.0)",
+  "build": "passed",
+  "axioms": {
+    "ThesisVerification.normalized_weights_sum_one": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.normalized_weight_nonnegative": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.aggregate_identical_scalar": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sellier.schrodinger_split": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sellier.schrodinger_derivatives": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sellier.printed_eq9_counterexample": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sellier.best_loss_antitone": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sellier.best_loss_attained": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "sha256": {
+    "lean-toolchain": "ca5f1f601d34c49079e38d7e7041eb0f2a9c227fbc1df0f404820069a052330c",
+    "lakefile.toml": "7b2ce907653045cb0f8a1fa52f09ad0a1d8a93f3129078cb74040b22d0389126",
+    "lake-manifest.json": "ca812bee4a36f0a6d07946a77149c5ff585d3765ef331c329c91fdb744dade5d",
+    "ThesisVerification.lean": "3033d0c6d02a484e2c3313d2635e110f0d0573d0592e287612d46bdbe85d1a0c",
+    "ThesisVerification/Aggregation.lean": "f6f38a2f9403feed64569e07ec0b481a9f250fd21a7cfa65ba0a862428d36cc6",
+    "ThesisVerification/Sellier.lean": "b80ffdd3b066727b4de7387ecd7ae083937469de1bf04f66c51e5ef8db09779a",
+    "check_proofs.py": "6e29be532ffd95f1baba1bdacc6a74fdfc006e63fa48f026223452d9fc04160c",
+    "sellier-source-map.json": "4d4ae515a0620ac500c7d59dd169e466035dc618c54bef073971d3156f019690"
+  },
+  "scope": "Three normalized-weighting lemmas plus five Sellier-specific pointwise algebra and recording checks. No PDE existence, FDTD stability, implementation, global convergence, privacy, detection or runtime claim."
+}

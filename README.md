@@ -1,0 +1,93 @@
+# Federated DDoS research
+
+Research software for inspecting network-flow datasets, preparing a bounded development subset, checking federated training, and verifying selected mathematical statements. This project supports Hossein Oliabak's master's research on DDoS detection shared among organizations or service-provider customers.
+
+The current Python implementation runs SGD and local Adam with a fixed FedAvg server. It is an engineering prototype. A Sellier-based QiML training engine has not been implemented, and the project does not establish a speedup, a final detection result, or readiness for a provider network.
+
+## Current components
+
+| Component | Purpose | Status |
+|---|---|---|
+| CSV inventory and extraction | Preserve source files and record SHA-256 hashes | Available |
+| Development audit | Inspect labels, numeric values, dates, and duplicate candidates | Available |
+| Exact overlap checks | Compare repeated FLNET records without deleting them | Available |
+| Connection grouping | Coordinate fitting and validation roles between source clients | Available; capture independence remains unresolved |
+| Training check | Run a small feedforward detector with local SGD or Adam and model averaging | Available; one seed and three rounds |
+| Lean verification | Check three aggregation lemmas and five scoped algebra/recording statements | Available; see the formal project |
+| QiML training and controlled network lab | Evaluate the proposed treatment and deployment conditions | Planned |
+
+## Install
+
+Python 3.13 and [uv](https://docs.astral.sh/uv/) are required. The dependency lock covers macOS and Linux. Linux uses PyTorch's CPU package index. The first installation may download Python and the locked packages.
+
+```sh
+git clone https://github.com/hosseinoliabak/federated-ddos-research.git
+cd federated-ddos-research
+uv sync --locked
+```
+
+The scientific dependencies are pinned in `pyproject.toml`, and their resolved dependencies are in `uv.lock`. Keep the lockfile when reproducing a run. The Lean environment is separate and has its own toolchain and dependency manifest.
+
+## Run without downloading datasets
+
+The integration check creates small synthetic CSV fixtures in a temporary directory, runs the pipeline, checks its outputs, and removes only those fixtures afterward. These records are software-test inputs, not traffic measurements or evidence for the thesis.
+
+```sh
+uv run python -m unittest discover -s tests -v
+uv run python scripts/engineering_pilot.py --self-test
+uv run python scripts/check_demo.py
+```
+
+The checks cover unequal client weighting, grouping, numeric audit behavior, training-only scaling, source preservation, absent-class metrics, reserved-test exclusion, and refusal to overwrite an existing run. The test workflow also runs on GitHub Actions. Passing software checks does not validate a scientific hypothesis.
+
+## Work with real data
+
+Keep data in a separate directory and point the tools to it. If `FDDOS_WORKSPACE` is unset, the default is the ignored `.workspace/` directory inside this checkout.
+
+```sh
+export FDDOS_WORKSPACE="$HOME/research-data/federated-ddos"
+```
+
+Acquire datasets from their publishers under the applicable terms. Place the CSV files in the structure documented in [dataset setup](docs/datasets.md). Then run the following commands from the code checkout.
+
+```sh
+uv run python scripts/inventory_csvs.py
+uv run python scripts/audit_datasets.py
+uv run python scripts/confirm_flnet_duplicates.py
+uv run python scripts/confirm_flnet_overlap.py
+uv run python scripts/propose_dataset_split.py
+uv run python scripts/inspect_flnet_groups.py
+uv run python scripts/render_audit_report.py
+uv run python scripts/engineering_pilot.py
+```
+
+The inventory command is for CSVs that are already extracted. An optional ZIP extraction route is documented separately. Do not run both routes against the same existing inventory. The initial audit uses three worker processes and may consume substantial memory on the full CICDDoS2019 development collection. Read the [method and resource limits](docs/methodology.md) before running it.
+
+The pipeline keeps original labels and source-client membership. The test directories are excluded from model development. The audit may read test headers; the training program reads only the allowlisted FLNET development paths. Source files are not rewritten, and completed audits and runs are preserved rather than silently overwritten.
+
+## Read outputs
+
+| Workspace path | Contents |
+|---|---|
+| `datasets/<dataset>/extraction.json` | File identity, provenance status, size, and hash |
+| `reports/dataset-audit/audit.json` | Field diagnostics and execution environment |
+| `reports/dataset-audit/index.html` | Readable audit report |
+| `config/split-proposal.json` | Proposed source roles and unresolved evaluation decisions |
+| `reports/development-preparation/flnet-connection-groups.json` | Candidate-group diagnostic |
+| `runs/engineering-smoke-v1-portable/` | Prepared subset, scaler, logs, checkpoints, and completion hashes |
+
+The candidate connection grouping controls a particular form of overlap. It does not establish independent captures, attack campaigns, or validity on future traffic. The selected feature policy and pooled training-only scaler are provisional engineering choices. See [methodology](docs/methodology.md) before interpreting any reported metric.
+
+## Extend the project
+
+Keep model training, client participation, server aggregation, and evaluation decisions explicit. A new local optimizer should use the same agreed model and protocol before a performance comparison is interpreted. Record changes in a new run configuration and preserve the earlier evidence. The current script is intentionally a bounded reference; it is not yet a general optimizer plug-in framework.
+
+The next work is feature-provenance checking, a defensible final evaluation split, a paired baseline pilot, a justified QiML implementation, and controlled lab collection. The [contribution guide](CONTRIBUTING.md) describes how to add code, tests, documentation, and evidence together.
+
+## Citation and license
+
+Use the repository's `CITATION.cff` metadata and identify the commit or tagged version used in your work. No software DOI or completed thesis publication is claimed. Method and dataset sources are listed in [references](docs/references.md).
+
+Original code and documentation in this repository are licensed under [MIT](LICENSE). Dataset, paper, and dependency licenses remain separate. This repository does not redistribute the datasets, article PDFs, unpublished thesis chapters, credentials, private correspondence, or trained model files.
+
+AI tools assisted with code and documentation. Execution records and human review remain necessary. AI review is not evidence that an experiment or mathematical correspondence is correct.

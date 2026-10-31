@@ -1,0 +1,21 @@
+{
+  "import_date": "2026-10-31",
+  "origin": "Original research scripts and Lean checks from the local thesis work; source hashes precede portability edits",
+  "source_sha256": {
+    "audit_datasets.py": "de79e93c046c179df4f1640b0711d3e2c33cbb99197053598cdbc626381b3ab7",
+    "confirm_flnet_duplicates.py": "ef6e56e9bba57d792913f7faf615a3d00cefc5f240578df7b38571917997de3f",
+    "confirm_flnet_overlap.py": "1948c53e88bc69c2fa049b29b1126501f6c1ea5ab6a87f0f8c1ae63cce1d44ee",
+    "engineering_pilot.py": "2285bbf791a570fe1daa6203e1ccc3c15349fa1afb840e0d8ae7d895004bf48a",
+    "extract_datasets.py": "b94d9ed0f29c82cfa9cd27591ac4627787489644cb789116d59684970ca04f4d",
+    "inspect_flnet_groups.py": "60539b90a1ca781ffb64a40e5f0b33badd28c41ff32cb9278950508cbede612a",
+    "propose_dataset_split.py": "dd37c9f4ffb6f965d9691ee1d325b60b8b8a7ea4709ad62502b53d10efc89c4c",
+    "test_audit.py": "614555dddd7b7216d84970f58ab43efac527a0eaf54d13b28852338337e6e48e",
+    "formal-verification/lean-toolchain": "ca5f1f601d34c49079e38d7e7041eb0f2a9c227fbc1df0f404820069a052330c",
+    "formal-verification/lakefile.toml": "7b2ce907653045cb0f8a1fa52f09ad0a1d8a93f3129078cb74040b22d0389126",
+    "formal-verification/lake-manifest.json": "ca812bee4a36f0a6d07946a77149c5ff585d3765ef331c329c91fdb744dade5d",
+    "formal-verification/ThesisVerification.lean": "3033d0c6d02a484e2c3313d2635e110f0d0573d0592e287612d46bdbe85d1a0c",
+    "formal-verification/ThesisVerification/Aggregation.lean": "f6f38a2f9403feed64569e07ec0b481a9f250fd21a7cfa65ba0a862428d36cc6",
+    "formal-verification/ThesisVerification/Sellier.lean": "b80ffdd3b066727b4de7387ecd7ae083937469de1bf04f66c51e5ef8db09779a",
+    "formal-verification/check_proofs.py": "1e75f2ecf8c94399c7c60353949ab93326bd046fb436a318d71fa52794546b66"
+  }
+}
