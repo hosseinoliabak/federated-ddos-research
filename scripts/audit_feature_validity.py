@@ -17,7 +17,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 from research_workspace import contained_path, workspace_root
 
-VERSION = "feature-validity-v1"
+VERSION = "feature-validity-v2"
 LABELS = {"Normal": 0, "DDoS-bot": 1, "DDoS-dyn": 1, "DDoS-stomp": 1, "DDoS-tcp": 1}
 NONNUMERIC = {"src_ip", "dst_ip", "timestamp", "label"}
 CHECK_FEATURES = ("flow_duration", "tot_fwd_pkts", "tot_bwd_pkts")
@@ -110,7 +110,7 @@ def score(target, prediction, probability):
         recall=tp / (tp + fn) if tp + fn else None,
         false_positive_rate=fp / (fp + tn) if fp + tn else None,
         average_precision=float(average_precision_score(target, probability))
-        if np.any(target == 1)
+        if np.unique(target).size == 2
         else None,
     )
 

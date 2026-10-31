@@ -2,6 +2,7 @@ from pathlib import Path
 import sys
 import unittest
 
+import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
@@ -10,6 +11,7 @@ from audit_feature_validity import (
     one_feature_checks,
     rate_consistency,
     approved_sources,
+    score,
 )
 
 
@@ -59,6 +61,16 @@ class FeatureValidity(unittest.TestCase):
         self.assertEqual(result["matching_factor_1e6"], 1)
         self.assertEqual(result["nonmatching_rows"], 1)
         self.assertEqual(result["zero_duration_zero_rate_rows"], 1)
+
+    def test_single_class_average_precision_is_not_reported(self):
+        for target in (np.array([1, 1]), np.array([0, 0])):
+            result = score(target, np.array([0, 1]), np.array([0.2, 0.8]))
+            self.assertIsNone(result["average_precision"])
+        attacks = score(np.array([1, 1]), np.array([0, 1]), np.array([0.2, 0.8]))
+        self.assertEqual(attacks["recall"], 0.5)
+        self.assertIsNone(attacks["false_positive_rate"])
+        mixed = score(np.array([0, 1]), np.array([0, 1]), np.array([0.2, 0.8]))
+        self.assertEqual(mixed["average_precision"], 1.0)
 
     def test_reserved_path_rejected_even_if_mislabelled_development(self):
         files = [
