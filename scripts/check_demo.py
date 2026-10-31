@@ -56,6 +56,15 @@ def main():
         prepared = json.loads((run / "preparation.json").read_text())
         trained = json.loads((run / "training.json").read_text())
         invoke("audit_feature_validity.py", env)
+        for optimizer in ("sgd", "adam"):
+            invoke(
+                "engineering_bundle.py",
+                env,
+                "--run",
+                "engineering-smoke-v1-portable",
+                "--optimizer",
+                optimizer,
+            )
         diagnostic = root / "reports/development-preparation/feature-validity-v2"
         validity = json.loads((diagnostic / "summary.json").read_text())
         assert validity["synthetic_only"] and not validity["reserved_test_opened"]

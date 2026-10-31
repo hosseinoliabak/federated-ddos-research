@@ -14,6 +14,7 @@ The current Python implementation runs SGD and local Adam with a fixed FedAvg se
 | Connection grouping | Coordinate fitting and validation roles between source clients | Available; capture independence remains unresolved |
 | Feature-validity diagnostic | Profile development features and fit bounded one-feature checks | Available; exploratory only |
 | Training check | Run a small feedforward detector with local SGD or Adam and model averaging | Available; one seed and three rounds |
+| Portable engineering bundles | Preserve model inputs and weights for offline transfer | Available; destination validation pending |
 | Lean verification | Check three aggregation lemmas and five scoped algebra/recording statements | Available; see the formal project |
 | QiML training and controlled network lab | Evaluate the proposed treatment and deployment conditions | Planned |
 
@@ -82,6 +83,8 @@ The pipeline keeps original labels and source-client membership. The test direct
 The candidate connection grouping controls a particular form of overlap. It does not establish independent captures, attack campaigns, or validity on future traffic. The selected feature policy and pooled training-only scaler are provisional engineering choices. See [methodology](docs/methodology.md) before interpreting any reported metric.
 
 The [feature-validity procedure](docs/feature-validity.md) explains the diagnostic scope, interpretation, and reproducibility record.
+
+The [portable-model guide](docs/portable-models.md) describes the offline bundle exporter, input contract, network-lab integration, and historical packet-layer regression.
 
 ## Extend the project
 
