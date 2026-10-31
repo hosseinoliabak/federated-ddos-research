@@ -12,6 +12,7 @@ The current Python implementation runs SGD and local Adam with a fixed FedAvg se
 | Development audit | Inspect labels, numeric values, dates, and duplicate candidates | Available |
 | Exact overlap checks | Compare repeated FLNET records without deleting them | Available |
 | Connection grouping | Coordinate fitting and validation roles between source clients | Available; capture independence remains unresolved |
+| Feature-validity diagnostic | Profile development features and fit bounded one-feature checks | Available; exploratory only |
 | Training check | Run a small feedforward detector with local SGD or Adam and model averaging | Available; one seed and three rounds |
 | Lean verification | Check three aggregation lemmas and five scoped algebra/recording statements | Available; see the formal project |
 | QiML training and controlled network lab | Evaluate the proposed treatment and deployment conditions | Planned |
@@ -59,6 +60,7 @@ uv run python scripts/propose_dataset_split.py
 uv run python scripts/inspect_flnet_groups.py
 uv run python scripts/render_audit_report.py
 uv run python scripts/engineering_pilot.py
+uv run python scripts/audit_feature_validity.py
 ```
 
 The inventory command is for CSVs that are already extracted. An optional ZIP extraction route is documented separately. Do not run both routes against the same existing inventory. The initial audit uses three worker processes and may consume substantial memory on the full CICDDoS2019 development collection. Read the [method and resource limits](docs/methodology.md) before running it.
@@ -74,9 +76,12 @@ The pipeline keeps original labels and source-client membership. The test direct
 | `reports/dataset-audit/index.html` | Readable audit report |
 | `config/split-proposal.json` | Proposed source roles and unresolved evaluation decisions |
 | `reports/development-preparation/flnet-connection-groups.json` | Candidate-group diagnostic |
+| `reports/development-preparation/feature-validity-v1/` | Field profiles, descriptive checks, and one-feature diagnostics |
 | `runs/engineering-smoke-v1-portable/` | Prepared subset, scaler, logs, checkpoints, and completion hashes |
 
 The candidate connection grouping controls a particular form of overlap. It does not establish independent captures, attack campaigns, or validity on future traffic. The selected feature policy and pooled training-only scaler are provisional engineering choices. See [methodology](docs/methodology.md) before interpreting any reported metric.
+
+The [feature-validity procedure](docs/feature-validity.md) explains the diagnostic scope, interpretation, and reproducibility record.
 
 ## Extend the project
 

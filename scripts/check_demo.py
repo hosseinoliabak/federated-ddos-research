@@ -55,6 +55,17 @@ def main():
         run = root / "runs/engineering-smoke-v1-portable"
         prepared = json.loads((run / "preparation.json").read_text())
         trained = json.loads((run / "training.json").read_text())
+        invoke("audit_feature_validity.py", env)
+        diagnostic = root / "reports/development-preparation/feature-validity-v1"
+        validity = json.loads((diagnostic / "summary.json").read_text())
+        assert validity["synthetic_only"] and not validity["reserved_test_opened"]
+        assert validity["rows"] == 225
+        assert len(validity["one_feature_checks"]) == 2
+        validity_hash = hashlib.sha256((diagnostic / "COMPLETE.json").read_bytes()).hexdigest()
+        invoke("audit_feature_validity.py", env, succeeds=False)
+        assert (
+            hashlib.sha256((diagnostic / "COMPLETE.json").read_bytes()).hexdigest() == validity_hash
+        )
         assert prepared["cross_role_groups"] == 0
         assert prepared["cross_role_identical_full_records"] == 0
         assert prepared["all_ten_clients_in_both_roles"]
