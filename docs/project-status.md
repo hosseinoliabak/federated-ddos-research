@@ -7,6 +7,10 @@ The [Research hub](https://oliabak.com/research/federated-ddos/) is the continui
 project index. The thesis is being drafted and revised in English, with French
 translation and proofreading planned after the English manuscript is complete.
 
+Human review now uses private Word copies with tracked changes and comments.
+The [Word review workflow](word-review-workflow.md) records how edits are
+preserved, reconciled with the canonical source, and checked before a new export.
+
 ## Verified engineering work
 
 The published benign-only pilot source is
