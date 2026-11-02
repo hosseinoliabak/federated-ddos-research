@@ -4,6 +4,13 @@ Research software for inspecting network-flow datasets, preparing a bounded deve
 
 The current Python implementation runs SGD and local Adam with a fixed FedAvg server. It is an engineering prototype. A Sellier-based QiML training engine has not been implemented, and the project does not establish a speedup, a final detection result, or readiness for a provider network.
 
+## Project status
+
+The [dated project status](docs/project-status.md) records the current evidence,
+remaining research gates, and publication boundaries. The
+[Research hub](https://oliabak.com/research/federated-ddos/) provides the continuing
+project index.
+
 ## Current components
 
 | Component | Purpose | Status |
