@@ -86,6 +86,20 @@ The [feature-validity procedure](docs/feature-validity.md) explains the diagnost
 
 The [portable-model guide](docs/portable-models.md) describes the offline bundle exporter, input contract, network-lab integration, and historical packet-layer regression.
 
+## Benign-only engineering pilot
+
+The [benign-only pilot](docs/benign-engineering-pilot.md) checks local fitting,
+FedAvg, separate target calibration, and later development probes on the frozen
+historical FLNET sample. It includes calibrated and fixed packet-count controls.
+This is a software check with an arbitrary 5% calibration target. Date/label,
+target/family, shared-traffic, and feature-provenance limits prevent interpreting
+its metrics as independent-source or operational performance.
+
+Run the required repository checks first. The script requires an explicit
+`--execute-development-pilot` flag and writes to a fresh versioned directory
+under `FDDOS_WORKSPACE`. See the protocol for data roles, the use of future probe
+identities in exclusion, comparator differences, and execution provenance.
+
 ## Extend the project
 
 Keep model training, client participation, server aggregation, and evaluation decisions explicit. A new local optimizer should use the same agreed model and protocol before a performance comparison is interpreted. Record changes in a new run configuration and preserve the earlier evidence. The current script is intentionally a bounded reference; it is not yet a general optimizer plug-in framework.
