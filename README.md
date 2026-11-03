@@ -24,13 +24,21 @@ The latest private presentation revision adds six original vector figure groups
 and native editable evidence tables. Five drawings retain editable draw.io
 sources; one chart is generated with Matplotlib. The retained source catalog
 contains 87 works, matching the verified Zotero parent count but serving a
-different purpose. The manuscript bibliography has 89 entries, including two
-software sources. Chapter 3 cites 59 works; the working PDF has
-154 pages. Counts do not establish research completion.
+different purpose. The manuscript bibliography has 94 entries, including two
+earlier software-related references and five AI-tool references. Chapter 3 cites
+59 works; the working PDF has 157 pages. Counts do not establish research
+completion. The five new tool entries document assistance rather than enlarge
+the retained research-paper collection.
 
 The [figure and table workflow](docs/figure-workflow.md) describes the reusable
 production and validation route without publishing private draft content or
 assets. This documentation update leaves the reviewed pilot code unchanged.
+
+The [research-assistance and validation workflow](docs/research-assistance-and-validation.md)
+records proportionate disclosure, separate model critiques, and the different
+roles of formal, numerical, software, empirical, and human checks. Planned
+reviews remain separate from completed ones. This documentation adds no new
+proof or experiment.
 
 ## Current components
 

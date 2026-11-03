@@ -57,8 +57,10 @@ conversion behavior, not the validity of a scientific comparison.
 
 The retained source catalog contains 87 works, and the working Zotero collection
 has 87 verified parent records. These are distinct records. The manuscript
-bibliography contains 89 entries, including two software-related references. Chapter 3 cites
-59 works, and the working PDF contains 154 pages. The
+bibliography contains 94 entries, including two earlier software-related
+references and five AI-tool references. The five new tool entries document
+assistance; they do not enlarge the retained research-paper collection. Chapter
+3 cites 59 works, and the working PDF contains 157 pages. The
 collection-year chart describes that retained catalog; it is not evidence of
 field-wide publication growth, search completeness or novelty.
 
@@ -70,6 +72,21 @@ novelty. Human review of Chapter 1 remains pending.
 This milestone changes explanatory material and documentation. The executed and
 reviewed pilot code remains at commit
 `102293e69f2f9e7cdcac58cb12ffe8d7d0165833`; no new training was run.
+
+## Research assistance and validation
+
+The [research-assistance workflow](research-assistance-and-validation.md)
+records assistance by purpose and affected work, including substantive drafting,
+code, or figure assistance when it occurred. Author review and acceptance remain
+separate checkpoints. The record must not describe unfinished human checks as
+completed.
+
+Separate model critiques retain their actual packet scope, model identity when
+recorded, and disagreements. A future review is planned work rather than a
+completed endorsement. Model agreement, a formal proof, a numerical test, a
+software test, and an empirical comparison support different claims. This
+documentation checkpoint adds no new review, proof, training run, or final
+experimental result.
 
 ## Verified engineering work
 
