@@ -46,6 +46,31 @@ It adds no new training run, final-test result, accepted final split, or numeric
 QiML engine. The next steps are Chapter 1 review and source-data feasibility
 checks before the bounded protocol is frozen and the main comparisons begin.
 
+## Figures, tables and source records
+
+The private draft presentation adds six original vector figure groups. Five
+retain editable draw.io sources; one chart is generated with Matplotlib.
+Definitions and evidence comparisons remain native editable tables. The
+[figure and table workflow](figure-workflow.md) records the reusable route and
+its format-specific checks. Source and output checks establish the documented
+conversion behavior, not the validity of a scientific comparison.
+
+The retained source catalog contains 87 works, and the working Zotero collection
+has 87 verified parent records. These are distinct records. The manuscript
+bibliography contains 89 entries, including two software-related references. Chapter 3 cites
+59 works, and the working PDF contains 154 pages. The
+collection-year chart describes that retained catalog; it is not evidence of
+field-wide publication growth, search completeness or novelty.
+
+Separate Gemini and Grok critiques covered a bounded packet for these additions.
+Their advice was checked against sources and the actual artifact records.
+Completion of a critique is not approval of the manuscript or certification of
+novelty. Human review of Chapter 1 remains pending.
+
+This milestone changes explanatory material and documentation. The executed and
+reviewed pilot code remains at commit
+`102293e69f2f9e7cdcac58cb12ffe8d7d0165833`; no new training was run.
+
 ## Verified engineering work
 
 The published benign-only pilot source is

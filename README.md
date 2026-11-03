@@ -20,6 +20,18 @@ review. The retained working collection contains 87 verified parent records;
 reading scope is recorded separately for each work. This documentation milestone
 adds no new training or final detection result.
 
+The latest private presentation revision adds six original vector figure groups
+and native editable evidence tables. Five drawings retain editable draw.io
+sources; one chart is generated with Matplotlib. The retained source catalog
+contains 87 works, matching the verified Zotero parent count but serving a
+different purpose. The manuscript bibliography has 89 entries, including two
+software sources. Chapter 3 cites 59 works; the working PDF has
+154 pages. Counts do not establish research completion.
+
+The [figure and table workflow](docs/figure-workflow.md) describes the reusable
+production and validation route without publishing private draft content or
+assets. This documentation update leaves the reviewed pilot code unchanged.
+
 ## Current components
 
 | Component | Purpose | Status |

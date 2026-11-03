@@ -30,6 +30,19 @@ conversion. Word pagination can differ from the typeset PDF, so identify review
 comments by chapter, section, and nearby text rather than relying only on a page
 number.
 
+Keep explanatory tables as native Word tables so their text and cells remain
+editable. For drawings, retain the editable draw.io source separately and insert
+actual SVG with a PNG fallback where the checked export route supports it. A
+vector picture is scalable, but it is not a collection of editable Word shapes.
+The scripted chart retains its code and source metadata separately.
+
+Check figure and table numbering, captions, cross-references, alt descriptions,
+label size and page fit in the delivered document. Keep one canonical caption
+for each figure. A plain text box is not a substitute for a rendered diagram.
+OOXML structure and media checks do not establish native Word pagination; record
+successful native inspection and any unverified layout separately. See the
+[figure and table workflow](figure-workflow.md) for the reusable production route.
+
 Current citations and bibliography entries are APA 6 formatted text. They are
 not live Zotero fields. Reconcile accepted citation changes with the canonical
 reference records before the next export.

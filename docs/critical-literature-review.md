@@ -55,6 +55,35 @@ appraisal. Verify citation metadata before adding the distinct work to the
 bibliography. Do not infer the first-online date from a PDF's modification date
 or from a future issue year alone.
 
+## Connect evidence tables to their source records
+
+Keep comparison tables native and editable, with a stable source identifier for
+each row. Record a method’s objective, actual data, evaluation conditions and
+relevant limitation before comparing it with another study. A compact cell does
+not replace its detailed appraisal or extend its reading scope. Separate an
+author-reported result from a reviewer’s inference, and retain contradictory
+evidence instead of forcing every source to support the proposed contribution.
+
+The current retained catalog contains 87 works. Its source map is distinct from
+the working Zotero collection, which has 87 verified parent records. The
+manuscript bibliography contains 89 entries because it also includes two software
+sources. A bibliography entry, an in-text citation, a retained source and an
+appraised main text are different counting units. Chapter 3 currently cites
+59 works.
+
+The 16 additions comprise 13 substantive PDF main-text appraisals and three
+limited records. Their individual page, appendix and visual limits remain in the
+private register. Counts describe recorded work; they do not reconstruct a
+systematic-review screening denominator. Similarly, a chart of bibliographic
+issue years describes this selected collection rather than field-wide publication
+growth. Preserve a verified first-online qualification when an issue year is
+later than the collection date.
+
+The reusable [figure and table workflow](figure-workflow.md) keeps production
+checks separate from source appraisal. Public documentation describes that
+process without exposing the private comparison matrix, chapters or article
+files.
+
 ## Keep source units separate from repeated runs
 
 Record separately the independently acquired sources, the observations derived
