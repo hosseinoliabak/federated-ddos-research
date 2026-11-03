@@ -46,6 +46,15 @@ It adds no new training run, final-test result, accepted final split, or numeric
 QiML engine. The next steps are Chapter 1 review and source-data feasibility
 checks before the bounded protocol is frozen and the main comparisons begin.
 
+## Introduction review checkpoint
+
+An additional independent review of Chapter 1 is complete. Google Gemini and
+xAI Grok reviewed the same frozen input, and the writer recorded the outcome.
+The chapter remains unchanged. Human reading and any resulting revision, source
+verification, protocol validation, and empirical evaluation remain separate
+gates. This checkpoint adds no new training run or final result and does not
+certify novelty.
+
 ## Figures, tables and source records
 
 The private draft presentation adds six original vector figure groups. Five
