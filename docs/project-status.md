@@ -55,6 +55,10 @@ verification, protocol validation, and empirical evaluation remain separate
 gates. This checkpoint adds no new training run or final result and does not
 certify novelty.
 
+A file-format compatibility issue in the private introduction review copy was
+corrected and checked in desktop Word. Human reading remains pending. No research
+findings or results changed.
+
 ## Figures, tables and source records
 
 The private draft presentation adds six original vector figure groups. Five
