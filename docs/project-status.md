@@ -88,6 +88,17 @@ software test, and an empirical comparison support different claims. This
 documentation checkpoint adds no new review, proof, training run, or final
 experimental result.
 
+## LaTeX authoring assessment
+
+The [editor assessment](latex-authoring-options.md) compares hosted Overleaf,
+upstream self-hosted editions and the roles of existing cloud services. Comments
+and tracked changes are required for the intended review workflow. The official
+ÉTS template has been located and a private template-only source prototype
+prepared; full compilation and migration are not established. Hosted access and
+an individually verified institutional license are candidates, and the
+requirement to use a personally controlled domain remains open. No editor account, deployment or manuscript
+transfer is reported by this documentation checkpoint.
+
 ## Verified engineering work
 
 The published benign-only pilot source is

@@ -40,6 +40,10 @@ roles of formal, numerical, software, empirical, and human checks. Planned
 reviews remain separate from completed ones. This documentation adds no new
 proof or experiment.
 
+The [browser LaTeX authoring assessment](docs/latex-authoring-options.md) compares
+established editors and hosting roles for chapter editing and review. Platform
+selection and manuscript migration remain pending.
+
 ## Current components
 
 | Component | Purpose | Status |
