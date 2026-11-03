@@ -1,6 +1,6 @@
 # Project status
 
-Updated November 2, 2026.
+Updated November 3, 2026.
 
 This repository provides the code and documentation used to prepare the study.
 The [Research hub](https://oliabak.com/research/federated-ddos/) is the continuing
@@ -10,6 +10,32 @@ translation and proofreading planned after the English manuscript is complete.
 Human review now uses private Word copies with tracked changes and comments.
 The [Word review workflow](word-review-workflow.md) records how edits are
 preserved, reconciled with the canonical source, and checked before a new export.
+
+## Current preparation checkpoint
+
+The private manuscript now refines its comparison with close prior work and the
+boundaries of dataset-provenance claims. The dedicated Sellier-inspired chapter
+and an editable beginner reading guide support the next private review. The
+chapter distinguishes the published method, limited mathematical checks, and
+the proposed federated adaptation. Numerical specification remains unresolved.
+
+The private progress dashboard separates Codex and researcher checklists for
+this week and next. Its percentages count explicitly verified checks rather
+than estimate effort or overall thesis completion. Human reading and research
+decisions remain open where unconfirmed. Edited Word files are preserved before
+new exports and reconciled with the canonical source.
+
+The next work is to resolve eligible source units and benign-history roles,
+check a bounded local/federated development configuration, and complete the
+comparison protocol. No new real-data training, final-test modeling, public
+manuscript release, or numerical QiML engine is part of this checkpoint.
+
+Independent critique of the new manuscript preparation is recorded separately
+from the historical software reviews below. Separate Gemini and Grok reviews
+identified qualifications and revisions. Their findings were checked against
+primary sources and corrections applied. Numerical treatment, source eligibility,
+and the main protocol remain unresolved; no unanimous approval or novelty
+certification is claimed.
 
 ## Verified engineering work
 
