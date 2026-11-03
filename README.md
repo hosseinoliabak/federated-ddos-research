@@ -41,8 +41,11 @@ reviews remain separate from completed ones. This documentation adds no new
 proof or experiment.
 
 The [browser LaTeX authoring assessment](docs/latex-authoring-options.md) compares
-established editors and hosting roles for chapter editing and review. Platform
-selection and manuscript migration remain pending.
+own-domain editors for chapter files, rendered PDFs, comments and tracked edits.
+Ayakaleaf Pro is the leading open-source candidate for a bounded synthetic trial.
+Source inspection and local TeXlyre review/recovery checks retain their recorded
+limits. The current private workspace remains active; no replacement deployment
+or manuscript migration is claimed.
 
 ## Current components
 

@@ -90,14 +90,27 @@ experimental result.
 
 ## LaTeX authoring assessment
 
-The [editor assessment](latex-authoring-options.md) compares hosted Overleaf,
-upstream self-hosted editions and the roles of existing cloud services. Comments
-and tracked changes are required for the intended review workflow. The official
-ÉTS template has been located and a private template-only source prototype
-prepared; full compilation and migration are not established. Hosted access and
-an individually verified institutional license are candidates, and the
-requirement to use a personally controlled domain remains open. No editor account, deployment or manuscript
-transfer is reported by this documentation checkpoint.
+The [editor assessment](latex-authoring-options.md) now applies the settled
+requirement that the editor itself run under a personally controlled domain.
+Ayakaleaf Pro is the leading open-source candidate for a bounded synthetic trial.
+Its public review and compilation source was inspected, and the trial bundle
+pins an application release, matching source and compiler image. No Ayakaleaf
+stack was run or deployed, and effective isolation, official-template PDF
+compilation, access and recovery remain acceptance checks.
+
+A separate local TeXlyre prototype imported the public-template chapter tree and
+exercised tracked edits with dummy content. A complete export/import preserved
+an inline comment and pending tracked insertion in a new browser profile. An
+immediate comment-visibility assertion failed, although the note appeared after
+reload and import. The local account could not sign in from the fresh profile;
+this does not establish the required remotely available private workspace.
+The browser trial did not compile the full university template.
+
+Separate Gemini and Grok critiques covered public-source options. Subsequent
+source inspection and prototype observations remain separate evidence rather
+than model-reviewed runtime results. The current editor remains active. This
+checkpoint adds documentation and bounded authoring checks, with no manuscript
+migration, scientific code change, training run or final result.
 
 ## Verified engineering work
 
