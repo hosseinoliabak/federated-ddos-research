@@ -1,0 +1,103 @@
+name: Editor runtime preflight
+
+"on":
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Measure disposable runner capacity
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import datetime
+          import json
+          import os
+          import platform
+          import shutil
+          import subprocess
+          import time
+
+          started_utc = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          started_monotonic = time.monotonic()
+
+          def probe(argv):
+              began = time.monotonic()
+              result = {"elapsed_seconds": None, "exit_code": None}
+              try:
+                  completed = subprocess.run(
+                      argv, capture_output=True, text=True, timeout=15, check=False
+                  )
+                  result["exit_code"] = completed.returncode
+                  if completed.returncode == 0:
+                      result["value"] = completed.stdout.strip()[:256]
+                  else:
+                      result["error"] = "command_failed"
+              except (OSError, subprocess.TimeoutExpired) as error:
+                  result["error"] = type(error).__name__
+              result["elapsed_seconds"] = round(time.monotonic() - began, 6)
+              return result
+
+          def disk(path):
+              result = {"path": path}
+              if not path:
+                  result["status"] = "path_unavailable"
+                  return result
+              try:
+                  usage = shutil.disk_usage(path)
+                  result.update(
+                      total_bytes=usage.total,
+                      used_bytes=usage.used,
+                      free_bytes=usage.free,
+                      status="measured",
+                  )
+              except OSError as error:
+                  result.update(status="unavailable", error=type(error).__name__)
+              return result
+
+          memory = {}
+          try:
+              with open("/proc/meminfo", encoding="ascii") as stream:
+                  for line in stream:
+                      name, _, value = line.partition(":")
+                      if name in ("MemTotal", "MemAvailable"):
+                          memory[name + "_bytes"] = int(value.split()[0]) * 1024
+          except (OSError, ValueError) as error:
+              memory["error"] = type(error).__name__
+
+          docker_version = probe(["docker", "version", "--format", "{{.Server.Version}}"])
+          compose_version = probe(["docker", "compose", "version", "--short"])
+          docker_root = probe(["docker", "info", "--format", "{{.DockerRootDir}}"])
+          docker_root_path = docker_root.get("value")
+          result = {
+              "schema": "editor-runtime-preflight/v1",
+              "scope": "Capacity check only; no container image pulled or started",
+              "started_utc": started_utc,
+              "github_sha": os.environ.get("GITHUB_SHA"),
+              "github_run_id": os.environ.get("GITHUB_RUN_ID"),
+              "system": {
+                  "os": platform.system(),
+                  "platform": platform.platform(aliased=True, terse=True),
+                  "architecture": platform.machine(),
+                  "logical_cpu_count": os.cpu_count(),
+                  "memory": memory,
+              },
+              "docker_server_version": docker_version,
+              "docker_compose_version": compose_version,
+              "docker_root": docker_root,
+              "disk": {
+                  "root": disk("/"),
+                  "workspace": disk(os.environ.get("GITHUB_WORKSPACE")),
+                  "docker_data": disk(docker_root_path),
+              },
+              "containers_pulled_or_started": False,
+              "timing_scope": "Python monotonic elapsed for these probes only; excludes job setup and queue",
+          }
+          result["ended_utc"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          result["elapsed_seconds"] = round(time.monotonic() - started_monotonic, 6)
+          print("EDITOR_RUNTIME_PREFLIGHT_JSON=" + json.dumps(result, sort_keys=True))
+          PY
