@@ -13,29 +13,37 @@ preserved, reconciled with the canonical source, and checked before a new export
 
 ## Current preparation checkpoint
 
-The private manuscript now refines its comparison with close prior work and the
-boundaries of dataset-provenance claims. The dedicated Sellier-inspired chapter
-and an editable beginner reading guide support the next private review. The
-chapter distinguishes the published method, limited mathematical checks, and
-the proposed federated adaptation. Numerical specification remains unresolved.
+The research questions have been reopened after a fresh critical appraisal of
+the literature. A direction has now been selected for feasibility assessment;
+the final questions and protocol remain under review. The retained register
+contains 84 sources: 71 original sources
+and 13 additional sources. All 71 original sources have fresh substantive
+appraisals. Of the additional sources, ten have primary PDFs and full substantive
+main-text appraisals. The other three have explicitly limited coverage: metadata
+and abstract, selected primary sections, or extracted main prose with image-only
+tables and plots still unread. These coverage categories remain separate.
 
-The private progress dashboard separates Codex and researcher checklists for
-this week and next. Its percentages count explicitly verified checks rather
-than estimate effort or overall thesis completion. Human reading and research
-decisions remain open where unconfirmed. Edited Word files are preserved before
-new exports and reconciled with the canonical source.
+The [critical literature review workflow](critical-literature-review.md) records
+how source versions, exact reading scope, reported claims, validity limits, and
+close precedents are checked. Completed reading does not establish replication,
+novelty, or an accepted research protocol. Later source additions also remain
+outside the evidence supplied in earlier independent-review packets.
 
-The next work is to resolve eligible source units and benign-history roles,
-check a bounded local/federated development configuration, and complete the
-comparison protocol. No new real-data training, final-test modeling, public
-manuscript release, or numerical QiML engine is part of this checkpoint.
+The updated abstract and chapter text record this feasibility stage. The final
+problem statement, contribution claims, data eligibility, and comparison
+protocol remain subject to review. Earlier chapter checks and
+completed engineering work remain historical evidence; they do not settle the
+revised scope or establish manuscript readiness.
 
-Independent critique of the new manuscript preparation is recorded separately
-from the historical software reviews below. Separate Gemini and Grok reviews
-identified qualifications and revisions. Their findings were checked against
-primary sources and corrections applied. Numerical treatment, source eligibility,
-and the main protocol remain unresolved; no unanimous approval or novelty
-certification is claimed.
+Independent reviews provide critiques of bounded evidence and proposed decisions.
+Their access scope, disagreements, and resulting corrections are recorded
+separately from historical software reviews. Reviewer agreement is not proof of
+correctness or novelty.
+
+This checkpoint adds literature appraisal and documentation. It adds no new
+training run, final-test result, accepted final split, or numerical QiML engine.
+The next research step is to resolve the scope and data requirements, then freeze
+a bounded protocol before the main comparisons.
 
 ## Verified engineering work
 
@@ -60,16 +68,18 @@ and [formal verification record](lean-verification.json) for their respective sc
 
 ## Remaining research gates
 
-1. Establish eligible source units, capture and ownership provenance, available
-   benign history, and fitting, calibration, and evaluation roles. The final
-   evaluation split remains unresolved.
-2. Freeze a bounded comparison protocol with explicit information access,
-   preprocessing, tuning budgets, uncertainty analysis, and failure accounting
+1. Resolve the research questions and contribution claims against the strongest
+   relevant prior work. Revise the abstract and affected chapters consistently.
+2. Establish eligible data, capture and ownership provenance, and fitting,
+   calibration, and evaluation roles. The final evaluation split remains
+   unresolved.
+3. Freeze a bounded comparison protocol with explicit information access,
+   preprocessing, tuning budgets, uncertainty units, and failure accounting
    before interpreting the main experiments.
-3. Run the selected federated-learning comparisons and preserve exact code,
-   configuration, source hashes, timing boundaries, and unsuccessful attempts.
-4. Specify and verify any Sellier-inspired training treatment before comparing
-   it with SGD and Adam. No QiML numerical engine is currently claimed.
+4. Run the selected comparisons and preserve exact code, configuration, source
+   hashes, timing boundaries, and unsuccessful attempts. Specify and verify any
+   Sellier-inspired training treatment before comparing it with SGD and Adam.
+   No QiML numerical engine is currently claimed.
 5. Validate the [portable model interface](portable-models.md) and network-lab
    capture path before making claims about live detection. A CSV experiment and
    a network deployment require different supporting evidence.

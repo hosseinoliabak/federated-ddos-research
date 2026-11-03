@@ -9,7 +9,9 @@ The current Python implementation runs SGD and local Adam with a fixed FedAvg se
 The [dated project status](docs/project-status.md) records the current evidence,
 remaining research gates, and publication boundaries. The
 [Research hub](https://oliabak.com/research/federated-ddos/) provides the continuing
-project index.
+project index. The [critical literature review workflow](docs/critical-literature-review.md)
+records reading scope, evidence limits, close precedents, and checks on proposed
+research gaps.
 
 ## Current components
 
