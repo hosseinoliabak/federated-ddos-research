@@ -41,6 +41,20 @@ state the method and data, the strongest relevant validity limit, and the source
 role in the research argument. Save the record after each source so that coverage
 can be audited without reconstructing reading history.
 
+## Reconcile newly supplied files
+
+Before counting a new PDF as a new work, compare its DOI or stable primary
+identity, title, authors, and version with the retained register. A supplied batch
+may contain works already appraised. Record supplied-file counts separately from
+new retained works, and preserve which files matched which records.
+
+A SHA-256 hash identifies file bytes, not a unique research contribution.
+Different files may be versions of the same work. Keep a version-specific reading
+record when the content changes, and do not count a duplicate file as a new
+appraisal. Verify citation metadata before adding the distinct work to the
+bibliography. Do not infer the first-online date from a PDF's modification date
+or from a future issue year alone.
+
 ## Keep source units separate from repeated runs
 
 Record separately the independently acquired sources, the observations derived

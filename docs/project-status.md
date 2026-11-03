@@ -7,43 +7,44 @@ The [Research hub](https://oliabak.com/research/federated-ddos/) is the continui
 project index. The thesis is being drafted and revised in English, with French
 translation and proofreading planned after the English manuscript is complete.
 
-Human review now uses private Word copies with tracked changes and comments.
-The [Word review workflow](word-review-workflow.md) records how edits are
-preserved, reconciled with the canonical source, and checked before a new export.
+Human review of Chapter 1 remains pending. Private review material and the
+researcher’s comments remain outside the public repository.
 
 ## Current preparation checkpoint
 
-The research questions have been reopened after a fresh critical appraisal of
-the literature. A direction has now been selected for feasibility assessment;
-the final questions and protocol remain under review. The retained register
-contains 84 sources: 71 original sources
-and 13 additional sources. All 71 original sources have fresh substantive
-appraisals. Of the additional sources, ten have primary PDFs and full substantive
-main-text appraisals. The other three have explicitly limited coverage: metadata
-and abstract, selected primary sections, or extracted main prose with image-only
-tables and plots still unread. These coverage categories remain separate.
+The nine-chapter English working draft has been revised throughout around the
+current working study direction. Its four research questions have distinct roles,
+with the primary comparison separated from supporting and conditional work.
+Required source data, study feasibility, and the final protocol remain to be
+checked. Human review of Chapter 1 is still pending.
+
+The retained working collection now contains 87 verified parent records.
+Newly supplied files were reconciled with existing records before three new works
+were added. All 71 original sources have fresh substantive appraisals; additional
+works retain their individually recorded reading coverage and limits. A retained
+record is not automatically a full main-text appraisal, and reading is not
+independent replication.
 
 The [critical literature review workflow](critical-literature-review.md) records
-how source versions, exact reading scope, reported claims, validity limits, and
-close precedents are checked. Completed reading does not establish replication,
-novelty, or an accepted research protocol. Later source additions also remain
-outside the evidence supplied in earlier independent-review packets.
+source identity and versions, duplicate-file reconciliation, exact reading scope,
+reported claims, validity limits, and close precedents. Later source additions
+remain outside the evidence supplied in earlier independent-review packets.
 
-The updated abstract and chapter text record this feasibility stage. The final
-problem statement, contribution claims, data eligibility, and comparison
-protocol remain subject to review. Earlier chapter checks and
-completed engineering work remain historical evidence; they do not settle the
-revised scope or establish manuscript readiness.
+The abstract and chapter text retain the prospective status of the study.
+Earlier chapter checks and engineering work remain historical evidence; they do
+not establish the revised protocol, empirical findings, or manuscript readiness.
+Novelty remains provisional and must be assessed against the strongest relevant
+prior work.
 
-Independent reviews provide critiques of bounded evidence and proposed decisions.
-Their access scope, disagreements, and resulting corrections are recorded
-separately from historical software reviews. Reviewer agreement is not proof of
-correctness or novelty.
+Independent reviews critique bounded evidence and proposed decisions. Their
+access scope, disagreements, and resulting corrections are recorded separately
+from historical software reviews. Reviewer agreement does not prove correctness,
+certify novelty, or replace human review.
 
-This checkpoint adds literature appraisal and documentation. It adds no new
-training run, final-test result, accepted final split, or numerical QiML engine.
-The next research step is to resolve the scope and data requirements, then freeze
-a bounded protocol before the main comparisons.
+This checkpoint adds source appraisal and manuscript/documentation realignment.
+It adds no new training run, final-test result, accepted final split, or numerical
+QiML engine. The next steps are Chapter 1 review and source-data feasibility
+checks before the bounded protocol is frozen and the main comparisons begin.
 
 ## Verified engineering work
 
@@ -68,8 +69,9 @@ and [formal verification record](lean-verification.json) for their respective sc
 
 ## Remaining research gates
 
-1. Resolve the research questions and contribution claims against the strongest
-   relevant prior work. Revise the abstract and affected chapters consistently.
+1. Complete human review of Chapter 1 and reconcile its comments. Keep the
+   working questions, contribution limits, and affected chapters consistent with
+   the strongest relevant prior work.
 2. Establish eligible data, capture and ownership provenance, and fitting,
    calibration, and evaluation roles. The final evaluation split remains
    unresolved.

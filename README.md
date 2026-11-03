@@ -13,6 +13,13 @@ project index. The [critical literature review workflow](docs/critical-literatur
 records reading scope, evidence limits, close precedents, and checks on proposed
 research gaps.
 
+The nine-chapter English working draft has been realigned with the current
+study direction and four research questions with distinct roles. Source-data
+feasibility and the final protocol remain open, and Chapter 1 awaits human
+review. The retained working collection contains 87 verified parent records;
+reading scope is recorded separately for each work. This documentation milestone
+adds no new training or final detection result.
+
 ## Current components
 
 | Component | Purpose | Status |
@@ -113,7 +120,7 @@ identities in exclusion, comparator differences, and execution provenance.
 
 Keep model training, client participation, server aggregation, and evaluation decisions explicit. A new local optimizer should use the same agreed model and protocol before a performance comparison is interpreted. Record changes in a new run configuration and preserve the earlier evidence. The current script is intentionally a bounded reference; it is not yet a general optimizer plug-in framework.
 
-The next work is feature-provenance checking, a defensible final evaluation split, a paired baseline pilot, a justified QiML implementation, and controlled lab collection. The [contribution guide](CONTRIBUTING.md) describes how to add code, tests, documentation, and evidence together.
+The next work is to verify source-data feasibility, complete human review of Chapter 1, and freeze the bounded evaluation protocol. The optional Sellier-inspired branch still requires a numerical specification. Any live-lab measurements require separate functional checks; a constructed topology does not establish capture or detector readiness. The [contribution guide](CONTRIBUTING.md) describes how to add code, tests, documentation, and evidence together.
 
 ## Citation and license
 
