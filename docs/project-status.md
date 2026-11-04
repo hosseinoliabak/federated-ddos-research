@@ -15,9 +15,11 @@ comments remain outside the public repository.
 The working design assigns collection, learning and scoring to provider points
 of presence (PoPs), with central coordination. These PoPs are the candidate
 learning participants, whereas customers are reporting and evaluation groups.
-No detector appliance is assumed on customer premises. Independent local,
-permitted pooled-central and federated training remain comparisons on matched
-observations with the same PoP inference. The comparison remains unrun.
+No detector appliance is assumed on customer premises. The planned comparison covers independent local,
+permitted pooled-central and federated training. It keeps the same observation
+view, feature definitions and PoP inference placement. Pooled and federated
+training use the same permitted fitting evidence. Independent local training
+retains its local evidence. The comparison remains unrun.
 
 The checked private English draft has nine chapters, 164 PDF pages
 and 110 bibliography entries; Chapter 3 cites 72

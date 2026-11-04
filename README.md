@@ -14,10 +14,14 @@ readiness for a provider network.
 
 A [provider architecture assessment](docs/provider-observation-and-learning.md)
 considers provider-owned PoP collection and scoring with central coordination,
-Internet-border observations and complementary customer-facing PE views. It
-keeps local-only, permitted pooled-central and federated training as choices to
-compare on matched inputs. The design is provisional. The comparison is unrun,
-with no lab rebuild, new training or selected final protocol. Provider PoPs are the candidate learning units; customers are reporting and evaluation groups. Local-only, pooled-central and federated training should use matched observations and the same PoP inference.
+Internet-border observations and complementary customer-facing PE views. The
+planned comparison covers independent local, permitted pooled-central and
+federated training. It keeps the same observation view, feature definitions and
+PoP inference placement. Pooled and federated training use the same permitted
+fitting evidence. Independent local training retains its local evidence. The
+design is provisional and the comparison remains unrun. No lab rebuild, new
+training or final protocol is claimed. Provider PoPs are the candidate learning
+units; customers are reporting and evaluation groups.
 
 ## November 4 source follow-up
 

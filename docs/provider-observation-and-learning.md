@@ -9,8 +9,10 @@ observation candidate for externally offered load. Customer-facing provider-edge
 (PE) views remain complementary or a separate observation comparison.
 
 Observation, flow collection, training, inference and mitigation remain separate
-decisions. Local-only, permitted pooled-central and federated training should be
-compared on matched inputs. Reporting by customer does not, by itself, define
+decisions. The proposed training comparison fixes the observation view, feature
+definitions and PoP inference placement. Pooled and federated training use the
+same permitted fitting evidence. Independent local training retains its local
+evidence. Reporting by customer does not, by itself, define
 the training participants. The working design instead treats provider PoPs as
 the candidate learning units. These are proposed choices, not a selected final
 protocol or a completed experiment.
@@ -53,7 +55,7 @@ used for edge-server detection. Their results are specific to that setup.
 |---|---|
 | Internet-border observations with central analysis | Cover all relevant borders and establish which externally offered traffic is visible. |
 | Customer-facing PE views | Check customer context, metering stage and missing information before treating these as complementary or alternative inputs. |
-| Matched observations with local-only, pooled-central or federated training | Compare quality and cost with the same PoP inference placement and permitted information access. |
+| Fixed observation view for local-only, pooled-central or federated training | Compare quality and cost at the same PoP inference placement. Pooled and FL fits share permitted fitting evidence; the independent local fit retains local evidence. |
 | Combined border and PE observations | Establish provenance and handle overlapping records before assessing additional coverage and cost. |
 
 Pooling depends on permission, governance and operational constraints, not only
@@ -63,7 +65,7 @@ guarantee ([Kairouz et al., 2021](https://doi.org/10.1561/2200000083)).
 Transmission savings also require measurement. The comparison should account for serialized telemetry,
 model exchange and update cadence over the declared training lifecycle.
 
-Learning methods should first be compared with the same observation inputs.
+Keep the observation view and feature definitions fixed when comparing training methods.
 Changing the observation location at the same time would mix information and
 learning effects. Separate checks must establish exporter behavior, sampling,
 record loss, feature compatibility, inference placement and end-to-end alert
