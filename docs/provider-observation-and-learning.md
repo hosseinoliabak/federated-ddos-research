@@ -78,7 +78,7 @@ Two bounded xAI Grok critique rounds on public architecture concepts and source
 summaries informed this assessment. The tool reported `grok-4.7-build`. The writer accepted
 the central baseline and the separation of design choices, then qualified
 pooling permission, metering-stage semantics and alert-timing claims. The review
-had no RAG, web or execution access. It does not validate the lab, select the
+used supplied public-source packets and was instructed not to query RAG or other files. Web access was disabled. No independent full-source retrieval is claimed. It does not validate the lab, select the
 final protocol or certify novelty.
 
 Scalability remains an evaluation goal. Any proposed mechanism needs measured
