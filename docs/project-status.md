@@ -12,9 +12,17 @@ comments remain outside the public repository.
 
 ## Provider architecture assessment
 
-**November 4, 2026.** A [bounded architecture assessment](provider-observation-and-learning.md) separates packet observation, flow collection, model training, inference and mitigation. It considers provider-operated customer-facing and Internet-border observations without requiring separate customer-premises detector appliances. Centralized training with local inference remains a baseline when pooling is permitted. Federation must be assessed against measured quality and cost objectives.
+**November 4, 2026.** The [bounded assessment](provider-observation-and-learning.md)
+considers provider-owned PoP collection and scoring with central coordination.
+Internet-border ingress is the primary observation candidate for externally
+offered load; customer-facing PE views remain complementary or a separate
+comparison. Local-only, permitted pooled-central and federated training remain
+choices to compare on matched inputs. No customer-premises detector appliances
+are assumed.
 
-The comparison remains unrun. A public-source xAI critique informed the assessment, with metering semantics, pooling permission and alert timing kept explicit. The final protocol and manuscript alignment remain open. No EVE topology was rebuilt, no new training was performed and no novelty claim is made.
+Two public-source xAI critique rounds informed the assessment. The comparison remains unrun and manuscript alignment is pending. No final
+protocol has been selected and no novelty is claimed. No EVE topology was rebuilt or new training performed.
+The earlier version-1 lab figure remains design history.
 
 ## Earlier manuscript preparation checkpoint
 

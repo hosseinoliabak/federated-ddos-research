@@ -12,12 +12,12 @@ readiness for a provider network.
 
 ## Project status
 
-A [provider architecture assessment](docs/provider-observation-and-learning.md) now
-separates traffic observation from flow collection, model training, inference and
-mitigation. It retains centralized training with local inference as a baseline
-when pooling is permitted. Provider-operated detection and federation remain
-proposed choices to compare. The assessment adds no lab rebuild, new training
-run or selected final protocol.
+A [provider architecture assessment](docs/provider-observation-and-learning.md)
+considers provider-owned PoP collection and scoring with central coordination,
+Internet-border observations and complementary customer-facing PE views. It
+keeps local-only, permitted pooled-central and federated training as choices to
+compare on matched inputs. The design is provisional. The comparison is unrun,
+with no lab rebuild, new training or selected final protocol.
 
 The [dated project status](docs/project-status.md) records the current evidence,
 remaining research gates, and publication boundaries. The [Research
