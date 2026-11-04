@@ -64,12 +64,18 @@ not replace its detailed appraisal or extend its reading scope. Separate an
 author-reported result from a reviewer’s inference, and retain contradictory
 evidence instead of forcing every source to support the proposed contribution.
 
-The current retained catalog contains 87 works. Its source map is distinct from
-the working Zotero collection, which has 87 verified parent records. The
-manuscript bibliography contains 89 entries because it also includes two software
-sources. A bibliography entry, an in-text citation, a retained source and an
-appraised main text are different counting units. Chapter 3 currently cites
-59 works.
+The current retained reading bank contains 95 works. The working Zotero
+collection has 98 parent references because it also includes three supporting
+engineering and measurement records. The manuscript bibliography contains
+105 entries; Chapter 3 cites 67 works. A bibliography entry, an in-text
+citation, a retained source, a targeted reading and a full main-text appraisal
+are different counting units.
+
+Eight scholarly sources were added after the earlier 87-record checkpoint.
+The [foundational-reference supplement](foundational-reference-selection.md)
+records the focused selection and targeted reading boundaries. These additions
+do not enlarge the original 71-source full-appraisal batch retrospectively.
+The collection-year chart remains a historical snapshot of those 87 records.
 
 The 16 additions comprise 13 substantive PDF main-text appraisals and three
 limited records. Their individual page, appendix and visual limits remain in the
