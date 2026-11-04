@@ -10,21 +10,37 @@ proofreading planned after the English manuscript is complete.
 Human review of Chapter 1 remains pending. Private review material and the researcher’s
 comments remain outside the public repository.
 
-## Provider architecture assessment
+## November 4 source and manuscript follow-up
 
-**November 4, 2026.** The [bounded assessment](provider-observation-and-learning.md)
-considers provider-owned PoP collection and scoring with central coordination.
-Internet-border ingress is the primary observation candidate for externally
-offered load; customer-facing PE views remain complementary or a separate
-comparison. Local-only, permitted pooled-central and federated training remain
-choices to compare on matched inputs. No customer-premises detector appliances
-are assumed.
+The working design assigns collection, learning and scoring to provider points
+of presence (PoPs), with central coordination. These PoPs are the candidate
+learning participants, whereas customers are reporting and evaluation groups.
+No detector appliance is assumed on customer premises. Independent local,
+permitted pooled-central and federated training remain comparisons on matched
+observations with the same PoP inference. The comparison remains unrun.
 
-Two public-source xAI critique rounds informed the assessment. The comparison remains unrun and manuscript alignment is pending. No final
-protocol has been selected and no novelty is claimed. No EVE topology was rebuilt or new training performed.
-The earlier version-1 lab figure remains design history.
+The checked private English draft has nine chapters, 164 PDF pages
+and 110 bibliography entries; Chapter 3 cites 72
+works. Human review of Chapter 1 remains pending. The working reference
+collection contains 103 parent records, including 98 stored paper or book PDFs
+and five supporting records. The public bibliography is a separate selection
+of 23 entries. These counts do not establish reading depth or completion.
 
-## Earlier manuscript preparation checkpoint
+The three additional papers have primary publication links in the
+[architecture assessment](provider-observation-and-learning.md). FlowSentry
+received targeted reading of Sections 5.2–5.3, 6.1 and 6.3, replacing the earlier
+abstract-only boundary. The SCLDDOS2024 paper is a 2025 work; FADES is a 2026
+work. Acquisition and targeted reading do not establish a complete appraisal,
+an exhaustive novelty search or a new detection result.
+
+Three bounded public-source xAI architecture critique calls are recorded. The
+tool reported `grok-4.7-build`. They did not receive or review this new private
+chapter revision. The writer retained supported advice and qualified or
+rejected overgeneralizations; model agreement is not scientific validation.
+Source-data feasibility, the final protocol and novelty assessment remain open.
+No scientific code, EVE topology or training result was changed.
+
+## Earlier manuscript preparation checkpoint, November 3
 
 The working English opening and foundations have been revised to establish DDoS and the
 relevant learning concepts before the specific study detail. The nine-chapter structure
@@ -32,7 +48,7 @@ and four working questions remain. Required source-data checks, the final learne
 protocol, and the novelty assessment remain open. Chapter 1 awaits human review. No new
 training run, numerical QiML engine or final detection result is part of this milestone.
 
-The checked private English draft has nine chapters, 162 PDF pages and 105 bibliography
+At that checkpoint, the checked private English draft had nine chapters, 162 PDF pages and 105 bibliography
 entries; Chapter 3 cites 67 works. The retained reading bank contains 95 works. The
 working Zotero collection has 98 parent references because it also includes three
 supporting engineering and measurement records. The public bibliography is a separate
@@ -88,9 +104,9 @@ Source and output checks establish the documented conversion behavior, not the v
 of a scientific comparison.
 
 The collection-year chart describes the earlier 87-record source catalog. It remains a
-historical snapshot rather than a chart of the enlarged reading bank. The current bank
-contains 95 works, and the working Zotero collection has 98 parent references, including
-three supporting records. The checked private English draft has nine chapters, 162 PDF
+historical snapshot rather than a chart of the enlarged reading bank. At that earlier checkpoint, the bank
+contained 95 works, and the working Zotero collection had 98 parent references, including
+three supporting records. At that checkpoint, the checked private English draft had nine chapters, 162 PDF
 pages and 105 bibliography entries; Chapter 3 cites 67 works. These are distinct
 counting units. The chart does not establish field-wide publication growth, search
 completeness or novelty.

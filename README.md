@@ -2,8 +2,8 @@
 
 Research software for inspecting network-flow datasets, preparing a bounded development
 subset, checking federated training, and verifying selected mathematical statements.
-This project supports Hossein Oliabak's master's research on DDoS detection shared among
-organizations or service-provider customers.
+This project supports Hossein Oliabak’s master’s research on provider-operated
+DDoS detection for customer traffic.
 
 The current Python implementation runs SGD and local Adam with a fixed FedAvg server. It
 is an engineering prototype. A Sellier-based QiML training engine has not been
@@ -17,7 +17,25 @@ considers provider-owned PoP collection and scoring with central coordination,
 Internet-border observations and complementary customer-facing PE views. It
 keeps local-only, permitted pooled-central and federated training as choices to
 compare on matched inputs. The design is provisional. The comparison is unrun,
-with no lab rebuild, new training or selected final protocol.
+with no lab rebuild, new training or selected final protocol. Provider PoPs are the candidate learning units; customers are reporting and evaluation groups. Local-only, pooled-central and federated training should use matched observations and the same PoP inference.
+
+## November 4 source follow-up
+
+The working reference collection now contains 103 parent records, including 98
+stored paper or book PDFs and five supporting records. The public reference
+selection now contains 23 entries. Three acquired papers supplement the earlier
+selection, with primary publication links and their reading limits recorded.
+FlowSentry received targeted reading of Sections 5.2–5.3, 6.1 and 6.3, replacing
+the earlier abstract-only boundary. The SCLDDOS2024 paper is a 2025 work; FADES
+is a 2026 work. Acquisition and targeted reading do not establish a complete
+appraisal, an exhaustive novelty search or a new detection result.
+
+Three bounded public-source xAI architecture critique calls are recorded. The
+tool reported `grok-4.7-build`. They did not receive or review the revised private
+Chapter 1. Their advice was adjudicated against requirements and source evidence,
+not counted as scientific validation.
+Human review of Chapter 1 and source-data feasibility checks remain pending.
+No scientific code, EVE topology or training result was changed.
 
 The [dated project status](docs/project-status.md) records the current evidence,
 remaining research gates, and publication boundaries. The [Research
@@ -32,13 +50,14 @@ before the study detail. Required source-data checks, the final learner and prot
 and the novelty assessment remain open. Chapter 1 awaits human review. No new training
 run, numerical QiML engine or final detection result is part of this milestone.
 
-The checked private English draft has nine chapters, 162 PDF pages and 105 bibliography
-entries; Chapter 3 cites 67 works. The retained reading bank contains 95 works. The
-working Zotero collection has 98 parent references because it also includes three
-supporting engineering and measurement records. The public bibliography is a separate
-selection of 20 entries. Eight new scholarly sources received targeted reading for
-specific explanations. These targeted readings do not establish a fresh full-text
-appraisal of all 95 works, an exhaustive systematic review or independent replication.
+The checked private English draft has nine chapters, 164 PDF pages and 110 bibliography
+entries; Chapter 3 cites 72 works. The retained reading bank contains 98 works. The
+working Zotero collection has 103 parent references because it also includes five
+supporting records. The public bibliography is a separate
+selection of 23 entries. Eight foundation sources received targeted reading for
+specific explanations. Three later paper acquisitions retain their own limited
+reading boundaries. These targeted readings do not establish a fresh full-text
+appraisal of all 98 works, an exhaustive systematic review or independent replication.
 The earlier collection-year chart remains a historical snapshot of 87 records. Counts do
 not establish research completion.
 
