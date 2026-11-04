@@ -12,6 +12,13 @@ readiness for a provider network.
 
 ## Project status
 
+A [provider architecture assessment](docs/provider-observation-and-learning.md) now
+separates traffic observation from flow collection, model training, inference and
+mitigation. It retains centralized training with local inference as a baseline
+when pooling is permitted. Provider-operated detection and federation remain
+proposed choices to compare. The assessment adds no lab rebuild, new training
+run or selected final protocol.
+
 The [dated project status](docs/project-status.md) records the current evidence,
 remaining research gates, and publication boundaries. The [Research
 hub](https://oliabak.com/research/federated-ddos/) provides the continuing project

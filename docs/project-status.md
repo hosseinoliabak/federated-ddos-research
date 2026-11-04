@@ -1,6 +1,6 @@
 # Project status
 
-Updated November 3, 2026.
+Updated November 4, 2026.
 
 This repository provides the code and documentation used to prepare the study. The
 [Research hub](https://oliabak.com/research/federated-ddos/) is the continuing project
@@ -10,7 +10,13 @@ proofreading planned after the English manuscript is complete.
 Human review of Chapter 1 remains pending. Private review material and the researcher’s
 comments remain outside the public repository.
 
-## Current preparation checkpoint
+## Provider architecture assessment
+
+**November 4, 2026.** A [bounded architecture assessment](provider-observation-and-learning.md) separates packet observation, flow collection, model training, inference and mitigation. It considers provider-operated customer-facing and Internet-border observations without requiring separate customer-premises detector appliances. Centralized training with local inference remains a baseline when pooling is permitted. Federation must be assessed against measured quality and cost objectives.
+
+The comparison remains unrun. A public-source xAI critique informed the assessment, with metering semantics, pooling permission and alert timing kept explicit. The final protocol and manuscript alignment remain open. No EVE topology was rebuilt, no new training was performed and no novelty claim is made.
+
+## Earlier manuscript preparation checkpoint
 
 The working English opening and foundations have been revised to establish DDoS and the
 relevant learning concepts before the specific study detail. The nine-chapter structure
