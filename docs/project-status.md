@@ -21,9 +21,9 @@ view, feature definitions and PoP inference placement. Pooled and federated
 training use the same permitted fitting evidence. Independent local training
 retains its local evidence. The comparison remains unrun.
 
-The checked private English draft has nine chapters, 164 PDF pages
+The checked private English draft has nine chapters, 165 PDF pages
 and 110 bibliography entries; Chapter 3 cites 72
-works. Human review of Chapter 1 remains pending. The working reference
+works. The existing original provider diagram is now Figure 1.1 in Chapter 1, beside an explanation of the illustrative topology. Chapter 4 refers back to it. This presentation update does not change the architecture or establish lab readiness. Human review of Chapter 1 remains pending. The working reference
 collection contains 103 parent records, including 98 stored paper or book PDFs
 and five supporting records. The public bibliography is a separate selection
 of 23 entries. These counts do not establish reading depth or completion.
