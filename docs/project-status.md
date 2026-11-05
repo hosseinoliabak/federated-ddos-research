@@ -1,6 +1,6 @@
 # Project status
 
-Updated November 4, 2026.
+Updated November 5, 2026.
 
 This repository provides the code and documentation used to prepare the study. The
 [Research hub](https://oliabak.com/research/federated-ddos/) is the continuing project
@@ -9,6 +9,20 @@ proofreading planned after the English manuscript is complete.
 
 Human review of Chapter 1 remains pending. Private review material and the researcher’s
 comments remain outside the public repository.
+
+## November 5 author-discussion preparation
+
+The checked private English draft now has nine chapters, 167 PDF pages and
+110 bibliography entries. The Sellier-inspired chapter has five explanatory
+figures and an indexed discussion guide with anchored Word comments. The
+chapter separates published statements, illustrative calculations, recorded
+limited formal checks and the proposed federated adaptation.
+
+A bounded public-mathematics critique from xAI reported `grok-4.6-build`.
+Its advice was checked against the primary texts. The reviewer did not receive
+the private chapter or correspondence. Author clarification, the numerical
+specification and implementation remain pending. This milestone reports no
+new training, speedup or detection result. Human review remains separate.
 
 ## November 4 source and manuscript follow-up
 
