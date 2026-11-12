@@ -9,6 +9,7 @@ import torch
 from sklearn.metrics import average_precision_score, confusion_matrix
 
 from research_workspace import workspace_root, contained_path
+from flow_metadata import connection_key
 
 ROOT = workspace_root()
 VERSION = "engineering-smoke-v1-portable"
@@ -53,13 +54,6 @@ def dump(path, obj):
 def sha(path):
     with path.open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
-
-
-def connection_key(src, dst, sport, dport, protocol):
-    endpoints = sorted(
-        [(str(src).strip(), str(sport).strip()), (str(dst).strip(), str(dport).strip())]
-    )
-    return json.dumps([endpoints, str(protocol).strip()], separators=(",", ":"))
 
 
 def group_choice(key):

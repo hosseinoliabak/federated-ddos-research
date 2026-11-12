@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-12",
+  "scope": "Grouped development-role preparation version 1; synthetic software checks, not benchmark performance",
+  "python_unit_tests": 56,
+  "targeted_grouped_role_tests": 13,
+  "engineering_self_test": "passed",
+  "synthetic_integration": "passed; 225 synthetic records, ten clients, SGD and local Adam, with reserved inputs poisoned before role preparation and training",
+  "reserved_test_opened_for_model_development": false,
+  "real_data_candidate_run": "separate private execution record",
+  "formal_verification": "not rerun for this change",
+  "external_review": "pending; candidate remains provisional",
+  "github_actions": "not yet run for this change"
+}

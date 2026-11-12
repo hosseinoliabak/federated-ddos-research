@@ -51,6 +51,25 @@ def main():
             root / "datasets/cicddos2019/extracted/03-11/reserved.csv",
         ]:
             p.write_text("this is deliberately not a valid model input\n")
+        role_policy = dict(
+            version="flnet-grouped-role-candidate-v1", candidate_id="synthetic-only-check",
+            dataset="flnet2023", claim_scope="within_release_grouped_holdout",
+            group_definition="stored_unordered_address_port_pair_and_protocol_v1",
+            role_seed="synthetic-check-only", role_weights=dict(train=8, validation=1, calibration=1),
+            minimum_rows_per_client_role=1,
+        )
+        (root / "config/role-policy.json").write_text(json.dumps(role_policy) + "\n")
+        role_args = ("--policy", "config/role-policy.json", "--output", "reports/development-preparation/grouped-role-fixture")
+        invoke("prepare_grouped_roles.py", env, *role_args)
+        role_dir = root / "reports/development-preparation/grouped-role-fixture"
+        role_result = json.loads((role_dir / "candidate-manifest.json").read_text())
+        assert role_result["rows"] == 225
+        assert not role_result["reserved_test_opened"] and not role_result["model_fitted"]
+        assert role_result["groups_seen_at_multiple_observers"] >= 1
+        assert all(role_result["rows_by_role"][r] > 0 for r in ["train", "validation", "calibration"])
+        role_digest = hashlib.sha256((role_dir / "COMPLETE.json").read_bytes()).hexdigest()
+        invoke("prepare_grouped_roles.py", env, *role_args, succeeds=False)
+        assert hashlib.sha256((role_dir / "COMPLETE.json").read_bytes()).hexdigest() == role_digest
         invoke("engineering_pilot.py", env)
         run = root / "runs/engineering-smoke-v1-portable"
         prepared = json.loads((run / "preparation.json").read_text())
@@ -103,6 +122,7 @@ def main():
                     methods=["sgd", "adam"],
                     checks=[
                         "global group separation",
+                        "three-role candidate with poisoned reserved sources",
                         "training-only scaling",
                         "matched initialization and batches",
                         "absent-class metrics",
