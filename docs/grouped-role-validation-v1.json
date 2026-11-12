@@ -8,6 +8,14 @@
   "reserved_test_opened_for_model_development": false,
   "real_data_candidate_run": "separate private execution record",
   "formal_verification": "not rerun for this change",
-  "external_review": "pending; candidate remains provisional",
+  "external_review": {
+    "reviewer": "xAI Grok",
+    "model": "grok-4.7-build",
+    "scope": "Supplied candidate-preparation code, synthetic checks, aggregate manifest and two named paper anchors; no raw datasets or private manuscript",
+    "verdict": "No blocking implementation defect established for retaining the recorded provisional artifact; no scientific protocol approval",
+    "initial_attempt": "Timed out at bridge900s; no verdict, model unknown",
+    "completed_followup_seconds": 127.821,
+    "limits": "One completed reviewer; no consensus claimed. Review does not prove dataset suitability or novel research findings."
+  },
   "github_actions": "not yet run for this change"
 }

@@ -1,6 +1,6 @@
 # Project status
 
-Updated November 5, 2026.
+Updated November 12, 2026.
 
 This repository provides the code and documentation used to prepare the study. The
 [Research hub](https://oliabak.com/research/federated-ddos/) is the continuing project
@@ -9,6 +9,34 @@ proofreading planned after the English manuscript is complete.
 
 Human review of Chapter 1 remains pending. Private review material and the researcher’s
 comments remain outside the public repository.
+
+## November 12 grouped-role preparation
+
+The new [preparation procedure](grouped-development-roles.md) constructs one
+provisional FLNET training, validation and calibration allocation. The recorded
+execution used commit `68a217879885e081fcc50095f961ffe9e08771ce` on all 14
+verified development CSVs. It accounts for 3,653,595 records and 802,477 stored
+keys, with global key roles and no reserved test access or model fitting.
+
+The local code checks passed 56 unit tests, the engineering self-test and the
+225-record synthetic integration workflow. Thirteen unit tests cover the new
+preparation. A bounded xAI critique reported `grok-4.7-build` and established no
+blocking implementation defect requiring a rerun of this candidate. The first
+attempt timed out at the bridge limit; the follow-up returned a scoped critique.
+One reviewer does not constitute a consensus or certify scientific validity.
+
+The writer checked the actual manifest against the 14 previously audited source
+paths, verified artifact and exact-commit code hashes, and checked class support
+in each role. The grouping does not establish independent captures or customers.
+Six observers have no attack support, and the collection-date/class association
+remains. The final feature, calibration and evaluation protocol remain open.
+The paper/release count discrepancy is retained as unresolved.
+
+The current proposed deployment separates PoP collection/training from software
+inference inside Internet border routers. Older PoP-scoring and four-question
+sections below describe earlier checkpoints. The whole-thesis mapping is being
+reconciled with the revised introduction. No new laboratory readiness or main
+detection result is claimed.
 
 ## November 5 author-discussion preparation
 
