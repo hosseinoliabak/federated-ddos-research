@@ -1,0 +1,31 @@
+{
+  "version": "matched-five-arm-cost-preset-v1",
+  "purpose": "engineering_cost_pilot_not_final_training_criteria",
+  "settings": {
+    "seed": 20261112,
+    "cpu_threads": 2,
+    "batch_rows": 256,
+    "learning_rate": 0.01,
+    "anchor_owner": 1,
+    "af_ridge": 0.001,
+    "af_mad_k": 3.0,
+    "af_blend": 0.5,
+    "af_trust_k": 3.0
+  },
+  "neural_architecture": [
+    73,
+    16,
+    1
+  ],
+  "neural_dtype": "float32",
+  "moments_dtype": "float64",
+  "neural_local_passes": 1,
+  "fedavg_rounds": 1,
+  "fedavg_local_passes_per_round": 1,
+  "row_weight_unit": "each_retained_source_row_equal_no_deduplication",
+  "anchor": "all Normal TRAIN source identities at observer1; excluded from only that worker stream",
+  "schedule": "PCG64 SeedSequence([seed,owner]) permutation of full native TRAIN identity order; filter anchor identities",
+  "af_state_fanout": "all10 configured owners, including exhausted owners",
+  "held_out_selection_or_scoring": false,
+  "actual_data_execution_in_this_task": false
+}
