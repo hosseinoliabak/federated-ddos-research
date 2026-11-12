@@ -324,7 +324,7 @@ def association(packets: list[Packet], connections: list[Connection], unsupporte
             totals[direction * 2 + 1] += p.ip_bytes
         reasons = []
         if c.end is None:
-            reasons.append("unset_multi_packet_duration")
+            reasons.append("unset_zero_packet_duration" if c.counts[0]+c.counts[2] == 0 else "unset_multi_packet_duration")
         if c.row in ambiguous_connections:
             reasons.append("competing_tuple_time_candidate")
         if c.row in vetoes:
@@ -369,10 +369,11 @@ def connection_profiles(connections, results):
             "rows": len(selected), "protocols": dict(Counter(c.proto for c in selected)),
             "states": dict(Counter(c.state for c in selected)),
             "duration_unset": sum(c.duration is None for c in selected),
+            "unset_zero_packet_counters": sum(c.duration is None and c.counts[0]+c.counts[2] == 0 for c in selected),
             "unset_single_packet": sum(c.duration is None and c.counts[0]+c.counts[2] == 1 for c in selected),
             "unset_multi_packet": sum(c.duration is None and c.counts[0]+c.counts[2] > 1 for c in selected),
             "known_duration_us": distribution(durations), "source_packet_counts": distribution(totals),
-            "packet_count_histogram": dict(Counter("1" if n == 1 else "2" if n == 2 else "3-9" if n < 10 else "10+" for n in totals)),
+            "packet_count_histogram": dict(Counter("0" if n == 0 else "1" if n == 1 else "2" if n == 2 else "3-9" if n < 10 else "10+" for n in totals)),
             "sum_source_packets": sum(totals),
             "admitted_connections": sum(results[c.row]["admitted"] for c in selected),
             "admitted_source_packets": sum(c.counts[0]+c.counts[2] for c in selected if results[c.row]["admitted"]),

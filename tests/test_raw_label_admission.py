@@ -130,6 +130,16 @@ class Joins(unittest.TestCase):
     def test_unset_multi_not_invented(self):
         c=connection(counts=(2,80,0,0));result=m.association([packet()],[c],[])
         self.assertFalse(result[1]);self.assertIn("unset_multi_packet_duration",result[2][1]["reasons"])
+    def test_unset_zero_not_multi_or_absent_packet_proof(self):
+        c=connection(counts=(0,0,0,0));result=m.association([packet()],[c],[])
+        self.assertFalse(result[1]);self.assertIn("unset_zero_packet_duration",result[2][1]["reasons"])
+        self.assertNotIn("unset_multi_packet_duration",result[2][1]["reasons"])
+    def test_zero_packet_profile_not_three_to_nine(self):
+        c=connection(counts=(0,0,0,0));result=m.association([packet()],[c],[])
+        p=m.connection_profiles([c],result[2])[c.label]
+        self.assertEqual(p["packet_count_histogram"],{"0":1})
+        self.assertEqual(p["unset_zero_packet_counters"],1)
+        self.assertEqual(p["unset_multi_packet"],0)
     def test_reverse_first_keeps_log_orientation(self):
         c=connection(counts=(0,0,1,40));self.assertEqual(m.association([packet(reverse=True)],[c],[])[1],{1})
     def test_known_two_direction_interval(self):

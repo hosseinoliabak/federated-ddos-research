@@ -23,6 +23,12 @@ Zeek documentation explains that they can omit trailing non-productive TCP
 packets. The policy therefore never extends a duration to collect additional
 packets. Any resulting incomplete connection remains unreconciled.
 
+Policyv1.1 distinguishes zero source packet counters from multi-packet source
+records in the reporting categories. Zero counters do not prove that no
+packets existed or that a source label is invalid. This reporting correction
+preserves the v1 tuple/time association and admission rules; it does not
+introduce a new selection rule after observing the capture.
+
 Original connection labels and regenerated timeout-flow labels serve different
 roles. The diagnostic meter receives every supported packet, including packets
 without an admitted binary label and packets in other attack categories. A new

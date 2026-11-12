@@ -1,5 +1,5 @@
 {
-  "version": "raw-label-policy-v1",
+  "version": "raw-label-policy-v1.1",
   "purpose": "Conservative source-connection to packet association and diagnostic timeout/sampling eligibility; no model experiment",
   "time_unit": "integer_microseconds",
   "clock_tolerance_microseconds": 0,
@@ -7,7 +7,7 @@
   "supported_packets": "Classic microsecond PCAP 2.4, Ethernet, up to four 802.1Q/802.1ad tags, unfragmented complete IPv4 TCP/UDP headers and IP payload. IPv4 protocol6/17, not EtherType0x0800. No reassembly, tunnels or IPv6.",
   "orientation": "Original Zeek originator/responder tuple and its exact reverse; no first-packet guess; equal endpoints are direction-ambiguous.",
   "known_duration": "Candidate only inside inclusive [ts, ts+duration]. Duration is a source-defined core interval and may omit trailing TCP packets. Never extend it.",
-  "unset_duration": "If source orig_pkts+resp_pkts equals1, consider only a packet at exact source ts. Unknown multi-packet duration is unsupported for assignment and a potential-competitor veto at all times at/after its ts; no end is invented.",
+  "unset_duration": "If source orig_pkts+resp_pkts equals1, consider only a packet at exact source ts. An unset duration with zero counters or more than one source packet is unsupported for assignment and a potential-competitor veto at all times at/after its ts; no end is invented. Zero counters are reported separately and are not interpreted as proof that no packets existed or that a label is invalid. This clarification preserves v1 admission behavior.",
   "ambiguity": "Keep all tuple/time candidates. Two or more candidates, or any unsupported temporal competitor, veto a unique association even when labels agree. No nearest time, first match, count-based tie break or clock fitting.",
   "unsupported_packet_veto": "Recognizable unsupported IPv4 TCP/UDP packets veto source connections with the same unordered address pair/protocol in their declared interval (or at/after ts if multi-packet duration is unset). No port is invented for fragments. Unsupported packets with no recoverable family are counted separately.",
   "connection_admission": "Every candidate packet must be uniquely associated; exact orig/resp packet and IPv4-total-length byte counts, first ts and last ts (known-duration end or single point) must match; no unsupported-packet veto, missed_bytes, tunnel parent or competing candidate. Partial associations are recorded but not transferred as eligible labels.",
