@@ -17,8 +17,12 @@ The [November 12 reusable-code checkpoint](docs/checked-preparation-checkpoint.m
 adds an independent loader audit, purpose-filtered data views, a disclosed
 AF-BKM-family adapter, a matched engineering runner and offline raw-reference
 checks. Its synthetic checks establish the documented software behavior. They
-do not establish a final detector ranking or live deployment readiness. The
-frozen scorer bundle remains a separate provisional candidate.
+do not establish a final detector ranking or live deployment readiness.
+
+The [frozen CSV scorer](docs/frozen-model-bundle.md) provides score-only neural
+and AF snapshots, owner-local TRAIN transform recovery and a summary-only merge.
+Its input, ownership and provenance checks do not establish row-to-predictor
+correspondence, issuer authenticity, empirical calibration or live-input equivalence.
 
 The architecture assessment below describes an earlier checkpoint.
 

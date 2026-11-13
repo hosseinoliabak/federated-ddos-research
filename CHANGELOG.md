@@ -9,6 +9,12 @@
 
 # Changelog
 
+## Unreleased
+
+- Add score-only CSV neural/AF bundles, owner-local TRAIN transform recovery and summary-only transform merging.
+- Validate declared identity sequences, final AF rounds, transform counts and optional exporter-source pins without requiring exporter/runtime source equality.
+- Add fabricated bundle regressions and document the limits of identity correspondence, calibration and live-input interpretation.
+
 ## 0.1.0
 
 - Import development-data audit, exact-repeat confirmation, candidate-group inspection, and bounded local SGD/Adam training tools.
