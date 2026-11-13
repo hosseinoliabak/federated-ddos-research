@@ -1,0 +1,80 @@
+# AF-BKM-family candidate adapter, version 1
+
+This module implements a bounded AF-BKM-family adaptation for synthetic engineering checks. It supplies a complete scoring, accepted-set summary and merge loop for a statistics-sharing comparator. AF-BKM is itself a federated method. This implementation has not been fitted to, used to score, or calibrated on any actual dataset. It is not a replication of the paper's experiments or an accepted main thesis protocol.
+
+The reviewed role-aware loader remains unchanged at its base commit, `2ff92fac3d1c534f9799ff40923c397779cc80d7`. This branch adds new files only. The frozen input-contract candidates, completed loader run and historical entrypoints retain their original identities.
+
+## Evidence and choice
+
+The primary method source is Al Saleh and Azar (2026), *Adaptive Federated Baseline K-Means for Lightweight IoT Intrusion Detection: Auto-Thresholding and Robust Statistics Aggregation*, IoT, 7, 67, DOI [10.3390/iot7030067](https://doi.org/10.3390/iot7030067). The checked PDF SHA-256 is `41b8d2a7318ed6a274ad9dc94b3d797c84f774f91e7174ce143df1e85906d0eb`. Sections 4.1–4.4 and Algorithm 1, PDF pages 7–9, govern this candidate. Section 5, page 9, describes anchor-only MinMax fitting and separately discloses the original experiment's pooled feature filter. Section 4.2 explicitly limits robustness claims: a reported mean can move the centroid and hence the anchor-derived threshold, while reported count and dispersion can change its weight.
+
+The checked public implementation is [josephazar/af-bkm at `8f6ac0f80bdc8d40ce2bd22227f6544facad0487`](https://github.com/josephazar/af-bkm/tree/8f6ac0f80bdc8d40ce2bd22227f6544facad0487). The MIT notice, including all three named copyright holders, is retained in [licenses/AF-BKM-MIT.txt](../licenses/AF-BKM-MIT.txt). It covers the public code; the paper separately has a CC BY notice. The original code was inspected, not executed or installed as a dependency.
+
+| Route | Relevant behavior | Decision |
+|---|---|---|
+| Reuse the public package and harness | Supplies the published scoring/merge structure, but its core repairs NaN and negative quadratic forms, and its experimental harness repartitions pooled evidence and crops worker streams. | Does not meet this task's numerical and ownership boundaries unchanged. |
+| Wrap the public package | Could replace its stream provider and restrict its dictionaries, but a wrapper around the repaired distance cannot recover evidence that an invalid intermediate existed. Replacing scoring and aggregation would still require a substantive adaptation. | Retain as a reference, rather than add wrapper complexity. |
+| Small implementation of the checked equations | Makes the numeric boundaries, immutable state, access controls and allowed messages directly inspectable. It requires its own invariants and explicit adaptation record. | Selected. Uses only installed NumPy and the standard library. |
+
+The focused RAG query for this exact AF-BKM procedure did not return the primary paper. The local primary PDF and pinned public source supplied the method evidence; no claim is labelled RAG-verified by that search. Current NumPy documentation was fetched through Context7 during implementation: covariance orientation and `ddof`, `linalg.solve`, `linalg.cholesky`, `errstate`, and `frombuffer`. The fetched docs identify the NumPy 2.4 documentation family. The locked environment uses NumPy 2.4.4.
+
+## Roles and interfaces
+
+The coordinator initializes a trusted benign **training** anchor once. Its immutable global state contains the anchor-fitted scaler, fixed regularized inverse covariance, fixed anchor mean, current centroid and internal decision threshold. Workers receive that state and process only approved training windows owned by their original observer. They return a mean, accepted count, distance dispersion and optional local threshold candidate. The coordinator merges those summaries and rescores only its own fixed anchor. Worker records are never pooled at the coordinator.
+
+- `TrainingScope` pins candidate, assignment, ordered feature schema and permitted source hashes. The reviewed loader's training role is exactly zero. The scope is supplied by a trusted caller after verifying its seal; it is not remote attestation of an arbitrary caller's assertions.
+- `training_batch(X, records, positions, scope, observer_id)` reads only source ID, source row, observer ID, role ID and group digest before it reads predictors. It rejects a non-training role, ownership mismatch or unapproved source before predictor access. It does not read worker labels, filter records, change roles, shuffle records or manufacture ownership. It makes one bounded immutable float64 batch copy.
+- `initialize_anchor(batch, parameters, model_id, trusted_benign=True)` requires a caller-approved benign training anchor with at least two rows. The Boolean is an explicit commissioning assertion, not evidence of benign status. An eventual runner must retain the outside-detector anchor eligibility decision and source-row selection. It cannot promote calibration or validation rows into the anchor.
+- `score(X, state)` performs a fixed-state transform and Mahalanobis score. Scoring alone cannot update any state. A future reporting interface may score held-out records under a frozen model; this task has used fabricated records only.
+- `authorize(batch, state)` binds a planned batch to one native worker, scope, schema, model, protocol round, state digest, record count and batch digest. `summarize(batch, state)` has no labels argument and uses no label field. Summaries are computed from the currently accepted set, including exact threshold ties, rather than from ground-truth benign labels.
+- `merge(state, anchor, updates, permits)` accepts exactly one summary for every authorized worker in that round. Missing, duplicate, stale or unauthorized updates fail explicitly. Permits contain no raw records. In-process access checks and digest identity do not authenticate a remote malicious worker or establish its summary's truthfulness.
+- `run_schedule` in the synthetic check consumes every supplied worker batch until all streams finish. It rejects repeated source-row identities, anchor/window overlap and owner swaps. It preserves repeated connection keys in distinct source rows and at distinct observers. It does not truncate to the shortest worker. This schedule is deterministic batch order, not verified original capture chronology.
+
+The current schedule simulates these roles in one process; it does not establish multi-host isolation or measured network delivery. The current module is not a sealed purpose-filtered reader. The parent will review and assign that reader and the independent parse/integer/multiplicity audit separately. The future runner must derive its scope from verified loader artifacts, enforce stage purposes, preserve native ownership and global roles, disallow anchor/window overlap, and compare actual selected identities and counts with a prespecified schedule. A valid seal does not prove original capture semantics or a common original observation policy.
+
+Validation may support declared model selection. It must not update this detector's anchor, scaler, covariance or training summaries. Calibration and final-test data must not select or fit these components. Shared train-only moments, if deliberately used by another comparison arm, are a charged collaboration mechanism; independent-local preprocessing remains local.
+
+## Source, implementation and adaptation map
+
+| Checked source | Implementation | Preserved procedure or explicit adaptation |
+|---|---|---|
+| §4.1, p.7; `core.fit_baseline`; §5, p.9 | `initialize_anchor`, `transform` | Anchor-only MinMax and sample covariance (`ddof=1`). Fixed full ordered schema; no pooled near-constant feature filter. Exactly constant anchor ranges use denominator one; no clipping. This implements the declared transform directly and does not claim equivalence to scikit-learn's near-constant heuristic. |
+| `core.regularized_inverse` | `initialize_anchor`, `positive_definite` | Ridge is a required explicit positive parameter. Solve `(cov + ridge*I) inverse = I`; symmetrize by averaging the result and transpose; require finite symmetric positive-definite inverse. No pseudoinverse fallback. Poorly conditioned cases may fail; finite ridge alone is not a universal success guarantee. |
+| Mahalanobis core; `core.mahalanobis` | `distances`, `score` | Same quadratic-form distance for valid inputs. Reject malformed, nonfinite or negative intermediate forms explicitly. No NaN-to-zero, infinity substitution, clipping or silent repair. Strict rejection of even a small negative form is a deliberate condition. |
+| §4.1; `federated._worker_update`, honest branch | `summarize` | Accepted mask is `distance <= internal_threshold`. Mean uses accepted scaled features; dispersion is the unscaled MAD of their distances. No ground-truth worker label access and no raw distances in messages. |
+| Public singleton branch (`NaN` dispersion, absent candidate), then public aggregate's zero replacement | `summarize`, `WorkerSummary.validate` | Singleton dispersion is explicitly finite zero and candidate is absent. Empty/no-accepted sets have no statistics and a distinct status. This avoids transmitting nonfinite values while preserving the effective singleton weight used by the public robust aggregate. |
+| §4.3 Eq.5; `thresholds.mad_threshold` | `mad_rule` | `median(D) + mad_k * 1.4826 * median(abs(D - median(D)))`. MAD-only rule in this candidate; no target-FPR, quantile or Otsu option. Parameters are explicit. Constant/tied distances are permitted. |
+| §4.4/Algorithm 1; `federated._aggregate(mode="robust")` | `merge` | Gate abstains for fewer than three finite candidates. Otherwise keep candidates within `trust_k * scaled_MAD` of the median; absent singleton candidates are outside the active gate. Empty kept set falls back to all valid summaries. |
+| Algorithm 1 versus public `+1e-12` scaled-MAD tolerance | `merge` | Follow exact Algorithm 1 zero-MAD boundary, without the public epsilon. Tied median candidates pass; a different candidate fails when width is zero. This is a disclosed difference from the pinned public implementation. |
+| Eq.6/Algorithm 1; public aggregate | `merge` | Normalize `accepted_count/(1+dispersion)` over retained workers, then form their weighted mean. Unequal workers keep their actual counts. The equation's fraction is confirmed by Algorithm 1 and public code. |
+| Eq.7 | `merge` | Blend with the **fixed original anchor mean**, not the previous centroid. `blend` in [0,1] limits the aggregate worker block relative to that anchor; it does not bound a fabricated worker mean or guarantee security. |
+| Eq.8 | `merge` | Recompute the internal threshold from the same training anchor scored under the newly blended centroid and fixed covariance. This is a detector fitting operation. It is distinct from a future held-out reporting-threshold adaptation. |
+| Algorithm 1 empty return | `merge`, wire round state | Numeric model parameters remain unchanged for an all-empty merge. The protocol round increments to prevent accepting stale messages; this metadata behavior is an adaptation. |
+| §4.1 d+3 logical statistics | `afbkm_wire` | Summary has those logical statistics plus rejected count, identity, provenance digests and status. Actual canonical JSON UTF-8 byte counts are recorded; no claim that the complete message is d+3 scalars or the paper's fp32 byte size. |
+| §4.1 fixed covariance distribution | `encode_initial`, `encode_delta`, `apply_delta` | Inverse covariance/scaler are distributed once per worker in the initial message. Later round messages contain only the mean, internal threshold and identity metadata; workers reconstruct against their existing fixed state. Initial fanout is charged separately. |
+| Original pooled/repartitioned simulation harness | `TrainingScope`, `training_batch`, `run_schedule` | Preserve supplied source rows, observers and global roles; no Dirichlet reassignment, corpus filter, balanced resampling or shortest-worker crop. This is a thesis candidate adaptation, not unchanged paper replication. |
+
+## Numerical and serialization conditions
+
+All predictors, scaler values, centroids, covariance entries, distances, thresholds and weights must be real finite float64 values. Integers in source metadata are not truncated from fractional or string values. Covariance matrices must have the required shape, exact symmetry and a successful finite Cholesky factorization. Positive definiteness is checked at state/scoring boundaries. Overflows or invalid arithmetic fail; the explicit quadratic-form finite check also catches an `einsum` result that did not raise a floating-point exception. A nonpositive sum or zero normalized weight fails. These are acceptance conditions, not a claim that every admissible dataset will be numerically well conditioned.
+
+The global state's arrays are backed by immutable bytes. A NumPy view cannot re-enable writing. The wire decoder rejects duplicate or unknown keys, noncanonical JSON, nonfinite numbers, wrong versions, invalid shapes, stale model/round/state identities and inconsistent reconstructed hashes. Its 2 MiB per-message parser bound is an engineering limit, not a selected research resource allowance. Application payload bytes exclude transport framing, encryption, retransmission and network stack overhead.
+
+An invalid state never produces a repaired benign score. Failures raise an `AdapterError` with a specific code; the synthetic command emits a failed receipt and nonzero exit if one reaches its boundary. Valid but empty and gate-rejected updates remain in the round audit with counts and reasons. The current protocol treats missing/invalid messages as a failed round. Dropout tolerance and an authenticated distributed transport are not implemented.
+
+## Checks and next integration step
+
+From this checkout, use the already locked environment's Python:
+
+```sh
+python -m unittest discover -s tests -v
+python scripts/engineering_pilot.py --self-test
+python scripts/check_demo.py
+python scripts/check_afbkm_adapter.py
+```
+
+The tests are fabricated-data checks. They cover hand-computable Equations 5–8; count/dispersion weighting; fixed-anchor blending; threshold ties; empty/singleton sets; zero/nonzero-MAD gates and fallback; constant/collinear anchor features; immutability; invalid data and quadratic forms; label independence; train-only access before predictors; owner/model/round/state boundaries; exact wire reconstruction and payload sizes; unequal full-tail schedules; and a sealed-array bridge from the reviewed loader's fabricated 14-source, 73-field fixture.
+
+The next bounded step is a verified loader purpose-view and identity/multiplicity audit, followed by a matched comparison runner contract that consumes these small interfaces. Before any actual-data detector fit, the reviewed protocol still needs an eligible anchor selection and allowance, explicit feature/transform interpretation, window/schedule policy, parameter-search allowance, stopping/resource budgets, collaboration accounting and a separate held-out reporting rule. No operating FPR target or epoch count is implied by the synthetic fixture's parameters (`ridge=.5`, `mad_k=3`, `blend=.5`, `trust_k=3`). Its ridge is selected for hand arithmetic, not recommended for a deployment.
+
+The full thesis scope remains local, permitted-pooled, gradient/model-sharing FL and a complete disclosed statistical detector comparison; controlled observation-policy interventions require suitable raw captures; deployment and timing claims require separate laboratory verification. Neither these synthetic checks nor source/role equality within a CSV comparison establish common original observation policies, live-input equivalence, deployment accuracy, privacy or unconditional robustness.
