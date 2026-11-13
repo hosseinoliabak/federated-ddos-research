@@ -24,8 +24,8 @@ The raw reference does not establish capture completeness, independent attack
 episodes or a controlled sampling/timeout benchmark. The scorer bundle remains
 under separate review; no review consensus or final adoption is claimed. Human
 manuscript review, protocol selection and functional lab checks remain open.
-The owner must review the proposed lab architecture and IP addressing before
-construction, reconfiguration or experimental traffic.
+The approved lab architecture and IP plan still require functional verification
+and measured overlap and capacity checks before experimental traffic.
 
 ## Earlier November 12 grouped-role preparation
 

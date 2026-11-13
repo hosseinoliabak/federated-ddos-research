@@ -62,8 +62,9 @@ The frozen CSV scorer and transform-recovery bundle remains a separate
 provisional candidate. It is not included here, and no completed independent
 review consensus is claimed for it. Later development-search work is also
 outside this integration. Final protocol selection and functional laboratory
-checks remain separate tasks, including the owner's review of the proposed lab
-architecture and IP addressing before construction or traffic generation.
+checks remain separate tasks. The lab architecture and IP plan are approved;
+functional verification and measured overlap and capacity checks remain open
+before experimental traffic.
 
 ## Attribution
 

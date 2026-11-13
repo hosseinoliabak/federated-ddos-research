@@ -4,9 +4,14 @@ This extension tests whether the saved UDP fragments can be associated with
 complete datagrams and the original source connection labels. It uses the
 official pinned TShark CLI to propose membership, then independently checks
 the bytes and frame lineage. Frozen version 1 and its completed development
-capture audit remain historical evidence. The current review candidate uses
-`raw-fragment-policy-v2.json`; its corrected acquired-capture audit has not
-run. A tool-produced row alone does not establish a label.
+capture audit remain historical evidence. At the November 12, 2026 version-2
+implementation checkpoint, the corrected acquired-capture audit had not run.
+The later audit completed on November 12 using `raw-fragment-policy-v2.json`
+and source commit `b9af25cb6b4d09711fa74634d64d9a52fcb9dbfe`. It supports only a
+narrow offline connection and counter reference from one inspected capture.
+It does not establish capture completeness, independent attack episodes or a
+controlled sampling/timeout benchmark. Private receipts and records are not
+redistributed. A tool-produced row alone does not establish a label.
 
 Version 2 vetoes every recognizable standard key touched by a rejected
 proposal, including early failures with no materialized record and rejected
