@@ -323,13 +323,58 @@ class AdapterTests(unittest.TestCase):
         self.assertEqual(W.apply_delta(restored, data).state_id, current.state_id)
         self.assertNotIn(b"inverse_covariance", data); self.assertNotIn(b"scaler_", data)
         self.assertNotIn(b"anchor_mean", data)
-        result = C.synthetic_check()
-        self.assertEqual(result["initial_distribution"]["bytes_per_worker"], 682)
-        self.assertEqual(result["initial_distribution"]["total_application_bytes"], 2046)
-        self.assertEqual(result["later_round_state_application_bytes"], 3741)
-        self.assertEqual(result["worker_summary_application_bytes"], 4150)
-        self.assertEqual(sum(sum(p["bytes"] for p in r["worker_payload_lengths"]) for r in result["rounds"]), 4150)
-        self.assertEqual(sum(r["round_state_bytes"] * 3 for r in result["rounds"]), 3741)
+        decode_initial, decode_summary, apply_delta = W.decode_initial, W.decode_summary, W.apply_delta
+        fake_batch = C.fake_batch
+        for adjacent_negative in (False, True):
+            with self.subTest(adjacent_negative=adjacent_negative):
+                initial_frames, summary_frames, delta_frames = [], [], []
+
+                def receive_initial(payload):
+                    initial_frames.append(payload)
+                    return decode_initial(payload)
+
+                def receive_summary(payload, dimension):
+                    restored = decode_summary(payload, dimension)
+                    summary_frames.append((restored.permit.worker_id, payload))
+                    return restored
+
+                def receive_delta(previous, payload):
+                    delta_frames.append(payload)
+                    return apply_delta(previous, payload)
+
+                def fixture_batch(scope, owner, values, **kwargs):
+                    X = np.asarray(values, dtype=float)
+                    if adjacent_negative:
+                        # A finite one-ULP variant can change a JSON number's byte length.
+                        X = np.where(X == -0.2, np.nextafter(-0.2, -np.inf), X)
+                    return fake_batch(scope, owner, X, **kwargs)
+
+                with patch.object(W, "decode_initial", side_effect=receive_initial), \
+                     patch.object(W, "decode_summary", side_effect=receive_summary), \
+                     patch.object(W, "apply_delta", side_effect=receive_delta), \
+                     patch.object(C, "fake_batch", side_effect=fixture_batch):
+                    result = C.synthetic_check()
+
+                # Count the exact frames received, including each replica's fanout.
+                self.assertEqual(len(initial_frames), 3)
+                self.assertEqual(len(set(initial_frames)), 1)
+                initial = result["initial_distribution"]
+                self.assertEqual(initial["recipients"], len(initial_frames))
+                self.assertEqual(initial["bytes_per_worker"], len(initial_frames[0]))
+                self.assertEqual(initial["total_application_bytes"], sum(map(len, initial_frames)))
+                self.assertEqual(result["worker_summary_application_bytes"],
+                                 sum(len(payload) for _, payload in summary_frames))
+                expected_summaries = [(p["worker_id"], p["bytes"])
+                                      for r in result["rounds"] for p in r["worker_payload_lengths"]]
+                self.assertEqual(expected_summaries,
+                                 [(owner, len(payload)) for owner, payload in summary_frames])
+                self.assertEqual(len(delta_frames), len(result["rounds"]) * len(initial_frames))
+                self.assertEqual(result["later_round_state_application_bytes"], sum(map(len, delta_frames)))
+                for index, round_audit in enumerate(result["rounds"]):
+                    received = delta_frames[index * 3:(index + 1) * 3]
+                    self.assertEqual(len(set(received)), 1)
+                    self.assertEqual(round_audit["round_state_recipient_count"], len(received))
+                    self.assertEqual(round_audit["round_state_bytes"], len(received[0]))
 
     def test_exact_wire_whitelist_and_hostile_encoding(self):
         summary = self.summary(); data = W.encode_summary(summary, 1)
