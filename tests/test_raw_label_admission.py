@@ -179,12 +179,12 @@ class Joins(unittest.TestCase):
 class Propagation(unittest.TestCase):
     def test_same_binary_label(self): self.assertEqual(m.propagated_label({"ddos"}),"ddos")
     def test_mixed_label(self): self.assertEqual(m.propagated_label({"ddos","benign"}),"mixed_binary_label")
-    def test_cc_outside_binary(self): self.assertEqual(m.propagated_label({"benign","excluded"}),"unknown_or_excluded")
-    def test_unknown_veto(self): self.assertEqual(m.propagated_label({"ddos","unknown"}),"unknown_or_excluded")
+    def test_cc_outside_binary(self): self.assertEqual(m.propagated_label({"benign","excluded"}),"mixed:benign+excluded")
+    def test_unknown_veto(self): self.assertEqual(m.propagated_label({"ddos","unknown"}),"mixed:ddos+unknown")
     def test_never_drop_unknown_before_meter(self):
         c=[connection()];p=[packet(),packet(2,1_000_001)]
         d=m.meter_diagnostic(p,c,{1:1},{1},POLICY,60_000_000,15_000_000,1)
-        self.assertEqual(d["selected_supported_packets"],2);self.assertEqual(d["new_record_labels"],{"unknown_or_excluded":1})
+        self.assertEqual(d["selected_supported_packets"],2);self.assertEqual(d["new_record_labels"],{"mixed:ddos+unknown":1})
     def test_timeout_reuse_propagates_underlying_connections(self):
         c=[connection(),connection(row=2,ts=2_000_000,label="Benign / -",binary="benign")]
         p=[packet(),packet(2,2_000_000)]

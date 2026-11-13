@@ -22,6 +22,7 @@ import sys
 import time
 
 import raw_label_admission as base
+import raw_reference_diagnostics as reference_diagnostics
 
 FIELDS = ["frame.number", "frame.time_epoch", "ip.fragment", "ip.fragment.count",
           "ip.fragment.overlap", "ip.fragment.overlap.conflict", "ip.fragment.multipletails",
@@ -103,6 +104,27 @@ def tshark_command(executable,capture):
     return args
 
 
+def proposal_from_fields(fields):
+    """Keep member lists; quarantine ambiguous scalar dissector occurrences.
+
+    Equal repeated values are still multiple occurrences. Do not guess which
+    protocol instance a scalar belongs to or silently pick its first value.
+    """
+    d=dict(fields)
+    errors=[name for name in FIELDS[4:9] if d[name] and d[name] not in ("0","False","false")]
+    ambiguous=[name for name in FIELDS[3:] if "," in d[name]]
+    errors.extend("ambiguous_tool_field:"+name for name in ambiguous)
+    for name in ambiguous:d[name]=""
+    return {"completion_frame":int(d["frame.number"]),"completion_ts":base.microseconds(d["frame.time_epoch"]),
+            "members":[int(v) for v in d["ip.fragment"].split(",")],"tool_errors":errors,
+            "tool_length":int(d["ip.reassembled.length"] or 0),
+            "tool_payload":bytes.fromhex(d["ip.reassembled.data"].replace(":","")),
+            "tool_sport":int(d["udp.srcport"]) if d["udp.srcport"] else None,
+            "tool_dport":int(d["udp.dstport"]) if d["udp.dstport"] else None,
+            "tool_udp_length":int(d["udp.length"]) if d["udp.length"] else None,
+            "tool_udp_checksum_status":d["udp.checksum.status"]}
+
+
 def proposals(executable,capture,config):
     config.mkdir(parents=True,exist_ok=False)
     plugins=config/"empty-plugins";plugins.mkdir()
@@ -118,15 +140,7 @@ def proposals(executable,capture,config):
         d=dict(zip(FIELDS,values));frame_count+=1
         if int(d["frame.number"])!=frame_count:raise ValueError("TShark frame sequence differs")
         if not d["ip.fragment"]:continue
-        members=[int(v) for v in d["ip.fragment"].split(",")]
-        errors=[name for name in FIELDS[4:9] if d[name] and d[name] not in ("0","False","false")]
-        rows.append({"completion_frame":int(d["frame.number"]),"completion_ts":base.microseconds(d["frame.time_epoch"]),
-                     "members":members,"tool_errors":errors,"tool_length":int(d["ip.reassembled.length"] or 0),
-                     "tool_payload":bytes.fromhex(d["ip.reassembled.data"].replace(":","")),
-                     "tool_sport":int(d["udp.srcport"]) if d["udp.srcport"] else None,
-                     "tool_dport":int(d["udp.dstport"]) if d["udp.dstport"] else None,
-                     "tool_udp_length":int(d["udp.length"]) if d["udp.length"] else None,
-                     "tool_udp_checksum_status":d["udp.checksum.status"]})
+        rows.append(proposal_from_fields(d))
     import re
     match=re.search(rb"(\d+)\s+maximum resident set size",p.stderr) if sys.platform=="darwin" else None
     return rows,{"command":cmd,"measured_command":measured,"exit_code":p.returncode,"elapsed_monotonic_seconds":time.monotonic()-start,
@@ -181,8 +195,14 @@ def validate_group(proposal,fragments):
 
 def validate_all(proposed,fragments):
     groups=[];owners=defaultdict(list);by_key=defaultdict(list)
+    rejected_keys=set();rejected_with_keys=0
     for proposal in proposed:
         record,reasons=validate_group(proposal,fragments)
+        # A rejected row can touch several keys or return no materialized record.
+        # Preserve every recognizable key before either early exit or first-key indexing.
+        if reasons:
+            known_keys={fragments[n].key for n in proposal["members"] if n in fragments}
+            rejected_keys.update(known_keys);rejected_with_keys+=bool(known_keys)
         if record is None:
             groups.append({"completion_frame":proposal["completion_frame"],"members":proposal["members"],"reasons":reasons,"admitted":False})
             continue
@@ -195,7 +215,7 @@ def validate_all(proposed,fragments):
         veto=[]
         if key in unresolved_keys:veto.append("same_key_unresolved_fragment")
         if key in shared_keys:veto.append("shared_fragment_membership")
-        if any(r["reasons"] for r in records):veto.append("same_key_rejected_group")
+        if key in rejected_keys or any(r["reasons"] for r in records):veto.append("same_key_rejected_group")
         ordered=sorted(records,key=lambda r:(r["first_ts"],r["first_ordinal"]))
         for a,b in zip(ordered,ordered[1:]):
             if a["last_ts"]>=b["first_ts"] or a["last_ordinal"]>=b["first_ordinal"]:
@@ -204,7 +224,14 @@ def validate_all(proposed,fragments):
             record["reasons"]=sorted(set(record["reasons"]+veto));record["admitted"]=not record["reasons"]
     accepted=[g for g in groups if g.get("admitted")]
     accepted_members={n for g in accepted for n in g["members"]}
-    return groups,accepted,set(fragments)-accepted_members,{"unproposed_fragments":len(unresolved),"shared_membership_frames":sum(len(v)>1 for v in owners.values()),"standard_keys":len({f.key for f in fragments.values()}),"keys_with_multiple_proposals":sum(len(v)>1 for v in by_key.values())}
+    return groups,accepted,set(fragments)-accepted_members,{"unproposed_fragments":len(unresolved),"shared_membership_frames":sum(len(v)>1 for v in owners.values()),"standard_keys":len({f.key for f in fragments.values()}),"keys_with_multiple_proposals":sum(len(v)>1 for v in by_key.values()),"rejected_proposal_key_vetoes":len(rejected_keys),"rejected_proposals_with_recognizable_keys":rejected_with_keys}
+
+
+def datagram_packet(group,fragments):
+    """Convert a validated group; VLAN depth is metadata, not a new flow key."""
+    first=fragments[group["members"][0]]
+    return base.Packet(group["completion_frame"],group["last_ts"],first.src,group["sport"],
+                       first.dst,group["dport"],17,group["ip_bytes"],vlans=len(first.vlans))
 
 
 def public_group(g,fragments):
@@ -251,10 +278,14 @@ def run(contract_path,expected_hash,output):
     if base.digest(tool)!=contract["tshark"]["sha256"]:raise ValueError("Pinned CLI binary differs")
     output.mkdir(parents=True);phases={};phase=time.monotonic()
     fragments={};complete=[];unsupported=[];decode_counts=Counter();raw_count=0
+    complete_checksums=reference_diagnostics.CompleteChecksumAudit();udp_payload_bytes={}
     for frame in base.pcap_frames(capture):
         raw_count+=1;part=fragment(frame);d=base.decode(frame);decode_counts[d.reason]+=1
         if part:fragments[frame.ordinal]=part
-        elif d.packet:complete.append(d.packet)
+        elif d.packet:
+            complete.append(d.packet)
+            udp_payload=complete_checksums.observe(frame,d.packet)
+            if udp_payload is not None:udp_payload_bytes[frame.ordinal]=udp_payload
         elif d.family:unsupported.append((frame.ts,d.family))
     phases["raw_decode_and_lineage"]=time.monotonic()-phase;phase=time.monotonic()
     proposed,tool_record=proposals(tool,capture,output/"isolated-tshark-config")
@@ -263,15 +294,19 @@ def run(contract_path,expected_hash,output):
     groups,accepted,unresolved,reuse=validate_all(proposed,fragments)
     packets=list(complete)
     for g in accepted:
-        first=fragments[g["members"][0]]
-        packets.append(base.Packet(g["completion_frame"],g["last_ts"],first.src,g["sport"],first.dst,g["dport"],17,g["ip_bytes"]))
+        packets.append(datagram_packet(g,fragments))
+        udp_payload_bytes[g["completion_frame"]]=g["ip_bytes"]-28
     packets.sort(key=lambda p:(p.ts,p.ordinal))
     for ordinal in unresolved:
         f=fragments[ordinal];unsupported.append((f.ts,f.family))
-    policy=json.loads((root/"docs/raw-label-policy-v1.json").read_text());connections,headers=base.read_connections(labels,policy)
+    policy=json.loads((root/"docs/raw-label-policy-v2.json").read_text());connections,headers=base.read_connections(labels,policy)
     unique,admitted,results,statuses,ambiguity=base.association(packets,connections,unsupported)
     phases["byte_validation_and_original_connection_reconciliation"]=time.monotonic()-phase;phase=time.monotonic()
     profiles=admitted_profiles(connections,results,packets,unique,admitted);by_row={c.row:c for c in connections}
+    checksum_report=complete_checksums.report(unique,admitted,by_row)
+    payload_report=reference_diagnostics.udp_payload_comparison(connections,packets,unique,admitted,
+                    {g["completion_frame"] for g in accepted},udp_payload_bytes,labels)
+    timing_report=reference_diagnostics.datagram_wire_timing(accepted,fragments,complete,unique,admitted,by_row)
     datagram_labels=Counter();wire_labels=Counter();lineage_output=[]
     for g in accepted:
         row=unique.get(g["completion_frame"]);category=by_row[row].label if row in admitted else "UNRECONCILED"
@@ -296,16 +331,20 @@ def run(contract_path,expected_hash,output):
     base.write_json(output/"admitted-source-profiles.json",profiles)
     base.write_json(output/"datagram-domain-timeout-diagnostics.json",diagnostics)
     base.write_json(output/"sampling-position-diagnostic.json",sampling)
+    base.write_json(output/"complete-checksum-audit.json",checksum_report)
+    base.write_json(output/"UDP-payload-counter-comparison.json",payload_report)
+    base.write_json(output/"datagram-wire-timing-profiles.json",timing_report)
     base.write_json(output/"tool-receipt.json",tool_record)
     after=[base.seal(p) for p in [capture,labels]]
     if before!=after or base.digest(contract_path)!=expected_hash:raise ValueError("Originals/contract changed")
     peak=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss;peak=peak if sys.platform=="darwin" else peak*1024
-    summary={"version":"raw-fragment-admission-v1","status":"completed_development_reconstruction_diagnostic","started_utc":utc,"finished_utc":datetime.now(timezone.utc).isoformat(),
+    summary={"version":"raw-fragment-admission-v2","status":"completed_development_reconstruction_diagnostic","started_utc":utc,"finished_utc":datetime.now(timezone.utc).isoformat(),
              "elapsed_monotonic_seconds":time.monotonic()-started,"phase_seconds":phases,"peak_wrapper_RSS_bytes":peak,"TShark_child_peak_RSS_bytes":tool_record["TShark_peak_RSS_bytes"], "python":sys.version,"pid":os.getpid(),"workers":1,
              "code_commit":commit,"input_contract_sha256":expected_hash,"source_sha256":contract["source_sha256"],"tool_binary_sha256":contract["tshark"]["sha256"],"originals_before":before,"originals_after":after,"originals_unchanged":True,
              "raw_frame_count":raw_count,"decode_statuses":dict(decode_counts),"fragment_frames":len(fragments),"tool_proposed_groups":len(proposed),"validated_groups":len(accepted),"validated_fragment_members":sum(len(g["members"]) for g in accepted),"unresolved_fragment_frames":len(unresolved),
              "rejected_proposed_groups":sum(not g.get("admitted") for g in groups),"rejection_reasons_nonexclusive":dict(Counter(x for g in groups for x in g.get("reasons",[]))),"ID_reuse":reuse,"UDP_checksum_statuses":dict(Counter(g["udp_checksum"] for g in accepted)),
              "source_domain_packet_or_datagram_candidates":len(packets),"source_association_statuses":dict(statuses),"admitted_source_connections":len(admitted),"reconstructed_datagram_source_labels":dict(datagram_labels),"reconstructed_wire_fragment_source_labels":dict(wire_labels),"admitted_source_profiles":profiles,
+             "complete_checksum_audit":checksum_report,"reconstructed_UDP_payload_counter_statuses":payload_report["status_counts"],
              "model_fit_score_calibration_selection":False,"replay_or_live_capture":False,"forwarding_or_lab_change":False,"live_policy_committed":False,"benchmark_or_episode_or_customer_adoption":False,
              "limits":["Tool proposals plus strict local byte/checksum/lineage validation, not proof of unobserved in-flight ID uniqueness or historical analyzer/config identity.","Reassembly is offline label reconciliation. Datagram-domain timeout diagnostics do not define a forwarding-path or live detector operation.","Wire-before-reassembly and after-reassembly sampling differ. No sampled feature was built from full-trace/unsampled data.","Original analyst labels and source zero-counter histories are unchanged; C&C/scan remain outside binary task.","One development scenario; future final captures remain unopened; source/license/member provenance unresolved."]}
     base.write_json(output/"summary.json",summary);base.write_json(output/"COMPLETE.json",{"code_commit":commit,"contract_sha256":expected_hash,"artifacts":{p.name:base.digest(p) for p in output.iterdir() if p.is_file()}})

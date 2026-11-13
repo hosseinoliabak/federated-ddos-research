@@ -1,3 +1,12 @@
+## Private raw-fragment review candidate
+
+- Preserve VLAN depth when converting a validated datagram to packet metadata; connection keys remain unchanged.
+- Veto every recognizable standard key touched by a rejected proposal, including early failures and rejected mixed-key groups.
+- Quarantine multiple occurrences of scalar TShark fields rather than selecting or normalizing an occurrence. Clear singleton proposals retain their existing values.
+- Retain separate unknown/excluded/mixed diagnostic memberships; expose timer masks and source/cache histograms.
+- Add audit-only complete checksum, UDP payload-counter and original-wire/member-time diagnostics.
+- Add fabricated regressions. Frozen earlier code and actual-data runs remain historical evidence; this change does not establish sampled features, independent attack episodes or live readiness.
+
 # Changelog
 
 ## 0.1.0

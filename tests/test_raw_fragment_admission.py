@@ -141,6 +141,80 @@ class Reuse(unittest.TestCase):
         g,a,u,r=m.validate_all([],parts(make_frames()));self.assertFalse(a);self.assertEqual(u,{1,2,3});self.assertEqual(r['unproposed_fragments'],3)
 
 
+
+class ReviewRegression(unittest.TestCase):
+    """Fabricated review counterexamples; no acquired data or live tool calls."""
+    def fields(self,frames=None):
+        frames=make_frames() if frames is None else frames;p=proposal(frames)
+        d={name:"" for name in m.FIELDS}
+        d.update({"frame.number":str(p["completion_frame"]),"frame.time_epoch":"1.000002",
+                  "ip.fragment":",".join(map(str,p["members"])),"ip.fragment.count":"3",
+                  "ip.reassembled.length":str(p["tool_length"]),"ip.reassembled.data":p["tool_payload"].hex(),
+                  "udp.srcport":str(p["tool_sport"]),"udp.dstport":str(p["tool_dport"]),
+                  "udp.length":str(p["tool_udp_length"]),"udp.checksum.status":p["tool_udp_checksum_status"]})
+        return d
+    def test_vlan_depth_survives_conversion_as_metadata(self):
+        frames=[]
+        for f in make_frames():
+            data=f.data[:12]+struct.pack("!HHHH",0x88a8,100,0x8100,10)+f.data[12:]
+            frames.append(b.Frame(f.ordinal,f.ts,len(data),len(data),data))
+        ps=parts(frames);_,accepted,_,_=m.validate_all([proposal(frames)],ps)
+        packet=m.datagram_packet(accepted[0],ps)
+        self.assertEqual(packet.vlans,2)
+        without=b.Packet(packet.ordinal,packet.ts,packet.src,packet.sport,packet.dst,packet.dport,packet.proto,packet.ip_bytes)
+        self.assertEqual(packet.key,without.key);self.assertEqual(packet.family,without.family)
+    def test_unknown_member_reject_vetoes_already_owned_known_key(self):
+        frames=make_frames();bad=proposal(frames);bad["members"]=[1,999]
+        groups,accepted,unresolved,stats=m.validate_all([proposal(frames),bad],parts(frames))
+        self.assertFalse(accepted);self.assertEqual(unresolved,{1,2,3})
+        self.assertIn("same_key_rejected_group",groups[0]["reasons"])
+        self.assertEqual(stats["rejected_proposal_key_vetoes"],1)
+    def test_rejected_mixed_group_vetoes_all_recognizable_keys(self):
+        first=make_frames();second=make_frames(ident=8,base_ts=2000000,start=4)
+        extra2=make_frames(ident=8,base_ts=3000000,start=7,order=(1,))
+        extra1=make_frames(ident=7,base_ts=4000000,start=8,order=(0,))
+        bad=proposal(first);bad.update(members=[8,7],completion_frame=8,completion_ts=extra1[0].ts)
+        groups,accepted,unresolved,stats=m.validate_all([proposal(first),proposal(second),bad],parts(first+second+extra2+extra1))
+        self.assertFalse(accepted);self.assertEqual(unresolved,set(range(1,9)))
+        self.assertTrue(all("same_key_rejected_group" in g["reasons"] for g in groups))
+        self.assertEqual(stats["rejected_proposal_key_vetoes"],2)
+    def test_unowned_same_key_control_still_vetoes(self):
+        first=make_frames();extra=make_frames(base_ts=2000000,start=4,order=(1,))
+        bad=proposal(first);bad["members"]=[4,999]
+        groups,accepted,_,_=m.validate_all([proposal(first),bad],parts(first+extra))
+        self.assertFalse(accepted);self.assertIn("same_key_unresolved_fragment",groups[0]["reasons"])
+    def test_no_key_is_invented_for_all_unknown_members(self):
+        frames=make_frames();bad=proposal(frames);bad["members"]=[998,999]
+        _,accepted,_,stats=m.validate_all([proposal(frames),bad],parts(frames))
+        self.assertEqual(len(accepted),1);self.assertEqual(stats["rejected_proposal_key_vetoes"],0)
+    def test_duplicate_known_members_return_rejected_record(self):
+        frames=make_frames();bad=proposal(frames);bad["members"]=[1,1]
+        record,reasons=m.validate_group(bad,parts(frames))
+        self.assertIsNotNone(record);self.assertIn("duplicate_or_too_few_members",reasons)
+    def test_clear_singleton_fields_preserve_exact_old_proposal(self):
+        frames=make_frames();self.assertEqual(m.proposal_from_fields(self.fields(frames)),proposal(frames))
+    def test_member_list_is_not_treated_as_scalar_ambiguity(self):
+        parsed=m.proposal_from_fields(self.fields());self.assertEqual(parsed["members"],[1,2,3]);self.assertFalse(parsed["tool_errors"])
+    def test_ambiguous_checksum_is_quarantined_and_vetoes_key(self):
+        fields=self.fields();fields["udp.checksum.status"]="1,1";parsed=m.proposal_from_fields(fields)
+        self.assertIn("ambiguous_tool_field:udp.checksum.status",parsed["tool_errors"])
+        groups,accepted,_,_=m.validate_all([proposal(make_frames()),parsed],parts(make_frames()))
+        self.assertFalse(accepted);self.assertTrue(all("same_key_rejected_group" in g["reasons"] for g in groups))
+    def test_aggregated_scalar_fields_reject_without_parse_abort(self):
+        for name in ["ip.fragment.count","ip.reassembled.length","ip.reassembled.data",
+                     "udp.srcport","udp.dstport","udp.length","udp.checksum.status"]:
+            with self.subTest(name=name):
+                fields=self.fields();fields[name]+=","+fields[name];parsed=m.proposal_from_fields(fields)
+                self.assertIn("ambiguous_tool_field:"+name,parsed["tool_errors"])
+                self.assertFalse(m.validate_all([parsed],parts(make_frames()))[1])
+    def test_aggregated_false_error_flags_stay_quarantined(self):
+        fields=self.fields();fields["ip.fragment.overlap"]="0,0";parsed=m.proposal_from_fields(fields)
+        self.assertIn("ambiguous_tool_field:ip.fragment.overlap",parsed["tool_errors"])
+        self.assertFalse(m.validate_all([parsed],parts(make_frames()))[1])
+    def test_aggregated_port_never_uses_first_value(self):
+        fields=self.fields();fields["udp.srcport"]="1234,1234";self.assertIsNone(m.proposal_from_fields(fields)["tool_sport"])
+
+
 class PinnedCLI(unittest.TestCase):
     def test_independent_official_CLI_complete_outoforder_reused_and_hole(self):
         exe=os.environ.get('RAW_ADMISSION_TSHARK')

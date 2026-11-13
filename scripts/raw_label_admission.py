@@ -392,18 +392,23 @@ def selected(ordinal, denominator, seed):
 
 def propagated_label(tokens):
     """Unknown/excluded packets are never silently dropped from a new record."""
-    binary = {t for t in tokens if t in ("benign", "ddos")}
-    if len(binary) > 1:
+    tokens = set(tokens)
+    if not tokens <= {"benign", "ddos", "unknown", "excluded"}:
+        raise ValueError("Unknown label-propagation token")
+    if not tokens:
+        return "unknown"
+    if len(tokens) == 1:
+        return next(iter(tokens))
+    if tokens == {"benign", "ddos"}:
         return "mixed_binary_label"
-    if any(t not in ("benign", "ddos") for t in tokens):
-        return "unknown_or_excluded"
-    return next(iter(binary)) if binary else "unknown_or_excluded"
+    return "mixed:" + "+".join(sorted(tokens))
 
 
 def meter_diagnostic(packets, connections, unique, admitted, policy, active_us, idle_us, denominator):
     by_row = {c.row: c for c in connections}
     cache, output, labels, expiration = {}, [], Counter(), Counter()
     eligible_packet_counts, source_spans = Counter(), Counter()
+    token_sets, spans_by_label, records_per_source = Counter(), defaultdict(Counter), Counter()
     selected_packets, unknown_packets, excluded_packets = 0, 0, 0
 
     def close(key, reason):
@@ -414,6 +419,9 @@ def meter_diagnostic(packets, connections, unique, admitted, policy, active_us, 
         if label in ("benign", "ddos"):
             eligible_packet_counts[label] += f["count"]
         source_spans[str(len(f["connections"]))] += 1
+        token_sets["+".join(sorted(f["tokens"]))] += 1
+        spans_by_label[label][str(len(f["connections"]))] += 1
+        records_per_source.update(f["connections"])
         output.append((label, f["count"], f["last"]-f["first"]))
 
     for p in packets:
@@ -448,8 +456,16 @@ def meter_diagnostic(packets, connections, unique, admitted, policy, active_us, 
             "selected_supported_packets": selected_packets, "unknown_packets": unknown_packets,
             "excluded_category_packets": excluded_packets, "new_records": len(output),
             "new_record_labels": dict(labels), "expiration_triggers": dict(expiration),
+            "new_record_token_sets": dict(token_sets),
+            "idle_branch_reachable_under_active_first_rule": idle_us < active_us,
+            "idle_contrast_status": "STRUCTURALLY_MASKED" if idle_us >= active_us else "MECHANICALLY_AVAILABLE_NOT_ESTIMATED",
             "binary_eligible_packet_counts": dict(eligible_packet_counts),
             "source_connections_per_record_histogram": dict(source_spans),
+            "source_candidate_rows_per_record_histogram_by_record_label": {label: dict(counts) for label, counts in spans_by_label.items()},
+            "cache_records_per_admitted_source_connection_histogram": dict(Counter(str(records_per_source[row]) for row in admitted)),
+            "cache_records_per_admitted_source_label_histogram": {
+                label: dict(Counter(str(records_per_source[c.row]) for c in connections if c.row in admitted and c.label == label))
+                for label in sorted({c.label for c in connections if c.row in admitted})},
             "binary_eligible_record_packet_counts": {label: distribution([n for l,n,d in output if l == label]) for label in ["benign","ddos"]},
             "binary_eligible_record_duration_us": {label: distribution([d for l,n,d in output if l == label]) for label in ["benign","ddos"]}}
 
