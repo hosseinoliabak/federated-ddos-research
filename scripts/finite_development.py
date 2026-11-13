@@ -21,8 +21,8 @@ import workload_messages as M
 import train_separability_diagnostic as D
 from purpose_data_view import immutable, observer, UnlabeledBatch
 
-VERSION = 'finite-development-v3'
-SCORER_VERSION = 'finite-neural-csv-v3'
+VERSION = 'finite-development-v4'
+SCORER_VERSION = 'finite-neural-csv-v4'
 ANCHOR_SELECTION_VERSION = 'finite-development-v2'
 ARCHITECTURES = ((16,), (64, 128, 64))
 ARMS = ('independent_local', 'pooled_central', 'fedavg')
@@ -323,7 +323,7 @@ class FrozenAF:
     def validate(self):
         B.require(type(self.data) is bytes and len(self.data)<=2*2**20 and B.sha(self.data)==self.scorer_id,'af_scorer_hash')
         q=B.loads(self.data);B.keys(q,{'version','schema','input_id','scope','state','state_id','fixed_id','round','recipients'})
-        B.require(q['version']=='finite-af-csv-v3' and A.canonical(q)==self.data and
+        B.require(q['version']=='finite-af-csv-v4' and A.canonical(q)==self.data and
                   B.validate_schema(q['schema'])==q['input_id'] and q['recipients']==list(R.OWNERS),'af_scorer_metadata')
         B.require(type(q['round']) is int and q['round']>0,'positive_final_af_round_required')
         state=B.decode_final_af(A.canonical(q['state']),expected_state_id=q['state_id'],expected_fixed_id=q['fixed_id'],expected_round=q['round'])
@@ -342,7 +342,7 @@ class FrozenAF:
 
 def freeze_af(dataset,state):
     state.validate();schema=B.csv_schema(dataset.features,dataset.summary['input_sha256']['registry'])
-    q={'version':'finite-af-csv-v3','schema':schema,'input_id':B.validate_schema(schema),'scope':D.training_scope(dataset).scope_id,
+    q={'version':'finite-af-csv-v4','schema':schema,'input_id':B.validate_schema(schema),'scope':D.training_scope(dataset).scope_id,
        'state':state.payload(),'state_id':state.state_id,'fixed_id':state.fixed_id,'round':state.round_id,'recipients':list(R.OWNERS)}
     data=A.canonical(q);return FrozenAF(data,B.sha(data))
 
@@ -440,13 +440,16 @@ def admit_loss_message(data, *, scope, seed, grid, checkpoint, arm, owner, expec
     return q
 
 
-def choose(records, seeds, grids, checkpoints, *, owner):
+def choose(records, seeds, grids, checkpoints, *, owner, arm):
     """A local selector is given exactly one owner's records, no shared fallback.
 
-    Collective records have owner0 and contain only admitted sum/count messages.
+    Each record must identify the caller's explicit expected arm. Collective
+    records have owner0 and contain only admitted sum/count messages.
     A candidate is eligible only when both continuous horizon trials completed.
     """
     B.require(type(owner) is int and 0 <= owner <= 10 and all(q['owner'] == owner for q in records), 'selection_owner_isolation')
+    B.require(type(arm) is str and arm in set(ARMS) | {'local_shared_moments'}
+              and all(q.get('arm') == arm for q in records), 'selection_arm_isolation')
     candidates = []
     for grid in range(grids):
         for checkpoint in checkpoints:
@@ -458,7 +461,7 @@ def choose(records, seeds, grids, checkpoints, *, owner):
             candidates.append({'grid': grid, 'checkpoint': checkpoint, 'eligible': eligible, 'mean_seed_bce': mean})
     eligible = [r for r in candidates if r['eligible']]
     best = min(eligible, key=lambda r: (r['mean_seed_bce'], r['checkpoint'], r['grid'])) if eligible else None
-    return {'owner': owner, 'status': 'selected' if best else 'no_eligible_candidate', 'selection': best, 'candidates': candidates,
+    return {'owner': owner, 'arm': arm, 'status': 'selected' if best else 'no_eligible_candidate', 'selection': best, 'candidates': candidates,
             'criterion': 'minimum mean own-validation BCE across seeds' if owner else 'minimum mean permitted union-validation BCE across seeds',
             'horizon_limit': 'checkpoint4 selection indicates tested horizon boundary, not demonstrated convergence',
             'no_threshold_calibration_or_final_operation': True}

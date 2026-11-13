@@ -73,24 +73,41 @@ class ContractTests(unittest.TestCase):
         self.assertTrue(q['majority_tie']);self.assertEqual(q['auroc'],1.)
         self.assertEqual(F.rank_metrics(np.zeros(4),np.ones(4))['rank_status'],'NA_class_support')
 
-    def record(self,owner,seed,grid=0,checkpoint=1,loss=.5):
-        return {'owner':owner,'seed':seed,'grid':grid,'checkpoint':checkpoint,'loss_sum':loss*4,'loss_count':4,
+    def record(self,owner,seed,grid=0,checkpoint=1,loss=.5,arm='independent_local'):
+        return {'owner':owner,'arm':arm,'seed':seed,'grid':grid,'checkpoint':checkpoint,'loss_sum':loss*4,'loss_count':4,
                 'missing_scores':0,'status':'complete_validation','trial_complete':True}
 
     def test_local_selector_rejects_other_owner_feedback(self):
-        self.assertRaisesRegex(ValueError,'selection_owner_isolation',F.choose,[self.record(1,1),self.record(2,2)],(1,2),1,(1,),owner=1)
+        self.assertRaisesRegex(ValueError,'selection_owner_isolation',F.choose,[self.record(1,1),self.record(2,2)],(1,2),1,(1,),owner=1,arm='independent_local')
+
+    def test_selector_rejects_cross_arm_seed_pairs(self):
+        for owner,arms in [(1,('independent_local','local_shared_moments')),
+                           (0,('pooled_central','fedavg'))]:
+            records=[self.record(owner,1,arm=arms[0]),self.record(owner,2,arm=arms[1])]
+            self.assertRaisesRegex(ValueError,'selection_arm_isolation',F.choose,records,(1,2),1,(1,),owner=owner,arm=arms[0])
+
+    def test_selector_requires_record_arm_and_matches_explicit_expected_arm(self):
+        records=[self.record(1,1),self.record(1,2)]
+        for expected in ('local_shared_moments','unknown',None):
+            self.assertRaisesRegex(ValueError,'selection_arm_isolation',F.choose,records,(1,2),1,(1,),owner=1,arm=expected)
+        del records[1]['arm']
+        self.assertRaisesRegex(ValueError,'selection_arm_isolation',F.choose,records,(1,2),1,(1,),owner=1,arm='independent_local')
+
+    def test_empty_selector_remains_bound_and_ineligible(self):
+        result=F.choose([],(1,2),1,(1,),owner=0,arm='fedavg')
+        self.assertEqual(result['arm'],'fedavg');self.assertEqual(result['status'],'no_eligible_candidate')
 
     def test_missing_or_duplicate_seed_is_never_eligible(self):
         for rows in [[self.record(1,1)],[self.record(1,1),self.record(1,1)]]:
-            self.assertEqual(F.choose(rows,(1,2),1,(1,),owner=1)['status'],'no_eligible_candidate')
+            self.assertEqual(F.choose(rows,(1,2),1,(1,),owner=1,arm='independent_local')['status'],'no_eligible_candidate')
 
     def test_incomplete_trial_cannot_select_early_checkpoint(self):
         records=[self.record(1,1),self.record(1,2)];records[1]['trial_complete']=False
-        self.assertIsNone(F.choose(records,(1,2),1,(1,),owner=1)['selection'])
+        self.assertIsNone(F.choose(records,(1,2),1,(1,),owner=1,arm='independent_local')['selection'])
 
     def test_selection_tie_prefers_shorter_checkpoint_then_grid(self):
         records=[self.record(1,s,g,c) for s in (1,2) for g in (0,1) for c in (1,2)]
-        q=F.choose(records,(1,2),2,(1,2),owner=1)
+        q=F.choose(records,(1,2),2,(1,2),owner=1,arm='independent_local')
         self.assertEqual((q['selection']['grid'],q['selection']['checkpoint']),(0,1))
 
     def test_validation_loss_summary_binding_and_no_extra_labels(self):
@@ -203,7 +220,24 @@ class SyntheticTrialTests(unittest.TestCase):
         qs=self.result['selections']['independent_local']
         self.assertEqual([q['owner'] for q in qs],list(range(1,11)))
         self.assertTrue(all(q['status']=='selected' for q in qs))
+        self.assertTrue(all(q['arm']=='independent_local' for q in qs))
         self.assertEqual(self.result['selections']['fedavg']['owner'],0)
+        self.assertEqual(self.result['selections']['fedavg']['arm'],'fedavg')
+
+    def test_runner_passes_matching_expected_arm_to_every_selector(self):
+        original=F.choose;calls=[]
+        def choose(records,*args,**kwargs):
+            self.assertEqual({q['arm'] for q in records},{kwargs['arm']})
+            self.assertEqual({q['owner'] for q in records},{kwargs['owner']})
+            calls.append((kwargs['arm'],kwargs['owner']))
+            return original(records,*args,**kwargs)
+        plan=replace(self.plan,checkpoints=(1,),arms=F.ARMS+('local_shared_moments',))
+        with patch.object(F,'choose',choose):
+            r=S.run_neural(self.ds,plan,self.root/'selector-binding',synthetic_only=True)
+        self.assertEqual(r['status'],'complete_finite_neural_stage')
+        self.assertEqual(set(calls),{(a,o) for a in ('independent_local','local_shared_moments') for o in R.OWNERS}
+                         |{('pooled_central',0),('fedavg',0)})
+        self.assertEqual(len(calls),22)
 
     def test_same_initial_weights_and_order_across_arms(self):
         for seed in self.plan.seeds:
@@ -266,6 +300,22 @@ class SyntheticTrialTests(unittest.TestCase):
         records=[json.loads(line) for line in (self.root/'delivered/messages.jsonl').read_text().splitlines()]
         deliveries=[q for q in records if q['kind']=='checkpoint_scorer_delivery']
         self.assertEqual(len(deliveries),20);self.assertTrue(all(q['sender']==0 and q['recipient'] in R.OWNERS and q['bytes']>0 for q in deliveries))
+
+    def test_collective_scorer_archive_written_once_without_reducing_delivery(self):
+        original=Path.write_bytes;writes=[]
+        def write(path,data):
+            if path.name.startswith('scorer-') and path.name.endswith('-owner0.json'):writes.append(path)
+            return original(path,data)
+        plan=replace(self.plan,seeds=(55,),checkpoints=(1,2),arms=('pooled_central','fedavg'))
+        out=self.root/'single-collective-archive'
+        with patch.object(Path,'write_bytes',write):
+            r=S.run_neural(self.ds,plan,out,synthetic_only=True)
+        self.assertEqual(r['status'],'complete_finite_neural_stage')
+        self.assertEqual(len(writes),4);self.assertEqual(len(set(writes)),4)
+        records=[json.loads(line) for line in (out/'messages.jsonl').read_text().splitlines()]
+        deliveries=[q for q in records if q['kind']=='checkpoint_scorer_delivery']
+        self.assertEqual(len(deliveries),40)
+        self.assertEqual({q['recipient'] for q in deliveries},set(R.OWNERS))
 
     def test_fixed_and_wider_parameter_envelopes_include_scorer_distribution(self):
         # ASCII128 bounds this study's frozen ASCII schema, not all possible
@@ -391,6 +441,18 @@ class SyntheticTrialTests(unittest.TestCase):
             self.assertEqual(q['covariance_updates_after_initialization'],0)
         self.assertEqual([q['source_reference'] for q in r['fits']],[True,False,False])
         self.assertNotIn('best_ridge',r)
+
+    def test_af_constructed_budget_refuses_raw_message_and_records_zero_cap(self):
+        original=F.Budget;observed=[]
+        class Budget(original):
+            def __init__(budget,*args,**kwargs):
+                super().__init__(*args,**kwargs);observed.append(budget)
+        with patch.object(F,'Budget',Budget):
+            r=S.run_af(self.ds,self.root/'af-zero-raw-cap',synthetic_only=True,
+                       anchor_count=5,seeds=(36,),ridges=(.001,),max_seconds=120)
+        self.assertEqual(r['status'],'complete_finite_af_stage');self.assertEqual(len(observed),1)
+        self.assertEqual(r['budget']['max_pooled_raw_bytes'],0);self.assertEqual(r['budget']['pooled_raw_bytes'],0)
+        with self.assertRaisesRegex(F.BudgetExceeded,'pooled_raw_bytes'):observed[0].charge_message(1,raw=True)
 
     def test_af_budget_failure_retains_whole_score_universe(self):
         r=S.run_af(self.ds,self.root/'af-budget',synthetic_only=True,anchor_count=5,seeds=(99,),max_seconds=0)

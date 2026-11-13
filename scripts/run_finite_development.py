@@ -291,7 +291,8 @@ def neural_trial(dataset,scope,plan,seed,grid,arm,trial_id,resources,out,ledger,
                         delivery={'bytes':len(frame),'sha256':B.sha(frame),'sender':0,'recipient':owner,
                                   'policy':'full explicit checkpoint scorer for both collective arms; FedAvg duplicates its existing model/transform delivery'}
                     else:scorer=coordinator_scorer
-                    F.write(out/f'scorer-{epoch}-owner{key}.json',B.loads(scorer.data),budget)
+                    if key != 0 or owner == R.OWNERS[0]:
+                        F.write(out/f'scorer-{epoch}-owner{key}.json',B.loads(scorer.data),budget)
                     record=F.evaluate_owner(dataset,scorer,owner,budget,batch_rows=plan.batch_rows)
                     record.update(seed=seed,grid=grid,checkpoint=epoch,arm=arm,trial=trial_id,trial_complete=False)
                     record['scorer_delivery']=delivery
@@ -409,8 +410,8 @@ def run_neural(dataset,plan,output,*,synthetic_only=False):
             selections={}
             for arm in plan.arms:
                 if arm in {'independent_local','local_shared_moments'}:
-                    selections[arm]=[F.choose([q for q in metrics if q['arm']==arm and q['owner']==owner],plan.seeds,len(plan.grid),plan.checkpoints,owner=owner) for owner in R.OWNERS]
-                else:selections[arm]=F.choose([q for q in summaries if q['arm']==arm],plan.seeds,len(plan.grid),plan.checkpoints,owner=0)
+                    selections[arm]=[F.choose([q for q in metrics if q['arm']==arm and q['owner']==owner],plan.seeds,len(plan.grid),plan.checkpoints,owner=owner,arm=arm) for owner in R.OWNERS]
+                else:selections[arm]=F.choose([q for q in summaries if q['arm']==arm],plan.seeds,len(plan.grid),plan.checkpoints,owner=0,arm=arm)
             F.write(out/'SELECTION.json',{'selections':selections,'all_outcomes_retained':True,'final_or_calibration_access':False})
         status='complete_finite_neural_stage' if all(q['status']=='complete_continuous_trial' for q in results) else 'budget_limited' if stop else 'finite_stage_with_failed_trials'
         r.update(status=status,finished_utc=now(),selections=selections,peak_process_rss_bytes=F.peak_rss_bytes(),
@@ -536,7 +537,7 @@ def run_af(dataset,output,*,synthetic_only=False,anchor_count=2000,seeds=(202611
     B.require(type(dataset) is PurposeDataset and not sys.flags.optimize,'sealed_dataset_and_checked_python_required')
     if not synthetic_only:B.require(anchor_count==2000 and seeds==(20261112,20261113) and ridges==(.001,.0001,.01) and max_seconds==5400,'af_fixed_schedule')
     out=B.root_path(output,exists=False);out.mkdir(parents=True,exist_ok=False)
-    budget=F.Budget(max_seconds,2**30);ledger=Ledger(out,budget);progress={};fits=[];stop=False
+    budget=F.Budget(max_seconds,2**30,raw_bytes=0);ledger=Ledger(out,budget);progress={};fits=[];stop=False
     r={'version':F.VERSION,'status':'running','started_utc':now(),'anchor_count':anchor_count,'seeds':seeds,'ridges':ridges,'fits':fits,
        'synthetic_only':synthetic_only,'scope':D.training_scope(dataset).scope_id,'source':L.code_context(),
        'input_pins':dataset.summary['input_sha256'],'assignment_sha256':dataset.summary['assignment_sha256'],
