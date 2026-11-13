@@ -5,12 +5,22 @@ subset, checking federated training, and verifying selected mathematical stateme
 This project supports Hossein Oliabak’s master’s research on provider-operated
 DDoS detection for customer traffic.
 
-The current Python implementation runs SGD and local Adam with a fixed FedAvg server. It
-is an engineering prototype. A Sellier-based QiML training engine has not been
+The Python implementation includes SGD and local Adam with a fixed FedAvg server,
+plus a separate AF-BKM-family statistics-sharing candidate. These are engineering
+prototypes. A Sellier-based QiML training engine has not been
 implemented, and the project does not establish a speedup, a final detection result, or
 readiness for a provider network.
 
 ## Project status
+
+The [November 12 reusable-code checkpoint](docs/checked-preparation-checkpoint.md)
+adds an independent loader audit, purpose-filtered data views, a disclosed
+AF-BKM-family adapter, a matched engineering runner and offline raw-reference
+checks. Its synthetic checks establish the documented software behavior. They
+do not establish a final detector ranking or live deployment readiness. The
+frozen scorer bundle remains a separate provisional candidate.
+
+The architecture assessment below describes an earlier checkpoint.
 
 A [provider architecture assessment](docs/provider-observation-and-learning.md)
 considers provider-owned PoP collection and scoring with central coordination,

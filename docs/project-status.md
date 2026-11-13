@@ -10,7 +10,24 @@ proofreading planned after the English manuscript is complete.
 Human review of Chapter 1 remains pending. Private review material and the researcher’s
 comments remain outside the public repository.
 
-## November 12 grouped-role preparation
+## November 12 reusable-code integration
+
+The [checked preparation checkpoint](checked-preparation-checkpoint.md) records
+the reusable loader audit, purpose views, AF-BKM-family adapter, matched
+engineering runner and offline raw-reference checks. Original source commits,
+the unchanged dependency lock and historical execution identities are retained.
+The public integration reports software preparation and a narrow offline
+connection/counter reference, with no new acquired-data experiment or final
+detector comparison.
+
+The raw reference does not establish capture completeness, independent attack
+episodes or a controlled sampling/timeout benchmark. The scorer bundle remains
+under separate review; no review consensus or final adoption is claimed. Human
+manuscript review, protocol selection and functional lab checks remain open.
+The owner must review the proposed lab architecture and IP addressing before
+construction, reconfiguration or experimental traffic.
+
+## Earlier November 12 grouped-role preparation
 
 The new [preparation procedure](grouped-development-roles.md) constructs one
 provisional FLNET training, validation and calibration allocation. The recorded
