@@ -213,6 +213,13 @@ Run the required repository checks first. The script requires an explicit
 `FDDOS_WORKSPACE`. See the protocol for data roles, the use of future probe identities
 in exclusion, comparator differences, and execution provenance.
 
+## Finite development search
+
+The [v2 development controller](docs/finite-development-v2.md) implements a bounded
+continuous neural search and an identity-selected AF anchor sensitivity stage. Its
+public CLI accepts fabricated inputs only. Local, pooled and federated selection
+channels, optimizer state, complete tails and failed slots remain explicit.
+
 ## Extend the project
 
 Keep model training, client participation, server aggregation, and evaluation decisions
