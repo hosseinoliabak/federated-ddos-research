@@ -118,6 +118,13 @@ class ContractTests(unittest.TestCase):
             self.assertTrue(q['partial_archive_ineligible_for_scoring'])
             self.assertRaises(ValueError,F.unpacked_array,q['models']['1']['0.weight'])
 
+    def test_terminal_seal_bytes_are_checked_before_success_publication(self):
+        with tempfile.TemporaryDirectory(prefix='fabricated-seal-budget-') as tmp:
+            root=Path(tmp).resolve();(root/'artifact.txt').write_text('fabricated')
+            budget=F.Budget(20,1000,storage_bytes=20)
+            self.assertRaises(F.BudgetExceeded,S.seal,root,'fabricated_complete',budget)
+            self.assertFalse((root/'COMPLETE.json').exists());self.assertTrue((root/'PENDING-COMPLETE.json').exists())
+
 
 class SyntheticTrialTests(unittest.TestCase):
     @classmethod
@@ -232,6 +239,54 @@ class SyntheticTrialTests(unittest.TestCase):
         bad=B.loads(scorer.data);bad['schema']['live_eligible']=True;data=A.canonical(bad)
         self.assertRaises(ValueError,F.FrozenNeural,data,B.sha(data))
 
+    def test_scorer_delivery_rejects_endpoint_and_corrupted_payload(self):
+        scorer=self.scorer();q=scorer.validate()[0]
+        meta={'scope':q['scope'],'trial':1,'seed':1,'grid':0,'checkpoint':1,'arm':'fedavg','recipient':1}
+        data=F.scorer_delivery(scorer,meta);received=F.receive_scorer(data,meta)
+        self.assertEqual(received.data,scorer.data);self.assertIsNot(received,scorer)
+        with patch.object(F,'FrozenNeural',side_effect=AssertionError('wrong endpoint must reject before scorer decode')):
+            self.assertRaisesRegex(ValueError,'scorer_delivery_binding',F.receive_scorer,data,meta|{'recipient':2})
+        corrupt=B.loads(data);corrupt['payload']['state_id']='f'*64
+        self.assertRaises(ValueError,F.receive_scorer,A.canonical(corrupt),meta)
+
+    def test_collective_validation_uses_only_decoded_delivered_scorers(self):
+        coordinator=[];delivered=[];evaluated=[]
+        freeze=F.freeze;receive=F.receive_scorer;evaluate=F.evaluate_owner
+        def sender(*args,**kwargs):
+            q=freeze(*args,**kwargs);coordinator.append(q);return q
+        def recipient(*args,**kwargs):
+            q=receive(*args,**kwargs);delivered.append(q);return q
+        def owner(ds,scorer,*args,**kwargs):
+            self.assertTrue(any(scorer is x for x in delivered));self.assertFalse(any(scorer is x for x in coordinator))
+            evaluated.append(scorer);return evaluate(ds,scorer,*args,**kwargs)
+        plan=replace(self.plan,seeds=(54,),checkpoints=(1,),arms=('pooled_central','fedavg'))
+        with patch.object(F,'freeze',sender),patch.object(F,'receive_scorer',recipient),patch.object(F,'evaluate_owner',owner):
+            r=S.run_neural(self.ds,plan,self.root/'delivered',synthetic_only=True)
+        self.assertEqual(r['status'],'complete_finite_neural_stage');self.assertEqual(len(evaluated),20)
+        records=[json.loads(line) for line in (self.root/'delivered/messages.jsonl').read_text().splitlines()]
+        deliveries=[q for q in records if q['kind']=='checkpoint_scorer_delivery']
+        self.assertEqual(len(deliveries),20);self.assertTrue(all(q['sender']==0 and q['recipient'] in R.OWNERS and q['bytes']>0 for q in deliveries))
+
+    def test_fixed_and_wider_parameter_envelopes_include_scorer_distribution(self):
+        # ASCII128 bounds this study's frozen ASCII schema, not all possible
+        # Unicode names accepted by the generic scorer schema validator.
+        maxds=object.__new__(PurposeDataset);maxds.features=tuple(str(i).zfill(3)+'x'*125 for i in range(73));maxds.summary=self.ds.summary
+        observations=[]
+        for hidden,fl_trials,collective_trials in [((16,),12,24),((64,128,64),2,4)]:
+            state=F.snapshot(F.template(hidden));scope=D.training_scope(maxds)
+            scorer=F.freeze(maxds,state,hidden,0,np.zeros(73),np.ones(73))
+            delivery=F.scorer_delivery(scorer,{'scope':scope.scope_id,'trial':35,'seed':20261113,'grid':5,'checkpoint':4,'arm':'pooled_central','recipient':10})
+            model=F.model_frame(state,hidden,{'scope':scope.scope_id,'trial':35,'owner':10,'round':4,'count':2**64-1,'parent':'f'*64})
+            moments=M.encode('moments',R.meta(scope,'fedavg',10,2**64-1),{'mean':np.zeros(73),'M2':np.zeros(73)})
+            transform=M.encode('transform',R.meta(scope,'fedavg',0,2**64-1),{'mean':np.zeros(73),'denominator':np.ones(73)})
+            maximum=fl_trials*90*len(model)+collective_trials*3*10*(len(delivery)+4096)+10*(len(moments)+len(transform))
+            self.assertLess(maximum,64*2**20)
+            observations.append({'hidden':hidden,'delivery_bytes_ascii128':len(delivery),'model_frame_bytes':len(model),
+                'parameter_and_summary_upper_bound_bytes':maximum,'cap_bytes':64*2**20,
+                'includes':'FLinitial+4roundupdates/downlinks,allcheckpointscorerdeliveries,max4096BCEsummaries,coldmoment/transformfanout',
+                'excludes':'separately charged pooled rawTRAIN,artifact storage; no universal Unicode schema bound'})
+        print(json.dumps({'fabricated_conservative_parameter_envelopes':observations},sort_keys=True))
+
     def test_validation_never_calls_fit_or_calibration(self):
         original=self.ds.scoring
         def validation(role,*args,**kwargs):self.assertEqual(role,'validation');return original(role,*args,**kwargs)
@@ -304,6 +359,13 @@ class SyntheticTrialTests(unittest.TestCase):
         self.assertTrue(all(store.y[store.identities.index(i)]==0 for i in ids))
         self.assertRaises(ValueError,S.select_anchor,store,10000,13)
 
+    def test_anchor_identity_namespace_is_preserved_across_delivery_amendment(self):
+        import hashlib
+        store=R.stage(self.ds.supervised_train(1),256,[],'fabricated')
+        eligible=[r for r,y in zip(store.identities,store.y) if y==0]
+        def old_key(r):return hashlib.sha256(A.canonical(['finite-development-v2',13,r.source_id,r.source_row,r.observer_id,r.role_id])).digest(),r.source_id,r.source_row
+        self.assertEqual(S.select_anchor(store,5,13),tuple(sorted(eligible,key=old_key)[:5]))
+
     def test_af_full_worker_coverage_exact_anchor_exclusion_and_reference(self):
         original=A.summarize
         def no_labels(batch,state):self.assertFalse(hasattr(batch,'y'));return original(batch,state)
@@ -328,6 +390,18 @@ class SyntheticTrialTests(unittest.TestCase):
         self.assertEqual(r['validation_missing_scores'],r['validation_expected_scores'])
         self.assertEqual(r['validation_generated_scores_including_active'],0)
         self.assertFalse((self.root/'af-budget/COMPLETE.json').exists())
+
+    def test_af_terminal_storage_cap_withholds_complete_after_finished_fits(self):
+        target=self.root/'af-terminal-budget';original=F.Budget.refresh_storage;observed=[]
+        def terminal(budget,root,**kwargs):
+            if Path(root)==target:
+                observed.append(True);budget.storage_cap=max(0,sum(p.stat().st_size for p in target.rglob('*') if p.is_file())-1)
+            return original(budget,root,**kwargs)
+        with patch.object(F.Budget,'refresh_storage',terminal):
+            self.assertRaises(F.BudgetExceeded,S.run_af,self.ds,target,synthetic_only=True,anchor_count=5,seeds=(35,),max_seconds=120)
+        self.assertTrue(observed);self.assertFalse((target/'COMPLETE.json').exists())
+        r=json.loads((target/'FAILED.json').read_text());self.assertEqual(r['status'],'budget_limited')
+        self.assertEqual(len(r['fits']),3);self.assertTrue(all(q['status']=='complete_af_sensitivity_fit' for q in r['fits']))
 
 
 if __name__=='__main__':unittest.main()

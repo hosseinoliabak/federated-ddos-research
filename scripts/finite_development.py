@@ -21,8 +21,9 @@ import workload_messages as M
 import train_separability_diagnostic as D
 from purpose_data_view import immutable, observer, UnlabeledBatch
 
-VERSION = 'finite-development-v2'
-SCORER_VERSION = 'finite-neural-csv-v2'
+VERSION = 'finite-development-v3'
+SCORER_VERSION = 'finite-neural-csv-v3'
+ANCHOR_SELECTION_VERSION = 'finite-development-v2'
 ARCHITECTURES = ((16,), (64, 128, 64))
 ARMS = ('independent_local', 'pooled_central', 'fedavg')
 
@@ -276,6 +277,26 @@ def freeze(dataset, state, hidden, owner, mean, denominator):
     data = A.canonical(q); return FrozenNeural(data, B.sha(data))
 
 
+def scorer_delivery(scorer,meta):
+    """Explicit parameter/transform/input-contract delivery to one client."""
+    B.require(type(scorer) is FrozenNeural,'checkpoint_scorer_required');q=scorer.validate()[0]
+    B.keys(meta,{'scope','trial','seed','grid','checkpoint','arm','recipient'})
+    B.require(meta['scope']==q['scope'] and meta['arm'] in {'pooled_central','fedavg'} and
+              type(meta['recipient']) is int and meta['recipient'] in q['recipients'],'scorer_delivery_scope')
+    for k in ('trial','seed','grid','checkpoint'):B.integer(meta[k])
+    return A.canonical({'version':VERSION,'kind':'checkpoint_scorer','meta':meta,'scorer_id':scorer.scorer_id,'payload':q})
+
+
+def receive_scorer(data,expected_meta):
+    """Client receives only the serialized scorer, never the coordinator object."""
+    B.require(type(data) is bytes and len(data)<=3*2**20,'scorer_delivery_size')
+    q=B.loads(data);B.keys(q,{'version','kind','meta','scorer_id','payload'})
+    B.require(q['version']==VERSION and q['kind']=='checkpoint_scorer' and q['meta']==expected_meta,'scorer_delivery_binding')
+    scorer=FrozenNeural(A.canonical(q['payload']),q['scorer_id'])
+    B.require(scorer_delivery(scorer,expected_meta)==data,'scorer_delivery_encoding')
+    return scorer
+
+
 def rank_metrics(y, scores):
     B.require(type(y) is np.ndarray and type(scores) is np.ndarray and y.ndim == scores.ndim == 1
               and len(y) == len(scores) and bool(np.isin(y, [0, 1]).all()) and bool(np.isfinite(scores).all()), 'rank_inputs')
@@ -302,7 +323,7 @@ class FrozenAF:
     def validate(self):
         B.require(type(self.data) is bytes and len(self.data)<=2*2**20 and B.sha(self.data)==self.scorer_id,'af_scorer_hash')
         q=B.loads(self.data);B.keys(q,{'version','schema','input_id','scope','state','state_id','fixed_id','round','recipients'})
-        B.require(q['version']=='finite-af-csv-v2' and A.canonical(q)==self.data and
+        B.require(q['version']=='finite-af-csv-v3' and A.canonical(q)==self.data and
                   B.validate_schema(q['schema'])==q['input_id'] and q['recipients']==list(R.OWNERS),'af_scorer_metadata')
         state=B.decode_final_af(A.canonical(q['state']),expected_state_id=q['state_id'],expected_fixed_id=q['fixed_id'],expected_round=q['round'])
         B.require(state.scope_id==q['scope'],'af_scorer_scope');return q,state
@@ -320,7 +341,7 @@ class FrozenAF:
 
 def freeze_af(dataset,state):
     state.validate();schema=B.csv_schema(dataset.features,dataset.summary['input_sha256']['registry'])
-    q={'version':'finite-af-csv-v2','schema':schema,'input_id':B.validate_schema(schema),'scope':D.training_scope(dataset).scope_id,
+    q={'version':'finite-af-csv-v3','schema':schema,'input_id':B.validate_schema(schema),'scope':D.training_scope(dataset).scope_id,
        'state':state.payload(),'state_id':state.state_id,'fixed_id':state.fixed_id,'round':state.round_id,'recipients':list(R.OWNERS)}
     data=A.canonical(q);return FrozenAF(data,B.sha(data))
 

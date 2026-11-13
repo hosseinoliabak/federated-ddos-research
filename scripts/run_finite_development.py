@@ -278,10 +278,24 @@ def neural_trial(dataset,scope,plan,seed,grid,arm,trial_id,resources,out,ledger,
                 for owner in R.OWNERS:
                     progress.update(phase='validation',trial=trial_id,presentation=epoch,owner=owner)
                     key=0 if arm in {'pooled_central','fedavg'} else owner
-                    scorer=F.freeze(dataset,F.snapshot(models[key]),plan.hidden,key,*transforms[owner])
+                    coordinator_scorer=F.freeze(dataset,F.snapshot(models[key]),plan.hidden,key,*transforms[owner])
+                    delivery=None
+                    if arm in {'pooled_central','fedavg'}:
+                        expected_delivery={'scope':scope.scope_id,'trial':trial_id,'seed':seed,'grid':grid,
+                             'checkpoint':epoch,'arm':arm,'recipient':owner}
+                        t=time.monotonic();frame=F.scorer_delivery(coordinator_scorer,expected_delivery)
+                        ledger.record(arm,'checkpoint_scorer_delivery',0,owner,frame,time.monotonic()-t,
+                                      round_id=epoch,fields=('model','transform','input_schema','scorer_id'))
+                        scorer=F.receive_scorer(frame,expected_delivery)
+                        B.require(scorer.scorer_id==coordinator_scorer.scorer_id,'delivered_scorer_identity')
+                        delivery={'bytes':len(frame),'sha256':B.sha(frame),'sender':0,'recipient':owner,
+                                  'policy':'full explicit checkpoint scorer for both collective arms; FedAvg duplicates its existing model/transform delivery'}
+                    else:scorer=coordinator_scorer
                     F.write(out/f'scorer-{epoch}-owner{key}.json',B.loads(scorer.data),budget)
                     record=F.evaluate_owner(dataset,scorer,owner,budget,batch_rows=plan.batch_rows)
                     record.update(seed=seed,grid=grid,checkpoint=epoch,arm=arm,trial=trial_id,trial_complete=False)
+                    record['scorer_delivery']=delivery
+                    record['validation_model_access']='decoded_serialized_checkpoint_scorer' if delivery else 'own_resident_local_checkpoint'
                     r['validation_valid_scores']+=record['valid_scores'];scores.append(record);metrics.append(record)
                     F.write(out/f'validation-{epoch}-owner{owner}.json',record,budget)
                     if arm in {'pooled_central','fedavg'}:
@@ -336,9 +350,14 @@ def slots(plan):
     return result
 
 
-def seal(out,status):
+def seal(out,status,budget=None):
     files={str(p.relative_to(out)):{'sha256':L.sha(p),'bytes':p.stat().st_size} for p in out.rglob('*') if p.is_file() and p.name!='COMPLETE.json'}
-    F.write(out/'COMPLETE.json',{'version':F.VERSION,'status':status,'artifacts':files})
+    pending=out/'PENDING-COMPLETE.json'
+    F.write(pending,{'version':F.VERSION,'status':status,'artifacts':files})
+    # Include terminal manifest bytes/hash/write time before publishing COMPLETE.
+    # A failure preserves PENDING-COMPLETE and never publishes a success seal.
+    if budget is not None:budget.refresh_storage(out)
+    pending.rename(out/'COMPLETE.json')
 
 
 def run_neural(dataset,plan,output,*,synthetic_only=False):
@@ -402,7 +421,7 @@ def run_neural(dataset,plan,output,*,synthetic_only=False):
         try:budget.refresh_storage(out)
         except F.BudgetExceeded as exc:r.update(status='budget_limited',terminal_budget_reason=str(exc));status='budget_limited'
         r['budget']=budget.receipt();F.write(out/'STAGE.json',r)
-        if status=='complete_finite_neural_stage':seal(out,status)
+        if status=='complete_finite_neural_stage':seal(out,status,budget)
         else:F.write(out/'INCOMPLETE.json',{'status':status,'trials':[{k:q[k] for k in ('trial','arm','seed','grid','status')} for q in results], 'validation_missing_scores':r['validation_missing_scores']})
         return r
     except BaseException as exc:
@@ -420,7 +439,7 @@ def select_anchor(store,count,seed):
     B.require(len(eligible)>=count,'insufficient_trusted_anchor_rows')
     def key(i):
         r=store.identities[i]
-        return hashlib.sha256(A.canonical([F.VERSION,seed,r.source_id,r.source_row,r.observer_id,r.role_id])).digest(),r.source_id,r.source_row
+        return hashlib.sha256(A.canonical([F.ANCHOR_SELECTION_VERSION,seed,r.source_id,r.source_row,r.observer_id,r.role_id])).digest(),r.source_id,r.source_row
     selected=sorted(eligible,key=key)[:count]
     return tuple(store.identities[i] for i in selected)
 
@@ -547,12 +566,14 @@ def run_af(dataset,output,*,synthetic_only=False,anchor_count=2000,seeds=(202611
         r.update(status='complete_finite_af_stage' if all(q['status']=='complete_af_sensitivity_fit' for q in fits) else 'budget_limited' if stop else 'af_stage_with_failed_fits',
            finished_utc=now(),budget=budget.receipt(),peak_process_rss_bytes=F.peak_rss_bytes(),message_counts=dict(ledger.counts),application_bytes=dict(ledger.bytes))
         F.write(out/'STAGE.json',r)
-        if r['status']=='complete_finite_af_stage':seal(out,r['status'])
+        budget.refresh_storage(out,enforce=r['status']=='complete_finite_af_stage')
+        r['budget']=budget.receipt();F.write(out/'STAGE.json',r)
+        if r['status']=='complete_finite_af_stage':seal(out,r['status'],budget)
         else:F.write(out/'INCOMPLETE.json',r)
         return r
     except BaseException as exc:
         coverage()
-        r.update(status='failed_finite_af_stage',error_type=type(exc).__name__,error=str(exc),budget=budget.receipt(),active=progress)
+        r.update(status='budget_limited' if isinstance(exc,F.BudgetExceeded) else 'failed_finite_af_stage',error_type=type(exc).__name__,error=str(exc),budget=budget.receipt(),active=progress)
         F.write(out/'FAILED.json',r);raise
 
 
