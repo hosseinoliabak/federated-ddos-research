@@ -1,0 +1,139 @@
+{
+  "version": "finite-public-source-correspondence-v1",
+  "executed_source_commit": "3c3679dd96adcd788c8b4bac144bb12c7aea61f9",
+  "published_base_commit": "025cd41cbceb62f8a86a6ac7f79ed3cc2b234b7c",
+  "proposed_immutable_tag": "finite-development-v4-20261113",
+  "new_code_and_tests": [
+    {
+      "path": "scripts/finite_development.py",
+      "executed_source_sha256": "486e0f45209ca96b809e919738a7d6bf681c11e5a6bb20cbd3119d830d4c08ca",
+      "integration_sha256": "486e0f45209ca96b809e919738a7d6bf681c11e5a6bb20cbd3119d830d4c08ca",
+      "byte_identical": true
+    },
+    {
+      "path": "scripts/run_finite_development.py",
+      "executed_source_sha256": "7b976a154fccab50f4e5e0d60c627136bff3f6c7fc830a6c383fd360dee8a3dd",
+      "integration_sha256": "7b976a154fccab50f4e5e0d60c627136bff3f6c7fc830a6c383fd360dee8a3dd",
+      "byte_identical": true
+    },
+    {
+      "path": "scripts/train_separability_diagnostic.py",
+      "executed_source_sha256": "bb1864e64cb67fddf001bae7726c7268ab5b127acd4573316bd35cd9591cdbab",
+      "integration_sha256": "bb1864e64cb67fddf001bae7726c7268ab5b127acd4573316bd35cd9591cdbab",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/test_finite_development.py",
+      "executed_source_sha256": "a34eeb0911838c695c3df302bea528adb7aaf461923fafc87a52fead62527f31",
+      "integration_sha256": "a34eeb0911838c695c3df302bea528adb7aaf461923fafc87a52fead62527f31",
+      "byte_identical": true
+    },
+    {
+      "path": "tests/test_separability_diagnostic.py",
+      "executed_source_sha256": "d914e5c00357d563c7f0144f76ae0b93bb335a9ff624b451ef4e617cb137f796",
+      "integration_sha256": "d914e5c00357d563c7f0144f76ae0b93bb335a9ff624b451ef4e617cb137f796",
+      "byte_identical": true
+    }
+  ],
+  "local_import_closure": [
+    {
+      "module": "afbkm_adapter",
+      "path": "scripts/afbkm_adapter.py",
+      "executed_sha256": "f5c7549cd57fd8329295406fe6abdd96accbaa34118d6d35fc2dfd102ed31a6e",
+      "integration_sha256": "f5c7549cd57fd8329295406fe6abdd96accbaa34118d6d35fc2dfd102ed31a6e",
+      "byte_identical": true
+    },
+    {
+      "module": "afbkm_adapter_v2",
+      "path": "scripts/afbkm_adapter_v2.py",
+      "executed_sha256": "6f35b3d685ad761ab56138d380bb6d651d61c89e6560079c830e27be894ecb42",
+      "integration_sha256": "6f35b3d685ad761ab56138d380bb6d651d61c89e6560079c830e27be894ecb42",
+      "byte_identical": true
+    },
+    {
+      "module": "afbkm_wire_v2",
+      "path": "scripts/afbkm_wire_v2.py",
+      "executed_sha256": "be3b913830d029ce559471d879c5b08f1054c043b1cfee4f64caf518ee069dd6",
+      "integration_sha256": "be3b913830d029ce559471d879c5b08f1054c043b1cfee4f64caf518ee069dd6",
+      "byte_identical": true
+    },
+    {
+      "module": "finite_development",
+      "path": "scripts/finite_development.py",
+      "executed_sha256": "486e0f45209ca96b809e919738a7d6bf681c11e5a6bb20cbd3119d830d4c08ca",
+      "integration_sha256": "486e0f45209ca96b809e919738a7d6bf681c11e5a6bb20cbd3119d830d4c08ca",
+      "byte_identical": true
+    },
+    {
+      "module": "flow_metadata",
+      "path": "scripts/flow_metadata.py",
+      "executed_sha256": "b977a82d039870ee1c5e0c8a337afc0deaa09828be06142900b0c881ab9c49f9",
+      "integration_sha256": "b977a82d039870ee1c5e0c8a337afc0deaa09828be06142900b0c881ab9c49f9",
+      "byte_identical": true
+    },
+    {
+      "module": "frozen_model_bundle",
+      "path": "scripts/frozen_model_bundle.py",
+      "executed_sha256": "2239061ea4344ca74fab3b00ec15fb68d1ba84e3d7d7405d1c3fb43f9d1a2bee",
+      "integration_sha256": "c727ea353fa801cd22e47ed2883bcbd031ef52466a99f90ce5f1bb5b245eb610",
+      "byte_identical": false
+    },
+    {
+      "module": "load_grouped_candidate",
+      "path": "scripts/load_grouped_candidate.py",
+      "executed_sha256": "e8be04da5fff1cd608cbd29b585782715e9aaff68e823792f4c665cd545863fa",
+      "integration_sha256": "e8be04da5fff1cd608cbd29b585782715e9aaff68e823792f4c665cd545863fa",
+      "byte_identical": true
+    },
+    {
+      "module": "prepare_grouped_roles",
+      "path": "scripts/prepare_grouped_roles.py",
+      "executed_sha256": "23e707189c19fdf0c742c50b513fe09f75cb8ea3f389f22cd4356ce2c9593b16",
+      "integration_sha256": "23e707189c19fdf0c742c50b513fe09f75cb8ea3f389f22cd4356ce2c9593b16",
+      "byte_identical": true
+    },
+    {
+      "module": "purpose_data_view",
+      "path": "scripts/purpose_data_view.py",
+      "executed_sha256": "59d979cad25eebf33acc11b308292b40c99e3c7c0fddb1e0ed0ae07b84177302",
+      "integration_sha256": "59d979cad25eebf33acc11b308292b40c99e3c7c0fddb1e0ed0ae07b84177302",
+      "byte_identical": true
+    },
+    {
+      "module": "research_workspace",
+      "path": "scripts/research_workspace.py",
+      "executed_sha256": "f30f3224894a51c045a8e9139a6c9b15e28a974042475fc08ce946aa7946e46d",
+      "integration_sha256": "f30f3224894a51c045a8e9139a6c9b15e28a974042475fc08ce946aa7946e46d",
+      "byte_identical": true
+    },
+    {
+      "module": "run_matched_workload",
+      "path": "scripts/run_matched_workload.py",
+      "executed_sha256": "977ca8d3d46af14edc112d9f35a15b33d6abe829939acdaf2e073fb1704c6f6b",
+      "integration_sha256": "977ca8d3d46af14edc112d9f35a15b33d6abe829939acdaf2e073fb1704c6f6b",
+      "byte_identical": true
+    },
+    {
+      "module": "synthetic_workload_fixture",
+      "path": "scripts/synthetic_workload_fixture.py",
+      "executed_sha256": "ebc60561f5689b6330fae838cc33f7a1dd719b49ee5852912732bfd7f083379d",
+      "integration_sha256": "ebc60561f5689b6330fae838cc33f7a1dd719b49ee5852912732bfd7f083379d",
+      "byte_identical": true
+    },
+    {
+      "module": "train_separability_diagnostic",
+      "path": "scripts/train_separability_diagnostic.py",
+      "executed_sha256": "bb1864e64cb67fddf001bae7726c7268ab5b127acd4573316bd35cd9591cdbab",
+      "integration_sha256": "bb1864e64cb67fddf001bae7726c7268ab5b127acd4573316bd35cd9591cdbab",
+      "byte_identical": true
+    },
+    {
+      "module": "workload_messages",
+      "path": "scripts/workload_messages.py",
+      "executed_sha256": "44a549039bb9064d9b22463f155dc5da7aa6368ae2bdb5173b843b656d48b3e6",
+      "integration_sha256": "44a549039bb9064d9b22463f155dc5da7aa6368ae2bdb5173b843b656d48b3e6",
+      "byte_identical": true
+    }
+  ],
+  "scope": "Source correspondence, not evidence of data roles, training correctness, model accuracy or runtime-wide numerical equivalence"
+}

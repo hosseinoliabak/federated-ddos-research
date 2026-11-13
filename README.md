@@ -13,6 +13,29 @@ readiness for a provider network.
 
 ## Project status
 
+### November 13 finite development source integration
+
+The [finite development source guide](docs/finite-development-source-versions.md)
+documents the runner and bounded continuous neural trials, owner-specific and collective
+selectors, a shared-moment comparison, and the AF-BKM-family reference/sensitivity schedule.
+The public command uses constructed records only. It does not open an acquired
+calibration or final-test source.
+
+The four recorded development stages used commit
+[`3c3679dd`](https://github.com/hosseinoliabak/federated-ddos-research/tree/3c3679dd96adcd788c8b4bac144bb12c7aea61f9).
+This integration preserves that version of the new finite and scalar modules,
+along with the later published bundle validation and raw-reference code.
+Use the exact executed commit when citing or reconstructing those historical
+procedures. The integrated tree has a different dependency closure and is not a
+new acquired-data execution. Final classification, live-input equivalence and
+router-laboratory functions remain separate work.
+
+The source guide records the differences and the fabricated integration checks.
+Historical procedure notes keep their original pre-execution scope. Private
+controllers, datasets, fitted model artifacts and manuscripts are not distributed.
+
+### November 12 reusable-code checkpoint
+
 The [November 12 reusable-code checkpoint](docs/checked-preparation-checkpoint.md)
 adds an independent loader audit, purpose-filtered data views, a disclosed
 AF-BKM-family adapter, a matched engineering runner and offline raw-reference
@@ -146,6 +169,8 @@ records are software-test inputs, not traffic measurements or evidence for the t
 uv run python -m unittest discover -s tests -v
 uv run python scripts/engineering_pilot.py --self-test
 uv run python scripts/check_demo.py
+uv run python scripts/train_separability_diagnostic.py --synthetic
+uv run python scripts/run_finite_development.py --synthetic --output /tmp/fddos-finite-v4-new-run
 ```
 
 The checks cover unequal client weighting, grouping, numeric audit behavior,

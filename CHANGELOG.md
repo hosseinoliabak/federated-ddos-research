@@ -1,3 +1,10 @@
+## Unreleased finite development source integration
+
+- Add the exact finite/scalar modules and tests from executed source `3c3679dd`.
+- Preserve the published `025cd41` bundle and raw-reference changes.
+- Document the executed source separately from the integrated runtime closure.
+- Add finite/scalar commands using constructed records without opening acquired calibration or final-test data.
+
 ## Private raw-fragment review candidate
 
 - Preserve VLAN depth when converting a validated datagram to packet metadata; connection keys remain unchanged.

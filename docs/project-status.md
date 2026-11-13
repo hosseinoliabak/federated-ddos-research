@@ -1,6 +1,6 @@
 # Project status
 
-Updated November 12, 2026.
+Updated November 13, 2026.
 
 This repository provides the code and documentation used to prepare the study. The
 [Research hub](https://oliabak.com/research/federated-ddos/) is the continuing project
@@ -9,6 +9,17 @@ proofreading planned after the English manuscript is complete.
 
 Human review of Chapter 1 remains pending. Private review material and the researcher’s
 comments remain outside the public repository.
+
+## November 13 finite development code
+
+The [source-version guide](finite-development-source-versions.md) records the
+bounded finite-development implementation used at commit `3c3679dd`. It also
+distinguishes that executed source from the later integrated public tree. The
+new finite/scalar code is preserved, and existing bundle and raw-reference
+validation remains in place. The integration checks use invented records and
+states; they do not reproduce the private acquired-data runs or establish final
+detection performance. Calibration, final-source eligibility, live-input
+compatibility and laboratory functions remain open.
 
 ## November 12 reusable-code integration
 

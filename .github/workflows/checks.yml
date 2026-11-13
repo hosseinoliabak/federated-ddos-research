@@ -21,3 +21,5 @@ jobs:
       - run: uv run python scripts/engineering_pilot.py --self-test
       - run: uv run python scripts/check_demo.py
       - run: uv run --script scripts/probe_packet_layers.py
+      - run: uv run python scripts/train_separability_diagnostic.py --synthetic
+      - run: uv run python scripts/run_finite_development.py --synthetic --output "$RUNNER_TEMP/finite-synthetic-v4"
