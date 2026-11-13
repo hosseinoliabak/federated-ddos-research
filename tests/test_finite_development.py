@@ -366,6 +366,15 @@ class SyntheticTrialTests(unittest.TestCase):
         def old_key(r):return hashlib.sha256(A.canonical(['finite-development-v2',13,r.source_id,r.source_row,r.observer_id,r.role_id])).digest(),r.source_id,r.source_row
         self.assertEqual(S.select_anchor(store,5,13),tuple(sorted(eligible,key=old_key)[:5]))
 
+    def test_af_round_zero_is_rejected_by_new_scorer_contract(self):
+        store=R.stage(self.ds.supervised_train(1),256,[],'fabricated');ids=S.select_anchor(store,5,13)
+        view=self.ds.trusted_benign_anchor(1,ids,approval_id='fabricated-positive-final-round')
+        anchor=R.stage(view,256,[],'fabricated')
+        batch=R.adapt(anchor,np.arange(len(anchor.X)),D.training_scope(self.ds))
+        initial,_=A.initialize_anchor(batch,A.Parameters(.001,3.,.5,3.),'fabricated-initial-state',trusted_benign=True)
+        self.assertEqual(initial.round_id,0)
+        self.assertRaisesRegex(ValueError,'positive_final_af_round_required',F.freeze_af,self.ds,initial)
+
     def test_af_full_worker_coverage_exact_anchor_exclusion_and_reference(self):
         original=A.summarize
         def no_labels(batch,state):self.assertFalse(hasattr(batch,'y'));return original(batch,state)

@@ -325,6 +325,7 @@ class FrozenAF:
         q=B.loads(self.data);B.keys(q,{'version','schema','input_id','scope','state','state_id','fixed_id','round','recipients'})
         B.require(q['version']=='finite-af-csv-v3' and A.canonical(q)==self.data and
                   B.validate_schema(q['schema'])==q['input_id'] and q['recipients']==list(R.OWNERS),'af_scorer_metadata')
+        B.require(type(q['round']) is int and q['round']>0,'positive_final_af_round_required')
         state=B.decode_final_af(A.canonical(q['state']),expected_state_id=q['state_id'],expected_fixed_id=q['fixed_id'],expected_round=q['round'])
         B.require(state.scope_id==q['scope'],'af_scorer_scope');return q,state
 
