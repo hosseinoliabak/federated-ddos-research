@@ -36,10 +36,15 @@ class BundleTests(unittest.TestCase):
         cls.run_dir=cls.root/'cost'; R.run(cls.dataset,R.PilotConfig(cpu_threads=1),cls.run_dir,synthetic_only=True)
         cls.completed=B.CompletedRun(cls.run_dir,hashlib.sha256((cls.run_dir/'COMPLETE.json').read_bytes()).hexdigest())
         cls.schema=B.csv_schema(cls.dataset.features,cls.dataset.summary['input_sha256']['registry'])
-        cls.recovery=cls.root/'recovery';cls.recovery_id=B.recover_train_transforms(cls.dataset,cls.completed,cls.recovery)
+        cls.locals={};cls.messages={}
+        for owner in R.OWNERS:
+            out=cls.root/('local-recovery-'+str(owner));rid=B.recover_train_transforms(cls.dataset,cls.completed,out,owner=owner)
+            cls.locals[owner]=(out,rid);cls.messages[owner]=B.local_moment_message(out,rid)
+        cls.recovery=cls.root/'recovery';cls.recovery_id=B.merge_train_transforms(cls.completed,cls.messages,cls.recovery)
         cls.bundles={}
         for arm in ['independent_local','pooled_central','fedavg','local_shared_moments','statistical_complete']:
             out=cls.root/('bundle-'+arm);args={} if arm=='statistical_complete' else {'transforms':cls.recovery,'transform_seal':cls.recovery_id}
+            if arm=='independent_local':args={'transforms':cls.locals[1][0],'transform_seal':cls.locals[1][1]}
             bid=B.export_bundle(cls.completed,cls.schema,out,arm=arm,
                 owner=1 if arm in {'independent_local','local_shared_moments'} else 0,**args)
             cls.bundles[arm]=(out,bid)
@@ -110,28 +115,75 @@ class BundleTests(unittest.TestCase):
               patch.object(self.dataset,'scoring',side_effect=AssertionError('heldout forbidden')),
               patch.object(self.dataset,'validation_selection',side_effect=AssertionError('selection forbidden')),
               patch.object(self.dataset,'trusted_benign_anchor',side_effect=AssertionError('anchor fitting forbidden'))):
-            p=self.case/'recovered';bid=B.recover_train_transforms(self.dataset,self.completed,p)
+            p=self.case/'recovered';bid=B.recover_train_transforms(self.dataset,self.completed,p,owner=1)
         values=B.open_seal(p,bid);t=B.loads(values['transforms.json']);receipt=B.loads(values['receipt.json'])
-        original=B.loads((self.recovery/'transforms.json').read_bytes())
-        self.assertEqual(t,original);self.assertEqual(receipt['rows'],self.dataset.summary['rows_by_role']['train'])
-        for v in list(t['owners'].values())+[t['union']]:
+        original=B.loads((self.locals[1][0]/'transforms.json').read_bytes())
+        self.assertEqual(t,original);self.assertEqual(receipt['rows'],original['owners']['1']['count'])
+        for v in t['owners'].values():
             self.assertEqual(v['M2'][-1],0);self.assertEqual(v['denominator'][-1],1)
         self.assertTrue(receipt['reconstruction_compute_not_original_training_time'])
+
+    def test_local_recovery_cannot_request_other_owner_predictors(self):
+        original=self.dataset.unlabeled_train;requested=[]
+        def own_only(owner,**kwargs):
+            requested.append(owner)
+            if owner!=1:raise AssertionError('other owner raw predictors forbidden')
+            return original(owner,**kwargs)
+        out=self.case/'own-only'
+        with patch.object(self.dataset,'unlabeled_train',own_only):
+            rid=B.recover_train_transforms(self.dataset,self.completed,out,owner=1)
+        self.assertEqual(requested,[1]);t=B.loads((out/'transforms.json').read_bytes())
+        self.assertEqual(set(t['owners']),{'1'});self.assertIsNone(t['union'])
+        B.export_bundle(self.completed,self.schema,self.case/'local-bundle',arm='independent_local',owner=1,transforms=out,transform_seal=rid)
+        with self.assertRaises(ValueError):B.export_bundle(self.completed,self.schema,self.case/'wrong-shared',arm='fedavg',transforms=out,transform_seal=rid)
+
+    def test_summary_coordinator_has_no_predictor_access_and_rejects_raw_or_wrong_scope(self):
+        out=self.case/'summary-merge'
+        with patch.object(self.dataset,'unlabeled_train',side_effect=AssertionError('no predictor access')):
+            rid=B.merge_train_transforms(self.completed,self.messages,out)
+        receipt=B.loads((out/'receipt.json').read_bytes())
+        self.assertEqual(receipt['predictor_rows_read'],0)
+        self.assertEqual(receipt['summary_application_bytes'],sum(map(len,self.messages.values())))
+        self.assertEqual(len(receipt['downlinks']),10)
+        self.assertTrue(all(v['numeric_fields']==['mean','denominator'] for v in receipt['downlinks']))
+        messages=dict(self.messages);kind,header,arrays=M.decode(messages[2]);header['scope']='f'*64
+        messages[2]=M.encode(kind,header,arrays)
+        with self.assertRaises(ValueError):B.merge_train_transforms(self.completed,messages,self.case/'bad-merge')
+        failed=B.loads((self.case/'bad-merge/FAILED.json').read_bytes())
+        self.assertEqual(len(failed['summaries']),1)
+        run=self.completed.read();scope=A.TrainingScope(run['candidate_sha256'],run['assignment_sha256'],tuple(run['features']),
+            tuple((q['source_id'],q['sha256']) for q in run['native_sources']))
+        store=R.stage(self.dataset.supervised_train(1),256,[],'fabricated_raw_boundary')
+        messages=dict(self.messages);n=min(256,len(store.X))
+        messages[1]=M.encode('pooled_raw',R.meta(scope,'pooled_central',1,n),R.raw_arrays(store,0,n))
+        with patch.object(M,'decode',side_effect=AssertionError('raw body decoder forbidden')):
+            with self.assertRaisesRegex(ValueError,'forbidden_parameter_frame_kind'):
+                B.merge_train_transforms(self.completed,messages,self.case/'raw-forbidden')
+
+    def test_parameter_kind_gate_rejects_raw_before_body_decoder(self):
+        raw=A.canonical({'version':M.VERSION,'kind':'pooled_raw','meta':{},'blocks':[]})
+        frame=struct.pack('>Q',len(raw))+raw+b'fabricated raw body that must not be decoded'
+        with patch.object(M,'decode',side_effect=AssertionError('body decoder forbidden')):
+            for kind in ['moments','model']:
+                with self.assertRaisesRegex(ValueError,'forbidden_parameter_frame_kind'):
+                    B.decode_parameter_frame(frame,kind)
 
     def test_prepared_array_pins_and_runtime_version_must_match(self):
         run=self.mutant_run(lambda x:x['prepared_array_artifacts']['features.npy'].__setitem__('sha256','f'*64))
         with self.assertRaisesRegex(ValueError,'recovery_scope_mismatch'):
-            B.recover_train_transforms(self.dataset,run,self.case/'bad-recovery')
+            B.recover_train_transforms(self.dataset,run,self.case/'bad-recovery',owner=1)
         p=self.copied_bundle();provenance=B.loads((p/'provenance.json').read_bytes())
         provenance['bundle_code']['torch']='unsupported-version';B.put_json(p/'provenance.json',provenance)
         with self.assertRaisesRegex(ValueError,'unsupported_inference_runtime'):B.load_bundle(p,self.reseal(p))
 
     def test_unequal_counts_owner_merge_full_tails_and_identity_accounting(self):
         t=B.loads((self.recovery/'transforms.json').read_bytes());r=B.loads((self.recovery/'receipt.json').read_bytes())
-        counts=[v['count'] for v in t['owners'].values()]
+        counts=[B.loads((p/'transforms.json').read_bytes())['owners'][str(owner)]['count'] for owner,(p,_) in self.locals.items()]
         self.assertGreater(len(set(counts)),1);self.assertEqual(sum(counts),t['union']['count'])
-        self.assertTrue(any(n%256 for n in counts));self.assertEqual([v['owner'] for v in r['owners']],list(R.OWNERS))
-        self.assertTrue(all(len(v['identity_order_sha256'])==64 for v in r['owners']))
+        self.assertTrue(any(n%256 for n in counts));self.assertEqual([v['owner'] for v in r['summaries']],list(R.OWNERS))
+        for p,_ in self.locals.values():
+            local_receipt=B.loads((p/'receipt.json').read_bytes())
+            self.assertTrue(all(len(v['identity_order_sha256'])==64 for v in local_receipt['owners']))
 
     def test_wrong_recorded_moment_count_and_partition_retains_failures(self):
         changes=[lambda x:x['arms']['independent_local']['local_moment_ids'].__setitem__('2','0'*64),
@@ -140,7 +192,7 @@ class BundleTests(unittest.TestCase):
         for i,change in enumerate(changes):
             sub=self.case/str(i);sub.mkdir();original=self.case;self.case=sub
             run=self.mutant_run(change);out=sub/'recovery'
-            with self.assertRaises(ValueError):B.recover_train_transforms(self.dataset,run,out)
+            with self.assertRaises(ValueError):B.recover_train_transforms(self.dataset,run,out,owner=2)
             f=B.loads((out/'FAILED.json').read_bytes());self.assertEqual(f['status'],'failed_train_transform_recovery')
             self.assertFalse((out/'MANIFEST.json').exists());self.case=original
 
@@ -153,9 +205,9 @@ class BundleTests(unittest.TestCase):
                 else:yield batch
         out=self.case/'bad-recovery'
         with patch.object(PurposeView,'batches',changed),self.assertRaises(ValueError):
-            B.recover_train_transforms(self.dataset,self.completed,out)
-        f=B.loads((out/'FAILED.json').read_bytes());self.assertGreater(f['rows'],0)
-        self.assertEqual(len(f['owners']),1)
+            B.recover_train_transforms(self.dataset,self.completed,out,owner=2)
+        f=B.loads((out/'FAILED.json').read_bytes());self.assertEqual(f['rows'],0)
+        self.assertGreater(f['attempted_rows'],0);self.assertEqual(len(f['owners']),0)
 
     def test_schema_owner_dtype_and_nonfinite_predictor_failures(self):
         s=self.scorer('independent_local');X=np.zeros((2,73),dtype='<f8')

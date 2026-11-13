@@ -14,11 +14,16 @@ def check():
         root=Path(tmp).resolve();ds=prepared_fixture(root/'source',small=True)
         run_dir=root/'cost';R.run(ds,R.PilotConfig(cpu_threads=1),run_dir,synthetic_only=True)
         completed=B.CompletedRun(run_dir,hashlib.sha256((run_dir/'COMPLETE.json').read_bytes()).hexdigest())
-        recovery=root/'recovery';rid=B.recover_train_transforms(ds,completed,recovery)
+        locals={};messages={}
+        for owner in R.OWNERS:
+            out=root/('local-recovery-'+str(owner));seal=B.recover_train_transforms(ds,completed,out,owner=owner)
+            locals[owner]=(out,seal);messages[owner]=B.local_moment_message(out,seal)
+        recovery=root/'recovery';rid=B.merge_train_transforms(completed,messages,recovery)
         schema=B.csv_schema(ds.features,ds.summary['input_sha256']['registry']);results=[]
         for arm in ['independent_local','pooled_central','fedavg','local_shared_moments','statistical_complete']:
             local=arm in {'independent_local','local_shared_moments'}
             options={} if arm=='statistical_complete' else {'transforms':recovery,'transform_seal':rid}
+            if arm=='independent_local':options={'transforms':locals[1][0],'transform_seal':locals[1][1]}
             out=root/arm;bid=B.export_bundle(completed,schema,out,arm=arm,owner=1 if local else 0,**options)
             scorer=B.load_bundle(out,bid)
             view=ds.scoring('validation',1,declaration_id='fabricated-bundle-check',frozen_scorer_id=scorer.scorer_id)

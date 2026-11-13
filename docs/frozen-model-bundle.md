@@ -2,7 +2,7 @@
 
 This candidate exports a self-contained score-only snapshot from a completed
 five-arm engineering run. It reuses the checked weight codec, scaler math,
-MLP constructor, AF state validators and purpose views. It does not establish
+MLP constructor, AF state validators and purpose views. Worker and coordinator recovery are separate interfaces. It does not establish
 physical feature semantics, customer identity, independent episodes, deployment
 readiness or a useful operational FPR.
 
@@ -11,12 +11,17 @@ readiness or a useful operational FPR.
 1. `CompletedRun(directory, complete_sha256)` verifies the pinned completion seal
    and all recorded run artifacts. Dataset/reserved directories are rejected
    before artifact access; this API has no raw-source/test-path argument.
-2. `recover_train_transforms(dataset, completed, output)` requests only named
+2. `recover_train_transforms(dataset, completed, output, owner=...)` requests only that owner's named
    `PurposeDataset.unlabeled_train(owner)` views. It reproduces each owner's
-   original256-row moment blocks and owner1..10 merge order, including every
+   original256-row moment blocks, including every
    tail. Counts, candidate/assignment/prepared-array pins and recorded mean/M2
    digests must match exactly. The sealed result stores mean, M2 and denominator
    values, identities/order digests, extra reads, UTC/monotonic timing and RSS.
+   `merge_train_transforms(completed, messages, output)` accepts only existing
+   validated count/mean/M2 frames from all10owners and merges them in native-owner
+   order. The coordinator has no dataset/view argument or raw-predictor input;
+   recipients receive only mean/denominator frames. Summary/fanout application
+   bytes are recorded separately; no transport timing is claimed.
    A zero TRAIN variance has denominator1; an untrained client is not silently
    exported as a trained model. Failure receipts and partial counts remain.
 3. `export_bundle(...)` copies the checked neural frame and actual transform
@@ -79,3 +84,9 @@ AF-BKM §§4.1–4.4 defines fixed-anchor covariance, label-free worker summarie
 anchor updates. Context7 PyTorch2.13 `load_state_dict`, `eval`, `inference_mode`,
 `random.fork_rng` and sigmoid documentation supports the library calls. Source
 and API retrieval records remain in the private evidence packet.
+
+Owner-local recovery is sufficient for an independent-local bundle; it never
+requests another owner's predictors. The shared transform is reconstructed from
+explicit summaries. This also recovers the numerically identical pooled scaler
+for export, without relabeling the original pooled training raw-data path. The
+implementation is a single-process reference, not a privacy/distribution proof.

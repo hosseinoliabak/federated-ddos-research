@@ -12,6 +12,7 @@ import math
 import os
 import resource
 import stat
+import struct
 import time
 import numpy as np
 import torch
@@ -22,7 +23,7 @@ import run_matched_workload as R
 from purpose_data_view import PurposeDataset, PurposeView, UnlabeledBatch, immutable, observer
 
 VERSION = 'frozen-csv-bundle-v1'
-TRANSFORM_VERSION = 'train-transform-recovery-v1'
+TRANSFORM_VERSION = 'train-transform-recovery-v2-owner-summary'
 SCHEMA_VERSION = 'csv73-unverified-input-v1'
 _LOAD_TOKEN = object()
 MAX_JSON = 2 * 1024 * 1024
@@ -107,7 +108,8 @@ def open_seal(directory, expected, names=None):
         supported = [
             {'scorer.json','input-schema.json','provenance.json','model.bin','preprocessing.json'},
             {'scorer.json','input-schema.json','provenance.json','af-state.json'},
-            {'transforms.json','receipt.json'}]
+            {'transforms.json','receipt.json'},
+            {'transforms.json','receipt.json','moments.bin'}]
         require(set(obj['files']) in supported, 'manifest_files')
     require(set(p.name for p in directory.iterdir()) == set(obj['files']) | {'MANIFEST.json'}, 'extra_artifact')
     result = {}
@@ -146,6 +148,18 @@ class CompletedRun:
         return file_bytes(root_path(self.directory), name)
 
 
+def decode_parameter_frame(data, expected_kind):
+    # Reject a raw/label frame by its bounded header before generic array decode.
+    require(expected_kind in {'model','moments'} and type(data) is bytes and
+            8 <= len(data) <= M.MAX_FRAME, 'parameter_frame_size')
+    n=struct.unpack('>Q',data[:8])[0]
+    require(0<n<=65536 and 8+n<=len(data), 'parameter_frame_header')
+    header=loads(data[8:8+n]);keys(header,{'version','kind','meta','blocks'})
+    require(header['kind']==expected_kind and type(header['blocks']) is list and
+            tuple(q['name'] for q in header['blocks'])==M.BLOCKS[expected_kind], 'forbidden_parameter_frame_kind')
+    return M.decode(data)
+
+
 def transform_payload(moments):
     moments.validate()
     return {'count': moments.count, 'mean': moments.mean.tolist(), 'M2': moments.M2.tolist(),
@@ -163,16 +177,17 @@ def validate_transform(obj, *, trained=True):
     return moments
 
 
-def recover_train_transforms(dataset, completed, output):
+def recover_train_transforms(dataset, completed, output, *, owner):
     """Extra, charged TRAIN-only preprocessing pass. Does not fit/score a detector."""
     require(isinstance(dataset, PurposeDataset) and isinstance(completed, CompletedRun), 'sealed_dataset_and_run_required')
+    observer(owner)
     out = root_path(output, exists=False); out.mkdir(parents=True, exist_ok=False)
     started = time.monotonic(); receipt = {'started_utc': datetime.now(timezone.utc).isoformat(), 'pid': os.getpid(),
         'python': os.sys.version, 'numpy': np.__version__, 'torch': torch.__version__,
         'torch_threads': torch.get_num_threads(), 'source_sha256': sha(Path(__file__).read_bytes()),
         'source_complete_sha256': completed.complete_sha256, 'status': 'running', 'rows': 0, 'attempted_rows': 0, 'owners': [],
         'boundary': 'extra recovery after output creation; includes run verification, TRAIN reads and transform writes, excludes prior dataset opening and original cost run',
-        'held_out_model_operation': False, 'labels_read': False,
+        'held_out_model_operation': False, 'labels_read': False, 'access_scope':'owner_local', 'requested_owner':owner,
         'integrity_byte_reads': 'PurposeDataset seal opening may hash held-out prepared bytes; this fitter requests only unlabeled_train.'}
     try:
         run = completed.read()
@@ -183,7 +198,7 @@ def recover_train_transforms(dataset, completed, output):
                 run['prepared_array_artifacts'] == dataset.summary['artifacts'], 'recovery_scope_mismatch')
         chunk = run['config']['batch_rows']; require(chunk == 256, 'unsupported_recovery_partition')
         union = M.empty_moments(); owners = {}
-        for owner in R.OWNERS:
+        for owner in (owner,):
             tick = time.monotonic(); current = M.empty_moments()
             view = dataset.unlabeled_train(owner)
             require(type(view) is PurposeView and view.purpose == 'unlabeled_train' and
@@ -207,24 +222,81 @@ def recover_train_transforms(dataset, completed, output):
             union = M.merge_moments(union, current)
             receipt['owners'].append({'owner': owner, 'rows': current.count, 'identity_order_sha256': identity_sha,
                                       'seconds': time.monotonic() - tick})
-        obj = transform_payload(union)
-        require(union.count == run['rows_by_role']['train'] == receipt['rows'], 'recovery_count')
-        require(all(obj['moment_id'] == run['arms'][arm]['global_moment_id'] for arm in
-                    ('pooled_central', 'fedavg', 'local_shared_moments')), 'recorded_global_transform_mismatch')
-        payload = {'version': TRANSFORM_VERSION, 'source_complete_sha256': completed.complete_sha256,
+        expected_rows=run['arms']['independent_local']['clients'][owner-1]['training_presentations']
+        require(union.count == expected_rows == receipt['rows'], 'recovery_count')
+        scope=A.TrainingScope(run['candidate_sha256'],run['assignment_sha256'],tuple(run['features']),
+            tuple((q['source_id'],q['sha256']) for q in run['native_sources']))
+        message=M.encode('moments',R.meta(scope,'fedavg',owner,union.count),{'mean':union.mean,'M2':union.M2})
+        (out/'moments.bin').write_bytes(message)
+        receipt.update(application_message_bytes=len(message),message_sha256=sha(message),
+            message_purpose='extra owner-local preprocessing recovery; existing FedAvg moment codec reused; no raw predictor upload')
+        payload = {'version': TRANSFORM_VERSION, 'scope':'owner_local', 'source_complete_sha256': completed.complete_sha256,
                    'candidate_sha256': run['candidate_sha256'], 'assignment_sha256': run['assignment_sha256'],
-                   'features': run['features'], 'batch_rows': chunk, 'owners': owners, 'union': obj}
+                   'features': run['features'], 'batch_rows': chunk, 'owners': owners, 'union': None}
         put_json(out / 'transforms.json', payload)
         receipt.update(status='complete_train_transform_recovery', finished_utc=datetime.now(timezone.utc).isoformat(), elapsed_seconds=time.monotonic() - started,
                        peak_process_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss *
                           (1 if os.sys.platform == 'darwin' else 1024),
                        reconstruction_compute_not_original_training_time=True)
         put_json(out / 'receipt.json', receipt)
-        return seal(out, ['transforms.json', 'receipt.json'])
+        return seal(out, ['transforms.json', 'receipt.json', 'moments.bin'])
     except BaseException as exc:
         receipt.update(status='failed_train_transform_recovery', finished_utc=datetime.now(timezone.utc).isoformat(), elapsed_seconds=time.monotonic() - started,
                        error_type=type(exc).__name__, error=str(exc))
         put_json(out / 'FAILED.json', receipt); raise
+
+
+def local_moment_message(directory, expected_seal):
+    return open_seal(directory,expected_seal,{'transforms.json','receipt.json','moments.bin'})['moments.bin']
+
+
+def merge_train_transforms(completed, messages, output):
+    """Coordinator accepts only whitelisted count/mean/M2 frames, no dataset/view."""
+    require(isinstance(completed,CompletedRun) and type(messages) is dict and
+            set(messages)==set(R.OWNERS), 'all_native_owner_summaries_required')
+    out=root_path(output,exists=False);out.mkdir(parents=True,exist_ok=False)
+    started=time.monotonic();receipt={'status':'running','started_utc':datetime.now(timezone.utc).isoformat(),
+        'source_complete_sha256':completed.complete_sha256,'predictor_rows_read':0,'labels_read':False,
+        'summaries':[],'summary_application_bytes':0,'downlinks':[],
+        'boundary':'extra summary-only merge/serialization after directory creation; no original training time',
+        'transport_latency_or_packets_measured':False}
+    try:
+        run=completed.read();scope=A.TrainingScope(run['candidate_sha256'],run['assignment_sha256'],
+            tuple(run['features']),tuple((q['source_id'],q['sha256']) for q in run['native_sources']))
+        union=M.empty_moments()
+        for owner in R.OWNERS:
+            frame=messages[owner];kind,header,arrays=decode_parameter_frame(frame,'moments')
+            require(kind=='moments' and header==R.meta(scope,'fedavg',owner,header['count']), 'summary_recovery_scope')
+            local=M.Moments(header['count'],arrays['mean'],arrays['M2'])
+            expected=run['arms']['independent_local']
+            require(local.count==expected['clients'][owner-1]['training_presentations'] and
+                A.digest([local.mean.tolist(),local.M2.tolist()])==expected['local_moment_ids'][str(owner)], 'summary_recovery_count_or_digest')
+            union=M.merge_moments(union,local)
+            receipt['summary_application_bytes']+=len(frame)
+            receipt['summaries'].append({'owner':owner,'count':local.count,'bytes':len(frame),'sha256':sha(frame)})
+        obj=transform_payload(union)
+        require(union.count==run['rows_by_role']['train'] and all(obj['moment_id']==run['arms'][arm]['global_moment_id']
+            for arm in ('pooled_central','fedavg','local_shared_moments')), 'recorded_global_transform_mismatch')
+        for owner in R.OWNERS:
+            frame=M.encode('transform',R.meta(scope,'fedavg',0,union.count),
+                {'mean':union.mean,'denominator':M.denominator(union)})
+            _,_,arrays=M.decode(frame)
+            require(np.array_equal(arrays['mean'],union.mean) and
+                np.array_equal(arrays['denominator'],M.denominator(union)), 'transform_recipient_mismatch')
+            receipt['downlinks'].append({'recipient':owner,'bytes':len(frame),'sha256':sha(frame),
+                'numeric_fields':['mean','denominator']})
+        payload={'version':TRANSFORM_VERSION,'scope':'summary_only','source_complete_sha256':completed.complete_sha256,
+            'candidate_sha256':run['candidate_sha256'],'assignment_sha256':run['assignment_sha256'],
+            'features':run['features'],'batch_rows':256,'owners':{},'union':obj}
+        put_json(out/'transforms.json',payload)
+        receipt.update(status='complete_summary_only_transform_recovery',finished_utc=datetime.now(timezone.utc).isoformat(),
+            elapsed_seconds=time.monotonic()-started,downlink_application_bytes=sum(q['bytes'] for q in receipt['downlinks']))
+        put_json(out/'receipt.json',receipt)
+        return seal(out,['transforms.json','receipt.json'])
+    except BaseException as exc:
+        receipt.update(status='failed_summary_only_transform_recovery',finished_utc=datetime.now(timezone.utc).isoformat(),
+            elapsed_seconds=time.monotonic()-started,error_type=type(exc).__name__,error=str(exc))
+        put_json(out/'FAILED.json',receipt);raise
 
 
 def csv_schema(features, registry_sha256):
@@ -285,13 +357,18 @@ def export_bundle(completed, schema, output, *, arm, owner=0, transforms=None, t
                 tuple((q['source_id'], q['sha256']) for q in run['native_sources'])).scope_id}
     files = {'input-schema.json': A.canonical(schema)}
     if meta['family'] == 'neural':
-        values = open_seal(transforms, transform_seal, {'transforms.json', 'receipt.json'})
+        values = open_seal(transforms, transform_seal)
         t = loads(values['transforms.json'])
-        keys(t, {'version', 'source_complete_sha256', 'candidate_sha256', 'assignment_sha256', 'features', 'batch_rows', 'owners', 'union'})
+        keys(t, {'version', 'source_complete_sha256', 'candidate_sha256', 'assignment_sha256', 'features', 'batch_rows', 'owners', 'union','scope'})
         require(t['version'] == TRANSFORM_VERSION and t['source_complete_sha256'] == completed.complete_sha256 and
                 t['features'] == run['features'] and t['candidate_sha256'] == run['candidate_sha256'] and
                 t['assignment_sha256'] == run['assignment_sha256'] and t['batch_rows'] == 256, 'recovered_transform_scope')
-        transform = t['owners'][str(owner)] if arm == 'independent_local' else t['union']
+        if arm=='independent_local':
+            require(t['scope']=='owner_local' and set(t['owners'])=={str(owner)} and t['union'] is None, 'owner_local_transform_required')
+            transform=t['owners'][str(owner)]
+        else:
+            require(t['scope']=='summary_only' and t['owners']=={} and t['union'] is not None, 'summary_only_transform_required')
+            transform=t['union']
         validate_transform(transform)
         expected_count = (run['arms'][arm]['clients'][owner - 1]['training_presentations']
                           if arm == 'independent_local' else run['rows_by_role']['train'])
@@ -300,7 +377,7 @@ def export_bundle(completed, schema, output, *, arm, owner=0, transforms=None, t
                     else run['arms'][arm]['global_moment_id'])
         require(transform['moment_id'] == expected, 'export_transform_digest')
         name = f'{arm}-owner{owner}.bin' if local else f'{arm}-final.bin'
-        payload = completed.checkpoint(name); kind, header, arrays = M.decode(payload)
+        payload = completed.checkpoint(name); kind, header, arrays = decode_parameter_frame(payload,'model')
         expected_model = (run['arms'][arm]['clients'][owner - 1]['final_state_id'] if local
                           else run['arms'][arm]['final_state_id'])
         require(kind == 'model' and header['arm'] == arm and header['owner'] == owner and
@@ -363,7 +440,7 @@ class FrozenScorer:
                 predictors.ndim == 2 and predictors.shape[1] == 73 and 1 <= len(predictors) <= 10000 and
                 bool(np.isfinite(predictors).all()), 'scoring_predictors')
         if meta['family'] == 'neural':
-            _, _, arrays = M.decode(self._payload); transform = loads(self._transform)
+            _, _, arrays = decode_parameter_frame(self._payload,'model'); transform = loads(self._transform)
             validate_transform(transform)
             x = M.standardize(predictors, np.asarray(transform['mean'], dtype='<f8'),
                               np.asarray(transform['denominator'], dtype='<f8'))
@@ -430,7 +507,7 @@ def load_bundle(directory, expected_bundle_id):
         require(meta['arm'] in ARMS and meta['architecture'] == 'linear73_relu16_linear1' and
                 meta['numeric_rule'] == 'float64_standardize_then_float32_logit_sigmoid', 'neural_architecture')
         integer(meta['training_count'],1); hex_id(meta['initial_model_id'])
-        kind, header, arrays = M.decode(files['model.bin']); t = loads(files['preprocessing.json']); validate_transform(t)
+        kind, header, arrays = decode_parameter_frame(files['model.bin'],'model'); t = loads(files['preprocessing.json']); validate_transform(t)
         require(kind == 'model' and header['arm'] == meta['arm'] and header['owner'] == meta['model_owner'] and
                 header['round'] == 1 and header['schema'] == meta['feature_order_id'] and
                 header['scope'] == meta['training_scope_id'] and header['count'] == meta['training_count'] and
