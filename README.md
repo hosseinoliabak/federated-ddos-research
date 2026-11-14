@@ -13,6 +13,14 @@ readiness for a provider network.
 
 ## Project status
 
+The [current project status](docs/project-status.md) records an executed frozen
+comparison, a separate common two-counter flow-meter and training pilot, and a
+finite native trained-inference check. The common-feature pilot retained an
+unfavorable fixed-decision finding. These bounded observations establish no
+causal federated-learning advantage, operational detection or scalability.
+Reusable publication of the new engines remains pending a checked extraction
+that excludes private models, data and execution records.
+
 ### November 13 finite development source integration
 
 The [finite development source guide](docs/finite-development-source-versions.md)
@@ -141,7 +149,8 @@ migration is claimed.
 | Training check | Run a small feedforward detector with local SGD or Adam and model averaging | Available; one seed and three rounds |
 | Portable engineering bundles | Preserve model inputs and weights for offline transfer | Available; destination validation pending |
 | Lean verification | Check three aggregation lemmas and five scoped algebra/recording statements | Available; see the formal project |
-| QiML training and controlled network lab | Evaluate the proposed treatment and deployment conditions | Planned |
+| QiML training | Evaluate the proposed numerical treatment | Numerical specification and implementation pending |
+| Native trained-inference pilot | Check the constructed forwarding, metering, inference and collector path | Finite synthetic-probe check executed; public packaging pending |
 
 ## Install
 
@@ -260,8 +269,8 @@ performance comparison is interpreted. Record changes in a new run configuration
 preserve the earlier evidence. The current script is intentionally a bounded reference;
 it is not yet a general optimizer plug-in framework.
 
-The next work is to verify source-data feasibility, complete human review of Chapter 1,
-and freeze the bounded evaluation protocol. The optional Sellier-inspired branch still
+The next work is to close the remaining source-validity, observation-policy and workload
+gates, reconcile the executed evidence, and complete human manuscript review. The optional Sellier-inspired branch still
 requires a numerical specification. Any live-lab measurements require separate
 functional checks; a constructed topology does not establish capture or detector
 readiness. The [contribution guide](CONTRIBUTING.md) describes how to add code, tests,

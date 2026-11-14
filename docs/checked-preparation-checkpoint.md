@@ -1,5 +1,10 @@
 # Checked reusable preparation, November 12, 2026
 
+This is the historical November 12 preparation record. The [current project
+status](project-status.md#november-14-executed-evidence-checkpoint) distinguishes
+the later executed comparisons and finite native functional check. Their new
+implementations are not silently attributed to this earlier integration.
+
 This integration makes the checked preparation and engineering tools available
 without publishing datasets, fitted models, private execution receipts or thesis
 drafts. It adds no acquired-data experiment and reports no final detector

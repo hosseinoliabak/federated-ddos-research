@@ -1,6 +1,6 @@
 # Project status
 
-Updated November 13, 2026.
+Updated November 14, 2026.
 
 This repository provides the code and documentation used to prepare the study. The
 [Research hub](https://oliabak.com/research/federated-ddos/) is the continuing project
@@ -9,6 +9,16 @@ proofreading planned after the English manuscript is complete.
 
 Human review of Chapter 1 remains pending. Private review material and the researcher’s
 comments remain outside the public repository.
+
+## November 14 executed evidence checkpoint
+
+A frozen comparison has been executed under recorded development settings. Its interpretation remains qualified by data roles and source limitations. A separate common-feature pilot used packet and octet counts from the same flow meter for independent local, pooled-central and federated training. Under its fixed decision rule, the learned arms and the count baseline produced no positive alerts. This unfavorable finding remains part of the record; it does not establish a causal advantage for federated learning.
+
+A separate finite native check used synthetic probes with a trained model inside the border-router process. It verified the constructed forwarding, flow-meter, local-inference and collector-input path. This functional check does not establish operational DDoS detection, scalability, proprietary router compatibility or networked federated training. It also does not validate the separate CSV feature profile.
+
+Paired observation-policy experiments, representative workloads, source validity and broader evaluation remain open. Human manuscript reading and acceptance remain separate gates, followed by French translation and proofreading. The next work is to close the specific evidence and reporting gaps without changing the recorded unfavorable finding.
+
+The exact common-feature and native implementations remain outside the public code release. Reusable packaging is pending a bounded public-source extraction and clean-checkout check that excludes models, data and private execution records. Existing public code links retain their historical scope.
 
 ## November 13 finite development code
 
@@ -252,16 +262,19 @@ generalization, an optimizer speedup, or deployment readiness. See the
 
 ## Remaining research gates
 
+The bounded executions above close their stated checks only. The broader gates
+below remain open where those checks do not supply the required evidence.
+
 1. Complete human review of Chapter 1 and reconcile its comments. Keep the
    working questions, contribution limits, and affected chapters consistent with
    the strongest relevant prior work.
 2. Establish eligible data, capture and ownership provenance, and fitting,
    calibration, and evaluation roles. The final evaluation split remains
    unresolved.
-3. Freeze a bounded comparison protocol with explicit information access,
-   preprocessing, tuning budgets, uncertainty units, and failure accounting
-   before interpreting the main experiments.
-4. Run the selected comparisons and preserve exact code, configuration, source
+3. Predeclare any remaining experiment with explicit information access,
+   preprocessing, tuning budgets, uncertainty units and failure accounting.
+   Preserve the completed frozen comparisons and their development boundaries.
+4. Complete the remaining comparisons and preserve exact code, configuration, source
    hashes, timing boundaries, and unsuccessful attempts. Specify and verify any
    Sellier-inspired training treatment before comparing it with SGD and Adam.
    No QiML numerical engine is currently claimed.
