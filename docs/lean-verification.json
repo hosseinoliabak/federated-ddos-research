@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-10-31T18:12:27.375768+00:00",
+  "checked_at_utc": "2026-11-15T20:09:14.449231+00:00",
   "lean": "Lean (version 4.35.0, arm64-apple-darwin24.6.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
   "lake": "Lake version 5.0.0-src+eb6cafb (Lean version 4.35.0)",
   "build": "passed",
@@ -43,17 +43,955 @@
       "Classical.choice",
       "Quot.sound",
       "propext"
+    ],
+    "ThesisVerification.Foundations.sigmoid_between": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.sigmoid_strictMono": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.logit_threshold_iff_sigmoid_threshold": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.bce_closed_form": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.bce_eq_logloss": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.hasDerivAt_bce": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.hasDerivAt_bce_coordinate": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.hasDerivAt_objective_coordinate": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.bce_convex": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.lrObjective_convex": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.parameter_counts": [
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.sampling_miss_single_packet": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.sgd_step_descent_scalar": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.adam_moment_constant": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.adam_bias_correction_constant": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.fed_objective_eq_pooled": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.fed_objective_common_penalty": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.fedavg_mem_convexHull": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.flow_alert_iff_fragment_alert": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.flow_alert_antitone": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.alert_rate_antitone": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.sorted_exceed_count_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.order_statistic_exceed_count_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.rank_bounds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.calibration_empirical_fpr_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.violationBound_zero": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.violationBound_antitone": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.violationBound_top": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.exists_rank_iff_pow_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.pow_le_iff_sample_size": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.sample_size_299_arithmetic": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.min_sample_size_299": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.rank_299_example": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.order_statistic_mem_lower_iff": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.aliasing_pointwise": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.aliasing_score_multiset": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.aliasing_equal_alert_rates": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.aliasing_constant_all_or_none": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.aliasing_equal_alert_probability": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Foundations.aliasing_syn_udp_example": [],
+    "ThesisVerification.Sampling.patternWeight_eq": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.patternWeight_sum_one": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.patternWeight_nonneg": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.deletion_probability": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.only_one_packet_retained": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.first_packet_only": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.retained_count_binomial": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.some_packet_retained": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.selection_threshold_quarter": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.quarter_sampling_instances": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.alert_rate_on_key_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.recall_ceiling": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.single_key_recall_ceiling": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.all_mass_one_key_recall_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.deterministic_no_alert_on_heavy_key": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.deterministic_recall_ceiling": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.Sampling.identical_key_same_decision": [],
+    "ThesisVerification.SamplingFlow.unit_max_no_alert_on_heavy_keys": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.SamplingFlow.unit_max_recall_zero_record_fpr": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.SamplingFlow.unit_fpr_no_alert_on_carried_key": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.SamplingFlow.unit_max_recall_zero_unit_fpr": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.SamplingFlow.pure_unit_aggregate_eq": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.SamplingFlow.unit_mean_between_min_and_max": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.SamplingFlow.unit_aggregate_recall_zero_on_pure_key": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.sum_prod_ite": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.selWeight_test": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.selWeight_sum_one": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.selWeight_eq": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.selWeight_nonneg": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.selWeight_eq_patternWeight": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.prob_all_selected": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.prob_none_selected": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.prob_selected": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.prob_pair_selected": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.selected_sum_eq_indicator": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.weighted_selected_mean": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.weighted_selected_sq": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.count_law": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.binomPMF_eq_pattern_sum": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.binomPMF_sum_one": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.binomPMF_mean": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.binomPMF_second_moment": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.binomPMF_rescaled_second_moment": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p1_conditional_unbiased": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p1_unbiased_finite": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p1_unbiased": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p1_quarter": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p1_weighted_unbiased": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p1_packets_times_four": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p1_bytes_times_four": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p1_syn_times_four": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p2_conditional_variance": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p2_quarter_variance": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p2_cv_quarter": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p2_cv_bounds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p2_weighted_variance": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p2_weighted_variance_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p2_weighted_quarter": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p2_bytes_cv_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p3_total_variance_finite": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p3_total_variance": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p3_quarter": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p3_overdispersed_quarter": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p3_numbers": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.hasSum_of_shift": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.choose_geometric_hasSum": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.real_exp_hasSum": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.nbPMF_hasSum_one": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.thinned_nb_series": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p4_thinned_nb": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p4_planning_case": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p4_planning_q": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.poissonPMF_hasSum_one": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p5_thinned_poisson": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.sum_finset_sum_type": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.selWeight_disjSum": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p5_selected_total": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p5_two_groups_independent": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.binomPMF_point": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p5_two_groups_joint_mass": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p5_selected_counts_independent": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p6a_host_unseen": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p6a_quarter": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p6b_expected_distinct": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p6b_expected_distinct_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p6b_expected_distinct_lt": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p6c_no_constant_factor": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p6c_constant_at_one": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p6c_quarter_instances": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p6d_source_seen": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p6d_expected_distinct": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p6d_expected_distinct_before": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p6d_disjoint_sources": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p7_rank_bounds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p7a_exceed_count_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p7a_rank_rule": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p7b_exceeds_iff": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p7b_rank_count_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p7b_rank_count_eq": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p7b_last_belowCount": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.belowCount_comp_perm": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p7b_event_iff": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p7b_symmetry": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p7b_exchangeable_le": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p7b_exchangeable_eq": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p7_numbers": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.fmean_const_mul": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.fmean_sum": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.fcov_self": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p8_mean": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p8_variance": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p9a_design_effect": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p9b_conditional_iid_covariance": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p9b_implied_correlation": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p9_numbers": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.poissonPMF_mean": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.poissonPMF_centered": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p10_mixed_poisson_mean": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p10_mixed_poisson_covariance": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p10_shared_component_covariance": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p10_numbers": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p11_not_both": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p11_support_excludes": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p11_against_excludes": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p11_above_zero_excludes": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p11_verdicts": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p11_error_bound_finite": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p11_corollary_finite": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p11_error_bound_measure": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p11_corollary_measure": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p12_standardize_scale": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p12_scaled_mean": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p12_scaled_sd": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p12_local_standardization": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.nbPMF_tail": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.nb_p0_partial_sum": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.nb_pS_partial_sum": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.n_threshold_p0": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.n_threshold_pS": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.n_frozen_threshold_fpr": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.nb_series_mean_core": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.nb_series_fact2_core": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.nbPMF_mean": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.nbPMF_fact2": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.nbPMF_variance": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p3_planning_case": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p5_planning_case": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "ThesisVerification.ControlledDesign.p9a_design_effect_matrix": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
     ]
   },
   "sha256": {
     "lean-toolchain": "ca5f1f601d34c49079e38d7e7041eb0f2a9c227fbc1df0f404820069a052330c",
     "lakefile.toml": "7b2ce907653045cb0f8a1fa52f09ad0a1d8a93f3129078cb74040b22d0389126",
     "lake-manifest.json": "ca812bee4a36f0a6d07946a77149c5ff585d3765ef331c329c91fdb744dade5d",
-    "ThesisVerification.lean": "3033d0c6d02a484e2c3313d2635e110f0d0573d0592e287612d46bdbe85d1a0c",
+    "ThesisVerification.lean": "af7754b81248da6c01b4ea7642b744aa47f7899e6c50e2a710e14a9195eb6733",
     "ThesisVerification/Aggregation.lean": "f6f38a2f9403feed64569e07ec0b481a9f250fd21a7cfa65ba0a862428d36cc6",
     "ThesisVerification/Sellier.lean": "b80ffdd3b066727b4de7387ecd7ae083937469de1bf04f66c51e5ef8db09779a",
-    "check_proofs.py": "6e29be532ffd95f1baba1bdacc6a74fdfc006e63fa48f026223452d9fc04160c",
-    "sellier-source-map.json": "4d4ae515a0620ac500c7d59dd169e466035dc618c54bef073971d3156f019690"
+    "ThesisVerification/Foundations.lean": "20c6af36e8dd4385e3042eb067376e0715a667b43def3aa1c7f5bec17b29d150",
+    "ThesisVerification/Sampling.lean": "ce8ac154e4b6dca04eb33f356cb9d0120d649d6c882eb1276fa5481a53c9f4ba",
+    "ThesisVerification/SamplingFlow.lean": "5434542f4ebd785064f47a5f874f3e3edab9cfaed6d74524ebb121988cd889e2",
+    "ThesisVerification/ControlledDesign.lean": "f8c6c5bd459fb2d9f5860cb64ccb866602637e4d2e5d2eb3296248642e8f347f",
+    "check_proofs.py": "56f29ea8a351cc634cc39db753503cd0bf58115cb27dd0b07cbcad1acca59635",
+    "sellier-source-map.json": "9005936c8f58b3cc7ec8be4173dc6bb122ed6ad26cff8eff8d50da79da3c878f",
+    "foundations-source-map.json": "0dc18b016778ef24a7d6784ee354618e2b9f638615355fe526876289e2b268f3",
+    "sampling-source-map.json": "d1dab83852d7f1b828b5e81c09cdc4545603c51147183edbe8338dabf458aa7c",
+    "design-source-map.json": "c153cc4544309ea59181bcd603eaaad0cc6c9a8bc947efccba684e0957c8e49d"
   },
-  "scope": "Three normalized-weighting lemmas plus five Sellier-specific pointwise algebra and recording checks. No PDE existence, FDTD stability, implementation, global convergence, privacy, detection or runtime claim."
+  "scope": "Three normalized-weighting lemmas, five Sellier-specific pointwise algebra and recording checks, and forty Chapter 2 checks (logistic loss and its derivative and convexity, Adam bias correction for a constant input, the federated objective and FedAvg weights, the flow-score maximum, the order-statistic threshold, the violation-bound arithmetic, and two-counter aliasing), and seventeen checks for the RQ2 sampling analysis (the product weight of independent packet selection with its deletion, single-packet and binomial retained-count probabilities, the one-quarter selection threshold, and the recall ceilings for decision rules on keys shared by attack and benign records), and seven checks for the flow-level corollary of that ceiling (a deterministic rule on the maximum per-record score, or on an aggregate between the smallest and the largest per-record score, alerts on no flow or episode whose records all lie on keys that benign traffic carries with mass above the false-positive budget), and 124 checks for propositions P1 to P12 of the controlled-study design v2.1 (unbiasedness and variance of rescaled counts under independent selection, thinning of the negative binomial law with integer size and of the Poisson law, distinct source hosts under selection, the rank-rule threshold and its exchangeable false-positive rate on a finite sample space, the paired alert difference, the design effect of a cluster mean, the covariance of mixed Poisson counts with a shared rate component, the logic of the interval decision rules, standardization under a common scale factor, and the threshold probabilities of NB(5, 40) and NB(5, 10) certified with exact rationals). Exact real-number, finite-combinatorial, and convergent-series statements, with one statement for a general probability measure (the P11 corollary). The probabilistic guarantee of Tong et al. Proposition 1 is not formalized. The sampling checks do not establish that the implemented HMAC-SHA256 selector behaves as independent selection, do not model the flow meter, and use no measured count. The design checks do not formalize the sum of two Gamma variables, the Poisson-Gamma mixture, the Gamma variance, or the negative binomial law with a non-integer size, and they treat the keyed selector as independent selection without proving it. No PDE existence, FDTD stability, implementation, floating-point, global convergence, privacy, detection or runtime claim."
 }

@@ -1,6 +1,6 @@
 # Project status
 
-Updated November 14, 2026.
+Updated November 15, 2026.
 
 This repository provides the code and documentation used to prepare the study. The
 [Research hub](https://oliabak.com/research/federated-ddos/) is the continuing project
@@ -9,6 +9,12 @@ proofreading planned after the English manuscript is complete.
 
 Human review of Chapter 1 remains pending. Private review material and the researcher’s
 comments remain outside the public repository.
+
+## November 15 controlled study design and formal checks
+
+A new controlled laboratory study has been designed and frozen before any build, traffic or data. The [design record](controlled-study-v2.1/README.md) states its hypotheses, safety caps, gates and analysis rules. The study is separate from the earlier controlled track, whose pre-registered gate stopped it; that result stays reported unchanged. No laboratory component of the new study has been built or started.
+
+The [Lean project](../formal-verification/README.md) now holds 196 checked theorems, including 124 for the design propositions. The [verification record](lean-verification.json) shows a passing build with standard axioms only. These checks cover the stated mathematics within their recorded limits; they do not establish detection performance or the effect of sampling, which remain open until the study is run.
 
 ## November 14 executed evidence checkpoint
 

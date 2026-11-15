@@ -1,0 +1,238 @@
+{
+  "source": {
+    "document": "Thesis Chapter 2, Conceptual and Mathematical Foundations",
+    "file": "reports/development-preparation/thesis-completion-2026-11-12/resume-work-20261114-v5/claude-takeover-20261114-v1/ch2-v8/02-foundations.tex",
+    "file_sha256": "e87c4eacd12614382ce7cc8a5344bcdc79fe387e3397947c30aa1fa282b70b36",
+    "locator_convention": "Section label, equation label, and line number in the .tex source. Equation numbers (2.1)-(2.12) follow the order of the equation labels. No typeset page numbers were available.",
+    "design_argument_file": "reports/development-preparation/thesis-completion-2026-11-12/resume-work-20261114-v5/claude-takeover-20261114-v1/rq4-g1/RQ4-INPUT-W-ROOT-DECISION-20261114.json",
+    "design_argument_sha256": "b489bd87bce3f808f0bb1a1202a5800a8ee91cb0ecde58d764683265a6d4b89f",
+    "cited_sources_opened": false,
+    "cited_sources_note": "Bottou et al. (2018), Kingma and Ba (2015), McMahan et al. (2017), and Tong et al. (FullReviewR068) were not opened for this check. The theorems concern the chapter's own equations and claims, not the accuracy of its citations."
+  },
+  "formal_scope": "Exact real-number and finite-combinatorial statements about the chapter's equations. Vectors are modeled by coordinates or by finite index types. No floating-point behaviour, implementation, convergence, probabilistic guarantee, or detection result is established.",
+  "transcriptions": {
+    "eq:ch2-logistic (2.1), line 87": "z = v^T x + b,  sigma(z) = 1 / (1 + e^{-z})",
+    "eq:ch2-bce (2.2), line 94": "l(w; x, y) = -y log sigma(z) - (1 - y) log(1 - sigma(z))",
+    "eq:ch2-objective (2.3), line 99": "F(w) = (1/n) sum_{i=1}^{n} l(w; x_i, y_i) + (lambda/2) ||w||_2^2",
+    "eq:ch2-mlp (2.4), line 106": "h = tanh(V x + c),  z = u^T h + b",
+    "eq:ch2-sgd (2.5), line 117": "w_t = w_{t-1} - eta g_t",
+    "eq:ch2-adam-moments (2.6), lines 124-125": "m_t = beta_1 m_{t-1} + (1 - beta_1) g_t,  v_t = beta_2 v_{t-1} + (1 - beta_2) g_t^2,  m_0 = v_0 = 0,  beta_1, beta_2 in [0,1)",
+    "eq:ch2-adam-update (2.7), lines 130-132": "m^_t = m_t / (1 - beta_1^t),  v^_t = v_t / (1 - beta_2^t),  w_t = w_{t-1} - eta m^_t / (sqrt(v^_t) + epsilon)",
+    "eq:ch2-fed-objective (2.8), lines 145-146": "f(w) = sum_{k=1}^{K} (n_k/n) F_k(w),  F_k(w) = (1/n_k) sum_{i in P_k} f_i(w),  n = sum_k n_k",
+    "eq:ch2-fedavg (2.9), line 153": "w_{t+1} = sum_{k=1}^{K} (n_k/n) w_{t+1}^k",
+    "eq:ch2-measures (2.10), lines 176-178": "recall = TP/(TP+FN),  FPR = FP/(FP+TN),  precision = TP/(TP+FP)",
+    "eq:ch2-threshold (2.11), line 185": "tau = T_(k),  k = max(1, ceil((1 - alpha) n)),  T_(1) <= ... <= T_(n) ordered benign calibration flow scores",
+    "eq:ch2-violation (2.12), line 192": "v(k) = sum_{j=k}^{n} C(n,j) (1 - alpha)^j alpha^{n-j}"
+  },
+  "mapping": {
+    "sigmoid_between": {
+      "source": "Section 2.3 (sec:ch2-models), text after eq:ch2-logistic, line 90: 'sigma(z) lies between 0 and 1'",
+      "meaning": "0 < sigma(z) < 1 for every real z.",
+      "assumptions": "None."
+    },
+    "sigmoid_strictMono": {
+      "source": "Section 2.3, line 111: 'Because sigma is an increasing function'",
+      "meaning": "sigma is strictly increasing.",
+      "assumptions": "None."
+    },
+    "logit_threshold_iff_sigmoid_threshold": {
+      "source": "Section 2.3, line 111: 'comparing z with a threshold gives the same decisions as comparing sigma(z) with the corresponding threshold'",
+      "meaning": "tau < z if and only if sigma(tau) < sigma(z).",
+      "assumptions": "The corresponding threshold is sigma(tau). Strict comparison, as in the alert rule S > tau."
+    },
+    "bce_closed_form": {
+      "source": "eq:ch2-bce (2.2), line 94",
+      "meaning": "The loss of (2.2) equals (1 - y) z + log(1 + e^{-z}) for every real y and z.",
+      "assumptions": "None. Supporting identity, not stated in the chapter."
+    },
+    "bce_eq_logloss": {
+      "source": "Section 2.3, text after eq:ch2-bce, line 97: 'Equation (2.2) equals log(1 + e^{-y~ z})' with y~ = 2y - 1",
+      "meaning": "For y = 0 or y = 1, the loss of (2.2) equals log(1 + exp(-(2y - 1) z)).",
+      "assumptions": "y in {0, 1}."
+    },
+    "hasDerivAt_bce": {
+      "source": "eq:ch2-logistic (2.1) and eq:ch2-bce (2.2)",
+      "meaning": "The derivative of the loss of (2.2) with respect to the logit z is sigma(z) - y.",
+      "assumptions": "Any real y. The chapter does not print this derivative; it is the fact that back propagation (line 109) relies on."
+    },
+    "hasDerivAt_bce_coordinate": {
+      "source": "eq:ch2-logistic (2.1) and eq:ch2-bce (2.2)",
+      "meaning": "If the logit depends on one parameter t as a t + c, the loss has derivative (sigma(z) - y) a. With a = x_j this is the derivative for weight v_j; with a = 1 it is the derivative for the bias b.",
+      "assumptions": "All other parameters are held fixed and collected in c."
+    },
+    "hasDerivAt_objective_coordinate": {
+      "source": "eq:ch2-objective (2.3), line 99",
+      "meaning": "The partial derivative of F along one parameter t is (1/n) sum_i (sigma(z_i) - y_i) a_i + pen t, where z_i = a_i t + c_i.",
+      "assumptions": "pen = lambda for a penalized parameter and 0 for an unpenalized one, because the chapter defers the set of penalized parameters to Chapter 3. r is the sum of the other squared parameters. Division by n uses the real-field convention when n = 0."
+    },
+    "bce_convex": {
+      "source": "Section 2.3, line 102: 'For logistic regression, this objective is convex'",
+      "meaning": "The loss of (2.2) is a convex function of the logit, for every real label value.",
+      "assumptions": "None."
+    },
+    "lrObjective_convex": {
+      "source": "eq:ch2-objective (2.3) and line 102: 'For logistic regression, this objective is convex'",
+      "meaning": "For logistic regression, F of (2.3) is convex in (v, b) jointly.",
+      "assumptions": "lambda >= 0. The penalty covers every parameter, as (2.3) is printed. Any finite number of records and inputs. Strict or strong convexity is not claimed."
+    },
+    "parameter_counts": {
+      "source": "Section 2.2, lines 62-70 (d = 14 inputs in six groups); Section 2.3, lines 90 and 109 (d + 1, 8d + 17, LR15, MLP129, LR3, MLP33)",
+      "meaning": "8d + 8 + 8 + 1 = 8d + 17; 14 + 1 = 15; 8*14 + 17 = 129; 2 + 1 = 3; 8*2 + 17 = 33; 2 + 1 + 1 + 6 + 2 + 2 = 14.",
+      "assumptions": "Natural-number arithmetic only."
+    },
+    "sampling_miss_single_packet": {
+      "source": "Section 2.2, line 77: 'missed entirely with probability (1 - p)^m, which is 0.75 for a single-packet flow at p = 1/4'",
+      "meaning": "(1 - 1/4)^1 = 0.75.",
+      "assumptions": "Arithmetic only. The independent-selection model that gives (1 - p)^m is the chapter's premise and is not formalized."
+    },
+    "sgd_step_descent_scalar": {
+      "source": "eq:ch2-sgd (2.5), line 117: 'moves the parameters against the gradient'",
+      "meaning": "For a scalar parameter, eta -> F(w - eta g) has derivative -g^2 <= 0 at eta = 0 when g is the derivative of F at w. The minus sign in (2.5) is the descent direction.",
+      "assumptions": "One coordinate, exact derivative of the same function. No claim for a minibatch gradient, which line 120 correctly says need not lower F."
+    },
+    "adam_moment_constant": {
+      "source": "eq:ch2-adam-moments (2.6), lines 124-128",
+      "meaning": "With m_0 = 0 and a constant input c, the moving average is m_t = (1 - beta^t) c.",
+      "assumptions": "One coordinate. Applies to both averages: input g for m_t and input g^2 for v_t."
+    },
+    "adam_bias_correction_constant": {
+      "source": "eq:ch2-adam-update (2.7), lines 130-132, and line 128: 'Adam corrects this bias before the update'",
+      "meaning": "For a constant input c, m_t / (1 - beta^t) = c for every t >= 1 and beta in [0, 1).",
+      "assumptions": "t >= 1, 0 <= beta < 1, one coordinate, constant input. Not a statement about stochastic gradients."
+    },
+    "fed_objective_eq_pooled": {
+      "source": "eq:ch2-fed-objective (2.8), lines 145-146, and line 160: 'Pooled training and FedAvg address the same objective'",
+      "meaning": "sum_k (n_k/n) F_k equals the average of f_i over the union of the client record sets.",
+      "assumptions": "The record sets P_k are pairwise disjoint; n_k = |P_k| and n = sum_k n_k. Empty client sets are allowed. f_i is the per-record loss at one fixed parameter value."
+    },
+    "fed_objective_common_penalty": {
+      "source": "eq:ch2-objective (2.3) with eq:ch2-fed-objective (2.8)",
+      "meaning": "If every local objective carries the same penalty term, the weighted sum carries exactly that term once.",
+      "assumptions": "Total weight nonzero. Covers the case in which F_k includes the L2 penalty of (2.3), which (2.8) leaves implicit."
+    },
+    "fedavg_mem_convexHull": {
+      "source": "eq:ch2-fedavg (2.9), line 153",
+      "meaning": "The aggregate with weights n_k/n is a convex combination: it lies in the convex hull of the client parameter vectors. It uses the existing lemmas that the weights are nonnegative and sum to one.",
+      "assumptions": "n = sum_k n_k > 0, any real vector space, every client participates (as line 156 states)."
+    },
+    "flow_alert_iff_fragment_alert": {
+      "source": "Section 2.7 (sec:ch2-threshold), line 174: flow score is the maximum of the fragment scores; alert when S > tau; 'a flow is flagged when any of its fragments would be'",
+      "meaning": "tau < max of fragment scores if and only if some fragment score exceeds tau.",
+      "assumptions": "A flow has at least one fragment. Strict inequality, as printed."
+    },
+    "flow_alert_antitone": {
+      "source": "Section 2.7, line 174 (alert rule S > tau)",
+      "meaning": "A flow alerted at tau' is alerted at every tau <= tau'.",
+      "assumptions": "Same flow score at both thresholds."
+    },
+    "alert_rate_antitone": {
+      "source": "Section 2.7, eq:ch2-measures (2.10), line 181: 'Raising tau cannot increase either' (v8.4; v8.3 read 'lowers both', which holds only weakly)",
+      "meaning": "In any fixed finite set of flows, the fraction with S > tau does not increase when tau increases. Applied to the attack flows this is recall, and to the benign flows the FPR.",
+      "assumptions": "The scores do not depend on tau. The result is weak monotonicity; a strict decrease is not guaranteed."
+    },
+    "sorted_exceed_count_le": {
+      "source": "eq:ch2-threshold (2.11), line 188: 'At most n - k ... calibration scores exceed tau'",
+      "meaning": "For ordered scores T_(1) <= ... <= T_(n), at most n - k scores are strictly greater than T_(k).",
+      "assumptions": "k = i + 1 for a zero-based index i < n. Ties are allowed."
+    },
+    "order_statistic_exceed_count_le": {
+      "source": "eq:ch2-threshold (2.11), line 188",
+      "meaning": "The same bound for scores given in any order, with T_(k) obtained by sorting.",
+      "assumptions": "Finite list of real scores; ties allowed."
+    },
+    "rank_bounds": {
+      "source": "eq:ch2-threshold (2.11), lines 185 and 188: 'n - k <= alpha n'",
+      "meaning": "With k = max(1, ceil((1 - alpha) n)): 1 <= k <= n and n - k <= alpha n.",
+      "assumptions": "alpha >= 0 and n >= 1. Exact real arithmetic."
+    },
+    "calibration_empirical_fpr_le": {
+      "source": "eq:ch2-threshold (2.11), line 188: 'the empirical FPR on the calibration flows is at most alpha'",
+      "meaning": "With tau = T_(k) and k from (2.11), the fraction of calibration scores strictly greater than tau is at most alpha.",
+      "assumptions": "alpha >= 0, n >= 1, alert rule S > tau. The index-validity hypothesis follows from rank_bounds. Deterministic statement about the calibration sample only."
+    },
+    "violationBound_zero": {
+      "source": "eq:ch2-violation (2.12), line 192",
+      "meaning": "v(0) = 1: the summands are the complete binomial distribution with success probability 1 - alpha.",
+      "assumptions": "None. Consistency check of the printed summand."
+    },
+    "violationBound_antitone": {
+      "source": "eq:ch2-violation (2.12) and line 195: 'the smallest rank k with v(k) <= delta'",
+      "meaning": "v(k) does not increase as k grows.",
+      "assumptions": "0 <= alpha <= 1."
+    },
+    "violationBound_top": {
+      "source": "eq:ch2-violation (2.12), line 192",
+      "meaning": "v(n) = (1 - alpha)^n.",
+      "assumptions": "None."
+    },
+    "exists_rank_iff_pow_le": {
+      "source": "Section 2.7, line 195: a rank with v(k) <= delta 'requires at least n >= log delta / log(1 - alpha) benign scores'",
+      "meaning": "A rank k in 1..n with v(k) <= delta exists if and only if (1 - alpha)^n <= delta.",
+      "assumptions": "0 <= alpha <= 1, n >= 1."
+    },
+    "pow_le_iff_sample_size": {
+      "source": "Section 2.7, line 195: 'n >= log delta / log(1 - alpha)'",
+      "meaning": "(1 - alpha)^n <= delta if and only if n >= log delta / log(1 - alpha).",
+      "assumptions": "0 < alpha < 1 and delta > 0."
+    },
+    "sample_size_299_arithmetic": {
+      "source": "Section 2.7, line 195: 'With alpha = 0.01 and, for example, delta = 0.05, at least 299 benign flows are required'",
+      "meaning": "0.99^299 <= 0.05 < 0.99^298.",
+      "assumptions": "Exact rational arithmetic."
+    },
+    "min_sample_size_299": {
+      "source": "Section 2.7, line 195: 'at least 299 benign flows are required'",
+      "meaning": "For alpha = 0.01 and delta = 0.05, a rank k in 1..n with v(k) <= delta exists if and only if n >= 299.",
+      "assumptions": "v is the printed bound (2.12). Whether v bounds the violation probability is Tong et al. Proposition 1, which is not formalized."
+    },
+    "rank_299_example": {
+      "source": "Section 2.7, line 195: the required rank 'is generally higher than the rank in Equation (2.11)'",
+      "meaning": "At n = 299, alpha = 0.01, delta = 0.05: (2.11) gives k = 297, v(297) > 0.05, v(298) > 0.05, and v(299) <= 0.05, so the required rank is 299.",
+      "assumptions": "One worked instance of 'generally higher'; not a statement for every n."
+    },
+    "order_statistic_mem_lower_iff": {
+      "source": "eq:ch2-violation (2.12), the argument behind Proposition 1 of Tong et al. as cited at line 190",
+      "meaning": "For a downward-closed set A of scores, T_(k) lies in A if and only if at least k of the n scores lie in A. With A the set of thresholds whose population FPR exceeds alpha, this turns the violation event into a count event.",
+      "assumptions": "Deterministic step only. The steps that the count is binomial for an i.i.d. sample, that its success probability is at most 1 - alpha, and that the binomial tail is monotone in that probability are not formalized."
+    },
+    "aliasing_pointwise": {
+      "source": "Section 2.2 (sec:ch2-flow-records), line 58: 'a model that receives only the two counters cannot tell them apart'",
+      "meaning": "Two records with equal (packetDeltaCount, octetDeltaCount) receive the same score from every function of the two counters.",
+      "assumptions": "The model reads the two counters only."
+    },
+    "aliasing_syn_udp_example": {
+      "source": "Section 2.2, line 58 (single 60-octet TCP SYN and single 60-octet UDP datagram); RQ4-INPUT-W-ROOT-DECISION-20261114.json, field 'finding'",
+      "meaning": "20 + 20 + 20 = 60 and 20 + 8 + 32 = 60, so both records have the counter pair (1, 60).",
+      "assumptions": "IPv4 header of 20 octets without options, TCP header of 20 octets with 20 option octets, UDP header of 8 octets with 32 payload octets, as the decision file states. This theorem needs no axioms."
+    },
+    "aliasing_score_multiset": {
+      "source": "Section 2.2, line 58; RQ4-INPUT-W-ROOT-DECISION-20261114.json, field 'finding'",
+      "meaning": "If two flow classes have the same multiset of counter values, every classifier that is a function of the counters gives both the same multiset of scores.",
+      "assumptions": "Finite multisets of flows; any counter type; any score function, including a trained LR3 or MLP33."
+    },
+    "aliasing_equal_alert_rates": {
+      "source": "RQ4-INPUT-W-ROOT-DECISION-20261114.json, field 'finding': 'separability under the two-counter input is impossible by construction'",
+      "meaning": "Under the same hypothesis, every threshold alerts the same fraction of both classes, so the true-positive rate equals the false-positive rate.",
+      "assumptions": "Equal counter multisets, which also makes the class sizes equal."
+    },
+    "aliasing_constant_all_or_none": {
+      "source": "RQ4-INPUT-W-ROOT-DECISION-20261114.json, field 'finding' (both mechanisms map to the single point (1, 60))",
+      "meaning": "If every flow of both classes has the same counter value, a threshold alerts either every flow of both classes or none.",
+      "assumptions": "Class sizes may differ. Applies to the matched design only while every record of both mechanisms is exactly (1, 60); sampling or timeouts that change the counters are outside this statement."
+    },
+    "aliasing_equal_alert_probability": {
+      "source": "RQ4-INPUT-W-ROOT-DECISION-20261114.json, field 'finding'",
+      "meaning": "Measure form: if the counters have the same distribution under two flow distributions, every counter-based classifier alerts with the same probability under both, at every threshold.",
+      "assumptions": "Measurable counter map and measurable alert set."
+    }
+  },
+  "not_formalized": {
+    "tong_proposition_1": "The probabilistic claim cited at line 190, that v(k) bounds the probability that the classifier S > T_(k) has population type I error above alpha, is not formalized. It needs an i.i.d. sample model, the distribution of order statistics, and monotonicity of the binomial tail. The chapter attributes it to the cited source and does not claim it for flow data.",
+    "eq:ch2-mlp (2.4)": "Only the parameter count is checked. Nonconvexity and back propagation are not formalized.",
+    "eq:ch2-sgd (2.5) and Adam (2.6)-(2.7) in vector form": "Checked by reading against the standard forms. The formal checks cover one coordinate and a constant input.",
+    "eq:ch2-measures (2.10)": "Definitions; only the monotonicity remark after them is formalized.",
+    "sampling probability (1 - p)^m": "Only the numerical instance is checked.",
+    "floating point": "The rank in (2.11) is checked in exact arithmetic. A floating-point evaluation of ceil((1 - alpha) n) is an implementation matter."
+  },
+  "finding_status": "No mathematical error was found in equations (2.1)-(2.12) or in the claims attached to them. Remarks on notation and wording are recorded in README.md."
+}

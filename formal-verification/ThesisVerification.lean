@@ -2,3 +2,7 @@ module
 
 public import ThesisVerification.Aggregation
 public import ThesisVerification.Sellier
+public import ThesisVerification.Foundations
+public import ThesisVerification.Sampling
+public import ThesisVerification.SamplingFlow
+public import ThesisVerification.ControlledDesign

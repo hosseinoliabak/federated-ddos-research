@@ -1,0 +1,662 @@
+{
+  "source": {
+    "document": "Propositions for the Lean check (controlled-study design v2.1)",
+    "file": "reports/development-preparation/thesis-completion-2026-11-12/resume-work-20261114-v5/claude-takeover-20261114-v1/option3-design-20261115/PROPOSITIONS-FOR-LEAN.v2.1.md",
+    "file_sha256": "834227af06dd9256ff67469f5b30abd825d2a808ee50689c01d5da8f4efb13b4",
+    "locator_convention": "Proposition labels P1 to P12 and the rows of the table 'Numeric results only' of the propositions file. 'Tool' marks a lemma that the file does not state and that the proofs use. 'Notation' marks the laws named in the notation paragraph.",
+    "numbers_note": "No theorem uses a measured count. The planning numbers (benign mean 40, size 5, selection probability 1/4, 60 windows, correlation 0.05) enter only the theorems marked [N] and the planning cases."
+  },
+  "formal_scope": "Exact real-number, finite-combinatorial, and convergent-series statements. Independent packet selection is the product weight selWeight on sets of selected packets of a finite packet set. A count on the natural numbers is described by its mass function, and an expectation over it is an unconditional sum (HasSum). Other random variables live on a finite sample space with real weights. The P11 corollary is also stated for a general probability measure. No pseudorandom-function assumption is proved, no measured data is used, and no learned model is concerned.",
+  "transcriptions": {
+    "Notation, binomial": "P(S = s | N = n) = C(n, s) p^s (1 - p)^(n - s)",
+    "Notation, negative binomial": "P(N = n) = Gamma(k + n)/(n! Gamma(k)) (k/(k + mu))^k (mu/(k + mu))^n; for integer k the coefficient is C(n + k - 1, k - 1), which is the form of nbPMF",
+    "Notation, Poisson": "P(A = a) = exp(-lambda) lambda^a / a!",
+    "P1": "E[S/p | N] = N; E[S/p] = E[N]; E[(1/p) sum w_i I_i] = sum w_i",
+    "P2": "Var(S/p | N = n) = n(1 - p)/p; Var((1/p) sum w_i I_i) = ((1 - p)/p) sum w_i^2 <= ((1 - p)/p) b_max sum w_i",
+    "P3": "Var(S/p) = Var(N) + ((1 - p)/p) E[N]; Var(4S) = 4 mu + phi mu^2",
+    "P4": "N ~ NB(k, mu), S | N ~ Binomial(N, p) implies S ~ NB(k, p mu)",
+    "P5": "A ~ Poisson(lambda), S_A | A ~ Binomial(A, p) implies S_A ~ Poisson(p lambda); S_B and S_A independent",
+    "P6": "P(host unseen) = (1 - p)^k; E[distinct] = sum_s (1 - (1 - p)^(k_s)); no constant correction; n(1 - exp(-p Lambda/n))",
+    "P7": "#{i : x_i > t} <= n - r <= n/100 with r = ceil(0.99 n); P(X_(n+1) > t) = (n - r + 1)/(n + 1)",
+    "P8": "E[D] = p10 - p01; Var(D) = p10 + p01 - (p10 - p01)^2",
+    "P9": "Var((1/m) sum D_i) = (sigma^2/m)(1 + (m - 1) rho); Cov(D_i, D_j) = Var(E[D_1 | U])",
+    "P10": "Gamma(a, theta) + Gamma(k - a, theta) = Gamma(k, theta); Poisson-Gamma mixture is NB(k, k theta); Cov(N_1, N_2) = Var(U) = a theta^2",
+    "P11": "interval logic and the error bounds of the three verdicts under coverage 1 - alpha",
+    "P12": "(c x - c m)/(c s) = (x - m)/s"
+  },
+  "mapping": {
+    "sum_prod_ite": {
+      "source": "Tool",
+      "meaning": "The sum over all subsets T of a product whose factor at i is a_i when i is in T and b_i otherwise equals the product of (a_i + b_i).",
+      "assumptions": "Finite index type."
+    },
+    "selWeight_test": {
+      "source": "Tool (independence)",
+      "meaning": "Under independent selection the expectation of a product of per-packet factors is the product of the per-packet expectations p x_i + (1 - p) y_i.",
+      "assumptions": "Independent selection (the product weight selWeight). Any real p."
+    },
+    "selWeight_sum_one": {
+      "source": "Tool",
+      "meaning": "The selection weights of all subsets add up to 1.",
+      "assumptions": "Any real p."
+    },
+    "selWeight_eq": {
+      "source": "Tool",
+      "meaning": "The weight of a pattern T is p^|T| (1 - p)^(n - |T|).",
+      "assumptions": "Any real p."
+    },
+    "selWeight_nonneg": {
+      "source": "Tool",
+      "meaning": "Every selection weight is nonnegative, so with selWeight_sum_one the weights are a probability distribution.",
+      "assumptions": "0 <= p <= 1."
+    },
+    "selWeight_eq_patternWeight": {
+      "source": "Tool (link to Sampling.lean)",
+      "meaning": "On packets indexed by Fin n, selWeight equals Sampling.patternWeight.",
+      "assumptions": "Any real p."
+    },
+    "prob_all_selected": {
+      "source": "Tool",
+      "meaning": "All packets of a set A are selected with probability p^|A|.",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "prob_none_selected": {
+      "source": "Tool; P6 (a)",
+      "meaning": "No packet of a set A is selected with probability (1 - p)^|A|.",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "prob_selected": {
+      "source": "Tool",
+      "meaning": "One given packet is selected with probability p.",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "prob_pair_selected": {
+      "source": "Tool",
+      "meaning": "Two different packets are both selected with probability p^2.",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "selected_sum_eq_indicator": {
+      "source": "Tool",
+      "meaning": "The sum of w over the selected packets equals the sum over all packets of w_i times the selection indicator.",
+      "assumptions": "None."
+    },
+    "weighted_selected_mean": {
+      "source": "Tool; P1 weighted form",
+      "meaning": "E[sum_i w_i I_i] = p sum_i w_i.",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "weighted_selected_sq": {
+      "source": "Tool; P2 weighted form",
+      "meaning": "E[(sum_i w_i I_i)^2] = p sum w_i^2 + p^2 ((sum w_i)^2 - sum w_i^2).",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "count_law": {
+      "source": "Tool",
+      "meaning": "The number of selected packets is binomial: the expectation of g(|T|) is the sum of g against the binomial mass function.",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "binomPMF_eq_pattern_sum": {
+      "source": "Tool (link to Sampling.lean)",
+      "meaning": "binomPMF n p s is the total pattern weight of the patterns with exactly s selected packets (Sampling.retained_count_binomial).",
+      "assumptions": "Any real p."
+    },
+    "binomPMF_sum_one": {
+      "source": "Tool",
+      "meaning": "The binomial masses add up to 1.",
+      "assumptions": "Any real p."
+    },
+    "binomPMF_mean": {
+      "source": "Tool",
+      "meaning": "E[S | N = n] = n p.",
+      "assumptions": "Any real p."
+    },
+    "binomPMF_second_moment": {
+      "source": "Tool",
+      "meaning": "E[S^2 | N = n] = n p (1 - p) + (n p)^2.",
+      "assumptions": "Any real p."
+    },
+    "binomPMF_rescaled_second_moment": {
+      "source": "Tool; P2 and P3",
+      "meaning": "E[(S/p - c)^2 | N = n] = n (1 - p)/p + (n - c)^2 for any centre c.",
+      "assumptions": "p != 0."
+    },
+    "p1_conditional_unbiased": {
+      "source": "P1, statement",
+      "meaning": "E[S/p | N = n] = n.",
+      "assumptions": "S | N = n is Binomial(n, p); p != 0."
+    },
+    "p1_unbiased_finite": {
+      "source": "P1, statement",
+      "meaning": "E[S/p] = E[N] for a count N with finite support.",
+      "assumptions": "p != 0. f n is the mass of N = n."
+    },
+    "p1_unbiased": {
+      "source": "P1, statement",
+      "meaning": "E[S/p] = E[N] for any count N on the natural numbers with a finite mean. E[S/p] is the sum over n of P(N = n) E[S/p | N = n].",
+      "assumptions": "p != 0; the mean of N exists as an unconditional sum."
+    },
+    "p1_quarter": {
+      "source": "P1, statement",
+      "meaning": "At p = 1/4, E[4S] = E[N].",
+      "assumptions": "As p1_unbiased."
+    },
+    "p1_weighted_unbiased": {
+      "source": "P1, weighted form",
+      "meaning": "E[(1/p) sum_i w_i I_i] = sum_i w_i for fixed real weights.",
+      "assumptions": "Independent selection (the product weight selWeight). p != 0. Nonnegativity of the weights is not needed."
+    },
+    "p1_packets_times_four": {
+      "source": "P1, cited use",
+      "meaning": "Packets x4 is unbiased at p = 1/4.",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "p1_bytes_times_four": {
+      "source": "P1, cited use",
+      "meaning": "Bytes x4 is unbiased at p = 1/4 for any packet sizes.",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "p1_syn_times_four": {
+      "source": "P1, cited use",
+      "meaning": "SYN x4 is unbiased at p = 1/4.",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "p2_conditional_variance": {
+      "source": "P2, statement",
+      "meaning": "Var(S/p | N = n) = n (1 - p)/p.",
+      "assumptions": "p != 0. The centre n is the conditional mean by p1_conditional_unbiased."
+    },
+    "p2_quarter_variance": {
+      "source": "P2, statement",
+      "meaning": "Var(4S | N = n) = 3n at p = 1/4.",
+      "assumptions": "None."
+    },
+    "p2_cv_quarter": {
+      "source": "P2, statement",
+      "meaning": "sqrt(3n)/n = sqrt(3/n): the coefficient of variation of 4S given N = n.",
+      "assumptions": "n > 0."
+    },
+    "p2_cv_bounds": {
+      "source": "P2, statement",
+      "meaning": "n >= 300 gives sqrt(3/n) <= 0.1 and n >= 1200 gives sqrt(3/n) <= 0.05.",
+      "assumptions": "None."
+    },
+    "p2_weighted_variance": {
+      "source": "P2, weighted form",
+      "meaning": "Var((1/p) sum w_i I_i) = ((1 - p)/p) sum w_i^2.",
+      "assumptions": "Independent selection (the product weight selWeight). p != 0."
+    },
+    "p2_weighted_variance_le": {
+      "source": "P2, weighted form",
+      "meaning": "The variance is at most ((1 - p)/p) b_max sum w_i.",
+      "assumptions": "0 < p <= 1 and 0 <= w_i <= b_max."
+    },
+    "p2_weighted_quarter": {
+      "source": "P2, weighted form",
+      "meaning": "At p = 1/4 the variance is 3 sum w_i^2, at most 3 b_max sum w_i.",
+      "assumptions": "0 <= w_i <= b_max."
+    },
+    "p2_bytes_cv_le": {
+      "source": "P2, weighted form",
+      "meaning": "The coefficient of variation of the byte estimator at p = 1/4 is at most sqrt(3/n) sqrt(b_max/b_avg).",
+      "assumptions": "0 <= w_i <= b_max and a positive total."
+    },
+    "p3_total_variance_finite": {
+      "source": "P3, statement",
+      "meaning": "For N with finite support: E[(S/p - c)^2] = E[(N - c)^2] + ((1 - p)/p) E[N], for any centre c.",
+      "assumptions": "p != 0."
+    },
+    "p3_total_variance": {
+      "source": "P3, statement",
+      "meaning": "Var(S/p) = Var(N) + ((1 - p)/p) E[N] for any count N on the natural numbers with mean mu and variance v.",
+      "assumptions": "p != 0; mean and variance exist as unconditional sums. The centre mu is the mean of S/p by p1_unbiased."
+    },
+    "p3_quarter": {
+      "source": "P3, statement",
+      "meaning": "Var(4S) = Var(N) + 3 E[N] at p = 1/4.",
+      "assumptions": "As p3_total_variance."
+    },
+    "p3_overdispersed_quarter": {
+      "source": "P3, corollary",
+      "meaning": "If Var(N) = mu + phi mu^2 then Var(4S) = 4 mu + phi mu^2.",
+      "assumptions": "As p3_total_variance."
+    },
+    "p3_numbers": {
+      "source": "P3, numbers [N]",
+      "meaning": "40 + 0.2 * 40^2 = 360 and 4 * 40 + 0.2 * 40^2 = 480.",
+      "assumptions": "None."
+    },
+    "hasSum_of_shift": {
+      "source": "Tool",
+      "meaning": "A series whose first s terms vanish has the sum of its shifted series.",
+      "assumptions": "None."
+    },
+    "choose_geometric_hasSum": {
+      "source": "Tool",
+      "meaning": "sum_m C(m + K, K) x^m = (1 - x)^(-(K + 1)) for 0 <= x < 1.",
+      "assumptions": "0 <= x < 1."
+    },
+    "real_exp_hasSum": {
+      "source": "Tool",
+      "meaning": "sum_n x^n / n! = exp(x).",
+      "assumptions": "None."
+    },
+    "nbPMF_hasSum_one": {
+      "source": "Notation",
+      "meaning": "The NB(k, mu) masses add up to 1.",
+      "assumptions": "Integer size k >= 1, mu > 0."
+    },
+    "thinned_nb_series": {
+      "source": "P4, statement",
+      "meaning": "The series identity behind P4 with success probability kappa/(kappa + mu) for any real kappa > 0 and exponent K + 1.",
+      "assumptions": "mu > 0, 0 < p <= 1."
+    },
+    "p4_thinned_nb": {
+      "source": "P4, statement",
+      "meaning": "If N is NB(k, mu) and S | N = n is Binomial(n, p), then S is NB(k, p mu): the mass of S = s is the sum over n of P(N = n) P(S = s | N = n).",
+      "assumptions": "Integer size k >= 1 only; mu > 0; 0 < p <= 1."
+    },
+    "p4_planning_case": {
+      "source": "P4, cited use",
+      "meaning": "NB(5, 40) sampled at p = 1/4 is NB(5, 10).",
+      "assumptions": "None."
+    },
+    "p4_planning_q": {
+      "source": "P4, integer size",
+      "meaning": "q = 5/45 = 1/9 for mean 40 and q = 5/15 = 1/3 for mean 10.",
+      "assumptions": "None."
+    },
+    "poissonPMF_hasSum_one": {
+      "source": "Notation",
+      "meaning": "The Poisson masses add up to 1.",
+      "assumptions": "Any real lambda."
+    },
+    "p5_thinned_poisson": {
+      "source": "P5, statement",
+      "meaning": "If A is Poisson(lambda) and S_A | A = a is Binomial(a, p), then S_A is Poisson(p lambda).",
+      "assumptions": "Any real lambda and p (the identity is algebraic)."
+    },
+    "sum_finset_sum_type": {
+      "source": "Tool",
+      "meaning": "A sum over subsets of a disjoint union of two packet groups is a double sum over subsets of each group.",
+      "assumptions": "Finite types."
+    },
+    "selWeight_disjSum": {
+      "source": "Tool",
+      "meaning": "The selection weight of two groups is the product of the weights of the groups.",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "p5_selected_total": {
+      "source": "P5, statement",
+      "meaning": "The number selected from the B + A packets equals S_B + S_A.",
+      "assumptions": "None."
+    },
+    "p5_two_groups_independent": {
+      "source": "P5, statement",
+      "meaning": "Given the two counts, E[g(S_B) h(S_A)] is the product of the two binomial expectations.",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "binomPMF_point": {
+      "source": "Tool",
+      "meaning": "The binomial mass is the expectation of a point indicator.",
+      "assumptions": "None."
+    },
+    "p5_two_groups_joint_mass": {
+      "source": "P5, statement",
+      "meaning": "Given B = b and A = a, P(S_B = i, S_A = j) is the product of the two binomial masses.",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "p5_selected_counts_independent": {
+      "source": "P5, statement",
+      "meaning": "For independent counts B and A, the joint mass of (S_B = i, S_A = j), summed over a and then b, is the product of the marginal masses.",
+      "assumptions": "The marginal masses exist as unconditional sums. Independence of B and A is the product form fB b * fA a."
+    },
+    "p6a_host_unseen": {
+      "source": "P6 (a)",
+      "meaning": "A host with k packets in the bin has none selected with probability (1 - p)^k.",
+      "assumptions": "Independent selection (the product weight selWeight)."
+    },
+    "p6a_quarter": {
+      "source": "P6 (a)",
+      "meaning": "(1 - 1/4)^k = (3/4)^k.",
+      "assumptions": "None."
+    },
+    "p6b_expected_distinct": {
+      "source": "P6 (b)",
+      "meaning": "The expected number of distinct hosts seen after selection is sum_s (1 - (1 - p)^(k_s)).",
+      "assumptions": "Independent selection (the product weight selWeight). Finite sets of packets and hosts."
+    },
+    "p6b_expected_distinct_le": {
+      "source": "P6 (b)",
+      "meaning": "The expected number is at most the number of hosts with k_s >= 1.",
+      "assumptions": "p <= 1."
+    },
+    "p6b_expected_distinct_lt": {
+      "source": "P6 (b)",
+      "meaning": "The expected number is strictly smaller when p < 1 and some host has a packet.",
+      "assumptions": "p < 1."
+    },
+    "p6c_no_constant_factor": {
+      "source": "P6 (c)",
+      "meaning": "For p != 1 there is no real c with c sum_s (1 - (1 - p)^(k_s)) = #{s : k_s >= 1} for every configuration.",
+      "assumptions": "p != 1; at least one host."
+    },
+    "p6c_constant_at_one": {
+      "source": "P6 (c), boundary",
+      "meaning": "At p = 1 the constant c = 1 is exact for every configuration, so P6 (c) needs p < 1.",
+      "assumptions": "None."
+    },
+    "p6c_quarter_instances": {
+      "source": "P6 (c)",
+      "meaning": "At p = 1/4, n hosts with one packet each need c = 4 and n hosts with two packets each need c = 16/7.",
+      "assumptions": "n >= 1."
+    },
+    "p6d_source_seen": {
+      "source": "P6 (d)",
+      "meaning": "A source that emits a Poisson(lambda) number of packets is seen after selection with probability 1 - exp(-p lambda).",
+      "assumptions": "Per-packet independent selection given the count."
+    },
+    "p6d_expected_distinct": {
+      "source": "P6 (d)",
+      "meaning": "With n sources of rate Lambda/n each, the sum over the sources of the probability of being seen is n (1 - exp(-p Lambda/n)).",
+      "assumptions": "The expected distinct count is taken as the sum of the per-source probabilities; the joint law of the sources is not modeled."
+    },
+    "p6d_expected_distinct_before": {
+      "source": "P6 (d)",
+      "meaning": "Before selection the sum is n (1 - exp(-Lambda/n)).",
+      "assumptions": "As p6d_expected_distinct."
+    },
+    "p6d_disjoint_sources": {
+      "source": "P6 (d)",
+      "meaning": "If the hosts of two packet sets are disjoint, the distinct count of the union is the sum of the two distinct counts.",
+      "assumptions": "None."
+    },
+    "p7_rank_bounds": {
+      "source": "P7 (a)",
+      "meaning": "For n >= 1 and r = ceil(0.99 n): 1 <= r <= n and n - r <= n/100.",
+      "assumptions": "n >= 1."
+    },
+    "p7a_exceed_count_le": {
+      "source": "P7 (a)",
+      "meaning": "At most n - r scores exceed the r-th smallest score (Foundations.order_statistic_exceed_count_le).",
+      "assumptions": "1 <= r <= n."
+    },
+    "p7a_rank_rule": {
+      "source": "P7 (a)",
+      "meaning": "With r = ceil(0.99 n), at most n/100 scores exceed the threshold.",
+      "assumptions": "n >= 1."
+    },
+    "p7b_exceeds_iff": {
+      "source": "P7 (b)",
+      "meaning": "A value exceeds the r-th smallest of n scores exactly when at least r scores are strictly below it (Foundations.order_statistic_mem_lower_iff).",
+      "assumptions": "1 <= r <= n."
+    },
+    "p7b_rank_count_le": {
+      "source": "P7 (b)",
+      "meaning": "Among m values at most m - r have at least r values strictly below them. Ties allowed.",
+      "assumptions": "None."
+    },
+    "p7b_rank_count_eq": {
+      "source": "P7 (b)",
+      "meaning": "Among m distinct values exactly m - r have at least r values strictly below them.",
+      "assumptions": "Distinct values."
+    },
+    "p7b_last_belowCount": {
+      "source": "P7 (b)",
+      "meaning": "The below-count of the last entry counts the first n entries only.",
+      "assumptions": "None."
+    },
+    "belowCount_comp_perm": {
+      "source": "P7 (b)",
+      "meaning": "Reordering the entries moves the below-counts with them.",
+      "assumptions": "None."
+    },
+    "p7b_event_iff": {
+      "source": "P7 (b)",
+      "meaning": "The event X_(n+1) > t, with t the r-th smallest of X_1..X_n, is the event that at least r values lie strictly below X_(n+1).",
+      "assumptions": "1 <= r <= n."
+    },
+    "p7b_symmetry": {
+      "source": "P7 (b)",
+      "meaning": "For an exchangeable vector, n + 1 times the probability of the event at the last position is the expected number of positions with the event.",
+      "assumptions": "Finite sample space; exchangeability in law (every reordering has the same expectation for every test function)."
+    },
+    "p7b_exchangeable_le": {
+      "source": "P7 (b)",
+      "meaning": "With ties and the strict rule, P(X_(n+1) > t) <= (n - r + 1)/(n + 1).",
+      "assumptions": "Finite sample space with nonnegative weights that add up to 1; exchangeability; 1 <= r <= n."
+    },
+    "p7b_exchangeable_eq": {
+      "source": "P7 (b)",
+      "meaning": "If the values are distinct with probability one, P(X_(n+1) > t) = (n - r + 1)/(n + 1).",
+      "assumptions": "Finite sample space with weights that add up to 1; exchangeability; distinct values wherever the weight is nonzero; 1 <= r <= n."
+    },
+    "p7_numbers": {
+      "source": "P7, numbers [N]",
+      "meaning": "n = 1200: r = 1188, 13th largest, 13/1201 rounds to 1.08%. n = 400: r = 396, 5th largest, 5/401 rounds to 1.25%. n = 300: r = 297, 4th largest, 4/301 rounds to 1.33%.",
+      "assumptions": "None."
+    },
+    "fmean_const_mul": {
+      "source": "Tool",
+      "meaning": "The expectation of a constant multiple.",
+      "assumptions": "Finite sample space."
+    },
+    "fmean_sum": {
+      "source": "Tool",
+      "meaning": "The expectation of a finite sum.",
+      "assumptions": "Finite sample space."
+    },
+    "fcov_self": {
+      "source": "Tool",
+      "meaning": "The covariance of a variable with itself is its variance.",
+      "assumptions": "Finite sample space."
+    },
+    "p8_mean": {
+      "source": "P8",
+      "meaning": "E[D] = P(X = 1) - P(Y = 1) = p10 - p01 for D = X - Y with X, Y in {0, 1}.",
+      "assumptions": "Finite sample space. The joint law of (X, Y) lives on four points, so this loses no generality."
+    },
+    "p8_variance": {
+      "source": "P8",
+      "meaning": "Var(D) = p10 + p01 - (p10 - p01)^2.",
+      "assumptions": "Weights add up to 1."
+    },
+    "p9a_design_effect": {
+      "source": "P9 (a)",
+      "meaning": "Var((1/m) sum D_i) = (sigma^2/m)(1 + (m - 1) rho).",
+      "assumptions": "Finite sample space; common variance sigma^2; every pair has covariance rho sigma^2; m >= 1."
+    },
+    "p9b_conditional_iid_covariance": {
+      "source": "P9 (b)",
+      "meaning": "If D_1 and D_2 are independent with the same law given U, then Cov(D_1, D_2) = Var(E[D_1 | U]).",
+      "assumptions": "U and the D_i take finitely many values; the conditional laws add up to 1."
+    },
+    "p9b_implied_correlation": {
+      "source": "P9 (b)",
+      "meaning": "With Var(D_1) = sigma^2 != 0, the covariance c equals (c / sigma^2) sigma^2, so rho = Var(E[D_1 | U]) / Var(D_1).",
+      "assumptions": "sigma^2 != 0."
+    },
+    "p9_numbers": {
+      "source": "P9, numbers [N]",
+      "meaning": "1 + (60 - 1) * 0.05 = 3.95.",
+      "assumptions": "None."
+    },
+    "poissonPMF_mean": {
+      "source": "P10, tool",
+      "meaning": "The mean of a Poisson(lambda) count is lambda.",
+      "assumptions": "Any real lambda."
+    },
+    "poissonPMF_centered": {
+      "source": "P10, tool",
+      "meaning": "The mean deviation of a Poisson(lambda) count from c is lambda - c.",
+      "assumptions": "Any real lambda."
+    },
+    "p10_mixed_poisson_mean": {
+      "source": "P10",
+      "meaning": "E[N] = E[Lambda] for a count that is Poisson given its rate.",
+      "assumptions": "The rate takes finitely many values. A Gamma rate is continuous and is not covered."
+    },
+    "p10_mixed_poisson_covariance": {
+      "source": "P10",
+      "meaning": "Cov(N_1, N_2) = Cov(Lambda_1, Lambda_2) for counts that are independent Poisson given their rates.",
+      "assumptions": "The rates take finitely many values. A Gamma rate is not covered."
+    },
+    "p10_shared_component_covariance": {
+      "source": "P10",
+      "meaning": "If Lambda_i = U + V_i and (U, V_2), (V_1, U), (V_1, V_2) are uncorrelated, then Cov(Lambda_1, Lambda_2) = Var(U).",
+      "assumptions": "Finite sample space."
+    },
+    "p10_numbers": {
+      "source": "P10, numbers [N]",
+      "meaning": "5 * 8 = 40, 40 + 40^2/5 = 360, and a * 8^2 / 360 = 64a/360.",
+      "assumptions": "None."
+    },
+    "p11_not_both": {
+      "source": "P11, item 1",
+      "meaning": "With L <= U, not both U <= Delta and L > Delta.",
+      "assumptions": "L <= U."
+    },
+    "p11_support_excludes": {
+      "source": "P11, item 2",
+      "meaning": "If delta > Delta and U <= Delta, then delta is not in [L, U].",
+      "assumptions": "None."
+    },
+    "p11_against_excludes": {
+      "source": "P11, item 3",
+      "meaning": "If delta <= Delta and L > Delta, then delta is not in [L, U].",
+      "assumptions": "None."
+    },
+    "p11_above_zero_excludes": {
+      "source": "P11, item 4",
+      "meaning": "If delta <= 0 and L > 0, then delta is not in [L, U].",
+      "assumptions": "None."
+    },
+    "p11_verdicts": {
+      "source": "P11, corollary",
+      "meaning": "Support, against, and inconclusive are exhaustive and mutually exclusive.",
+      "assumptions": "L <= U."
+    },
+    "p11_error_bound_finite": {
+      "source": "P11, corollary",
+      "meaning": "A verdict that excludes the covering event has probability at most alpha when coverage is at least 1 - alpha.",
+      "assumptions": "Finite sample space with nonnegative weights that add up to 1."
+    },
+    "p11_corollary_finite": {
+      "source": "P11, corollary",
+      "meaning": "Support has probability at most alpha when delta > Delta; against at most alpha when delta <= Delta; L > 0 at most alpha when delta <= 0.",
+      "assumptions": "Coverage P(L <= delta <= U) >= 1 - alpha. Finite sample space."
+    },
+    "p11_error_bound_measure": {
+      "source": "P11, corollary",
+      "meaning": "The same bound for any probability measure.",
+      "assumptions": "mu(univ) = 1 and a measurable covering event."
+    },
+    "p11_corollary_measure": {
+      "source": "P11, corollary",
+      "meaning": "The three error bounds for any probability measure.",
+      "assumptions": "mu(univ) = 1; the covering event is measurable; coverage at least 1 - alpha."
+    },
+    "p12_standardize_scale": {
+      "source": "P12",
+      "meaning": "(c x - c m)/(c s) = (x - m)/s.",
+      "assumptions": "c != 0."
+    },
+    "p12_scaled_mean": {
+      "source": "P12",
+      "meaning": "The sample multiplied by c has mean c m.",
+      "assumptions": "None."
+    },
+    "p12_scaled_sd": {
+      "source": "P12",
+      "meaning": "The sample multiplied by c >= 0 has standard deviation c s, for any divisor.",
+      "assumptions": "c >= 0."
+    },
+    "p12_local_standardization": {
+      "source": "P12, cited use",
+      "meaning": "A value standardized with the moments of its own sample is unchanged when value and sample are multiplied by the same c > 0.",
+      "assumptions": "c > 0."
+    },
+    "nbPMF_tail": {
+      "source": "Numeric table",
+      "meaning": "The NB masses from t on add up to 1 minus the first t masses.",
+      "assumptions": "Integer size k >= 1, mu > 0."
+    },
+    "nb_p0_partial_sum": {
+      "source": "Numeric table",
+      "meaning": "The first t masses of NB(5, 40) as a rational number with q = 1/9.",
+      "assumptions": "None."
+    },
+    "nb_pS_partial_sum": {
+      "source": "Numeric table",
+      "meaning": "The first t masses of NB(5, 10) as a rational number with q = 1/3.",
+      "assumptions": "None."
+    },
+    "n_threshold_p0": {
+      "source": "Numeric table, rows 1 and 3 [N]",
+      "meaning": "P(B <= 95) = 0.989539 < 0.99 <= P(B <= 96) = 0.990355 and P(B > 96) = 0.009645 for B ~ NB(5, 40), each value within 5e-7.",
+      "assumptions": "Exact rational arithmetic in the kernel (decide)."
+    },
+    "n_threshold_pS": {
+      "source": "Numeric table, rows 2 and 3 [N]",
+      "meaning": "P(S <= 25) = 0.987770 < 0.99 <= P(S <= 26) = 0.990748, P(S > 26) = 0.009252 for S ~ NB(5, 10), and 4 * 26 = 104.",
+      "assumptions": "Exact rational arithmetic in the kernel (decide)."
+    },
+    "n_frozen_threshold_fpr": {
+      "source": "Numeric table, row 4 [N]",
+      "meaning": "4S > 96 iff S > 24, and P(S > 24) = 0.016100 for S ~ NB(5, 10).",
+      "assumptions": "Exact rational arithmetic in the kernel (decide)."
+    },
+    "nb_series_mean_core": {
+      "source": "Notation, tool",
+      "meaning": "The series behind the NB mean.",
+      "assumptions": "0 < q, r = 1 - q >= 0."
+    },
+    "nb_series_fact2_core": {
+      "source": "Notation, tool",
+      "meaning": "The series behind the second factorial moment of the NB law.",
+      "assumptions": "0 < q, r = 1 - q >= 0."
+    },
+    "nbPMF_mean": {
+      "source": "Notation",
+      "meaning": "The mean of NB(k, mu) is mu.",
+      "assumptions": "Integer size k >= 1, mu > 0."
+    },
+    "nbPMF_fact2": {
+      "source": "Notation, tool",
+      "meaning": "E[N(N - 1)] = ((k + 1)/k) mu^2 for N ~ NB(k, mu).",
+      "assumptions": "Integer size k >= 1, mu > 0."
+    },
+    "nbPMF_variance": {
+      "source": "Notation",
+      "meaning": "The variance of NB(k, mu) is mu + mu^2/k, so phi = 1/k.",
+      "assumptions": "Integer size k >= 1, mu > 0."
+    },
+    "p3_planning_case": {
+      "source": "P3, numbers",
+      "meaning": "NB(5, 40) has mean 40 and variance 360, and Var(4S) = 480 at p = 1/4.",
+      "assumptions": "None."
+    },
+    "p5_planning_case": {
+      "source": "P5, cited use",
+      "meaning": "A Poisson(40 r) attack count sampled at p = 1/4 is Poisson(10 r).",
+      "assumptions": "None."
+    },
+    "p9a_design_effect_matrix": {
+      "source": "P9 (a)",
+      "meaning": "The same identity for a covariance matrix with sigma^2 on the diagonal and rho sigma^2 off it. By bilinearity of the covariance it applies on any probability space.",
+      "assumptions": "m >= 1. Bilinearity of the covariance is not formalized for a general probability space."
+    }
+  },
+  "not_formalized": {
+    "independence of the keyed selector": "The propositions treat the keyed 1-in-4 selector as independent selection with probability 1/4. This is the idealization stated in the propositions file. It is not proved.",
+    "P4 for a real size": "p4_thinned_nb is proved for an integer size k >= 1, which covers k = 5. The real-size case needs the binomial series with a real exponent and the Gamma function; those Mathlib modules are not in the local cache. The identity Gamma(k + n)/(n! Gamma(k)) = C(n + k - 1, k - 1) for integer k is not formalized for the same reason.",
+    "P6 (d), joint law": "The expected number of distinct sources is taken as the sum over the sources of the probability that a source is seen. Linearity of expectation over the joint law of n independent Poisson counts is not formalized.",
+    "P7 (b), general probability space": "The exchangeable false-positive rate is proved on a finite sample space. A continuous score distribution needs the Borel sigma-algebra and the Lebesgue integral, which are not in the local cache. The counting core (p7b_rank_count_le, p7b_rank_count_eq) is general.",
+    "P9, general probability space": "P9 (a) and P9 (b) are proved on finite sample spaces. p9a_design_effect_matrix gives the covariance-matrix form of P9 (a).",
+    "P10, Gamma additivity": "That Gamma(a, theta) + Gamma(k - a, theta) is Gamma(k, theta) is not formalized. It needs the Beta integral.",
+    "P10, Poisson-Gamma mixture": "That a Poisson count with a Gamma(k, theta) rate is NB(k, k theta) is not formalized. It needs the integral of lambda^(n + k - 1) exp(-lambda (1 + 1/theta)).",
+    "P10, Gamma variance": "Var(U) = a theta^2 for U ~ Gamma(a, theta) is not formalized. The covariance statements are proved for rates with finitely many values.",
+    "numeric results with exp or simulation": "The predicted recall table, the recall of the unscaled mismatch arm, the design effect under an episode share, the expected distinct hosts from the bin total, and the power and verdict probabilities remain numeric. They are not certified here.",
+    "bootstrap coverage": "The coverage of the percentile cluster bootstrap is a numeric result of the seeded simulation. The P11 corollary assumes the coverage."
+  },
+  "finding_status": "P1 to P9, P11, and P12 are proved as stated or in the finite form recorded under not_formalized. P4 is proved for integer size. P6 (c) is true only for p != 1: at p = 1 the constant c = 1 is exact (p6c_constant_at_one), so the statement needs p < 1, which the design satisfies at p = 1/4. Of P10 only the parts that need no integral are proved. The threshold values of the numeric table that are sums of rationals are certified exactly and agree with the propositions file to six digits."
+}

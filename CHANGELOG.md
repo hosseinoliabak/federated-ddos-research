@@ -18,6 +18,8 @@
 
 ## Unreleased
 
+- Publish the frozen controlled-study design v2.1 with its topology, propositions and figure, byte-identical to the frozen files.
+- Add the Foundations, Sampling, SamplingFlow and ControlledDesign Lean modules and their source maps; the checker passes 196 theorems with standard axioms only.
 - Add score-only CSV neural/AF bundles, owner-local TRAIN transform recovery and summary-only transform merging.
 - Validate declared identity sequences, final AF rounds, transform counts and optional exporter-source pins without requiring exporter/runtime source equality.
 - Add fabricated bundle regressions and document the limits of identity correspondence, calibration and live-input interpretation.

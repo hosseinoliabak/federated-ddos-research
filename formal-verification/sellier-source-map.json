@@ -42,5 +42,13 @@
       "assumptions": "The same running-minimum model. A fixed comparable evaluation criterion is needed to interpret scores as progress on one objective."
     }
   },
-  "finding_status": "Printed equation (9) is algebraically inconsistent with (7)-(8) under the transcribed conventions; the intended implementation and any author clarification are unverified."
+  "finding_status": "Printed equation (9) is algebraically inconsistent with (7)-(8) under the transcribed conventions; the intended implementation and any author clarification are unverified.",
+  "independent_review": {
+    "scope": "Publicly published equations (7)-(9) only",
+    "provider": "Anthropic Claude",
+    "completed_rounds": 1,
+    "verdict": "CHANGES_REQUIRED",
+    "finding_summary": "Derived the same kinetic-sign mismatch and the general h-factor mismatch. No access to the new proof files or thesis notes.",
+    "limitations": "Reviewer did not independently open the PDF or execute Lean. No claim of formal-code review approval."
+  }
 }

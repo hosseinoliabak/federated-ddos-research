@@ -148,7 +148,8 @@ migration is claimed.
 | Feature-validity diagnostic | Profile development features and fit bounded one-feature checks | Available; exploratory only |
 | Training check | Run a small feedforward detector with local SGD or Adam and model averaging | Available; one seed and three rounds |
 | Portable engineering bundles | Preserve model inputs and weights for offline transfer | Available; destination validation pending |
-| Lean verification | Check three aggregation lemmas and five scoped algebra/recording statements | Available; see the formal project |
+| Lean verification | Check 196 scoped statements: aggregation, Sellier algebra, foundations-chapter equations, sampling ceilings and the controlled-study propositions | Available; see the formal project |
+| Controlled study design v2.1 | Pre-registered design of a new sampled-flood laboratory study | Frozen November 15, 2026; not built or run; see `docs/controlled-study-v2.1/` |
 | QiML training | Evaluate the proposed numerical treatment | Numerical specification and implementation pending |
 | Native trained-inference pilot | Check the constructed forwarding, metering, inference and collector path | Finite synthetic-probe check executed; public packaging pending |
 

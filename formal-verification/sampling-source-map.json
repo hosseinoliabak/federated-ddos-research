@@ -1,0 +1,122 @@
+{
+  "source": {
+    "document": "RQ2 sampling analysis from the gate measurements (analytical post-mortem of the failed G4 gate)",
+    "file": "reports/development-preparation/thesis-completion-2026-11-12/resume-work-20261114-v5/claude-takeover-20261114-v1/rq2-sampling-analysis-20261115/ANALYSIS.md",
+    "file_sha256": "60df7731f361c356eaf7b9c430c93ab786741663a76ff327a47a3c1c64202a5c",
+    "file_sha256_note": "The analysis worker's file tool refused report files, so ANALYSIS.md is written by Root from the worker's returned text. Record its SHA-256 here once it exists and rerun check_proofs.py.",
+    "locator_convention": "Section numbers of ANALYSIS.md, and file:line for the implementation that the model describes.",
+    "implementation_file": "reports/development-preparation/thesis-completion-2026-11-12/resume-work-20261114-v5/claude-takeover-20261114-v1/w-candidate-v3/vendor_main/audited_policy_meter.py",
+    "implementation_sha256": "6bc59baf280112312ae01d22e338c7e523c16bdb065d12a2cd3707b4dce1c77a",
+    "numbers_file": "reports/development-preparation/thesis-completion-2026-11-12/resume-work-20261114-v5/claude-takeover-20261114-v1/rq2-sampling-analysis-20261115/RESULTS.json",
+    "numbers_note": "No theorem uses a measured count. RESULTS.json and compute.py hold the measured values that the analysis compares with these statements."
+  },
+  "formal_scope": "Exact real-number and finite-combinatorial statements. Independent packet selection is modeled as a product weight on retention patterns (finite sets of retained packet positions). Decision rules are functions on a finite key type. No measure-theoretic probability space, no pseudorandom-function assumption, no flow-meter model, no measured data, and no learned model.",
+  "transcriptions": {
+    "selector, audited_policy_meter.py:140-142": "variate = HMAC-SHA256(seed, json([ledger_id, ordinal])) as a 256-bit integer; selected iff variate * denominator < numerator * 2^256, with numerator = 1 and denominator = 4",
+    "Section 1.3, pattern weight": "w(T) = prod_{i=1}^{n} (p if i in T else 1 - p) for the set T of retained packets",
+    "Section 1.3, table": "P(no record) = (1 - p)^n;  P(only the first packet) = p (1 - p)^(n-1);  P(k retained) = C(n,k) p^k (1 - p)^(n-k);  P(at least one) = 1 - (1 - p)^n",
+    "Section 3.2, collision probability": "c = p (1 - p)^5 = (1/4)(3/4)^5 = 243/4096",
+    "Section 4.1, proposition": "FPR = sum_x b(x) phi(x) <= alpha and a(x) <= lambda b(x) on C imply recall = sum_x a(x) phi(x) <= a(K \\ C) + lambda alpha",
+    "Section 4.1, case 1": "recall <= 1 - a(x) + a(x) alpha / b(x) for one colliding key x with b(x) > 0",
+    "Section 4.1, case 2": "recall <= alpha / b(x) when a(x) = 1",
+    "Section 4.1, case 3": "deterministic rule, b(x) > alpha on C: no alert on C and recall <= a(K \\ C)",
+    "Section 4.2, model benign share": "b = (243/4096) / (3623/4096 + 7/16) = 81/1805"
+  },
+  "mapping": {
+    "patternWeight_eq": {
+      "source": "Section 1.3",
+      "meaning": "The weight of a retention pattern T of an n-packet flow is p^|T| (1 - p)^(n - |T|).",
+      "assumptions": "Any real p. The product form is the definition of independent selection with a common probability."
+    },
+    "patternWeight_sum_one": {
+      "source": "Section 1.3",
+      "meaning": "The weights of all 2^n retention patterns add up to 1.",
+      "assumptions": "Any real p."
+    },
+    "patternWeight_nonneg": {
+      "source": "Section 1.3",
+      "meaning": "Every pattern weight is nonnegative, so with patternWeight_sum_one the weights are a probability distribution.",
+      "assumptions": "0 <= p <= 1."
+    },
+    "deletion_probability": {
+      "source": "Section 1.3, table row 'No packet retained'; Section 2",
+      "meaning": "No packet of an n-packet flow is retained with probability (1 - p)^n.",
+      "assumptions": "Independent selection (the product weight). That an empty pattern yields no record is the meter's behaviour (audited_policy_meter.py:202-204) and is not formalized."
+    },
+    "only_one_packet_retained": {
+      "source": "Section 1.3, table row 'Exactly the first packet retained'",
+      "meaning": "Exactly one given packet j is retained, and no other, with probability p (1 - p)^(n-1).",
+      "assumptions": "Independent selection."
+    },
+    "first_packet_only": {
+      "source": "Section 1.3 and Section 3.2",
+      "meaning": "Of n + 1 packets exactly the first is retained with probability p (1 - p)^n. With n = 5 this is the collision probability of a six-packet benign TCP transaction.",
+      "assumptions": "Independent selection. That 'only the first packet retained' is the same event as 'the pS record is a lone SYN' rests on the meter's record rule and the measured packet order; compute.py checks this by enumeration and against every benign record, and Lean does not."
+    },
+    "retained_count_binomial": {
+      "source": "Section 1.3, table row 'Exactly k packets retained'",
+      "meaning": "The total weight of the patterns that retain exactly k of n packets is C(n,k) p^k (1 - p)^(n-k).",
+      "assumptions": "Independent selection."
+    },
+    "some_packet_retained": {
+      "source": "Section 1.3, table row 'At least one packet retained'",
+      "meaning": "The total weight of the nonempty patterns is 1 - (1 - p)^n.",
+      "assumptions": "Independent selection."
+    },
+    "selection_threshold_quarter": {
+      "source": "Section 1.1; audited_policy_meter.py:142",
+      "meaning": "variate * 4 < 1 * 2^256 holds exactly when variate < 2^254, so one quarter of the 2^256 values of the variate select the packet.",
+      "assumptions": "Natural-number arithmetic as in the Python expression. That the variate is uniformly distributed and independent across packets is not formalized."
+    },
+    "quarter_sampling_instances": {
+      "source": "Sections 1.3, 2, 3.2, and 4.2",
+      "meaning": "For p = 1/4: (3/4)^1 = 3/4, (3/4)^2 = 9/16, (3/4)^6 = 729/4096, (1/4)(3/4)^5 = 243/4096, the expected record count 3623/4096 of the six-packet TCP transaction, and the model benign share 81/1805.",
+      "assumptions": "Exact rational arithmetic. The expression for the expected record count, (1 - q^5) + p (p + q^5), is derived in compute.py from the record rule by enumeration; only its value is checked here."
+    },
+    "identical_key_same_decision": {
+      "source": "Section 4.1, assumption A1",
+      "meaning": "Two records with the same key receive the same decision from every rule that reads only the key.",
+      "assumptions": "The rule is a function of the key. This theorem needs no axioms."
+    },
+    "alert_rate_on_key_le": {
+      "source": "Section 4.1",
+      "meaning": "If the benign false-positive rate is at most alpha, the alert probability on a key with benign mass b(x) > 0 is at most alpha / b(x).",
+      "assumptions": "Finite key type; b >= 0 and phi >= 0 pointwise."
+    },
+    "recall_ceiling": {
+      "source": "Section 4.1, the proposition",
+      "meaning": "If a(x) <= lambda b(x) on C and FPR <= alpha, then recall <= a(K \\ C) + lambda alpha.",
+      "assumptions": "Finite key type; a >= 0, b >= 0, 0 <= phi <= 1 pointwise; lambda >= 0. The masses need not be normalized."
+    },
+    "single_key_recall_ceiling": {
+      "source": "Section 4.1, case 1",
+      "meaning": "With attack masses summing to 1 and one colliding key x with b(x) > 0, recall <= 1 - a(x) + a(x) (alpha / b(x)).",
+      "assumptions": "As recall_ceiling. The cap min(1, alpha / b(x)) of the printed formula follows from phi <= 1 and is not part of this statement."
+    },
+    "all_mass_one_key_recall_le": {
+      "source": "Section 4.1, case 2; Section 5",
+      "meaning": "If every attack record has the key x, recall <= alpha / b(x).",
+      "assumptions": "As single_key_recall_ceiling, with a(x) = 1."
+    },
+    "deterministic_no_alert_on_heavy_key": {
+      "source": "Section 4.1, case 3",
+      "meaning": "A deterministic rule with benign false-positive rate at most alpha cannot alert on a key whose benign mass exceeds alpha.",
+      "assumptions": "Finite key type; b >= 0."
+    },
+    "deterministic_recall_ceiling": {
+      "source": "Section 4.1, case 3",
+      "meaning": "If every key of C has benign mass above alpha, a deterministic rule with FPR <= alpha has recall at most a(K \\ C).",
+      "assumptions": "Finite key type; a >= 0 and b >= 0."
+    }
+  },
+  "not_formalized": {
+    "independence of the implemented selector": "The selector is a deterministic HMAC-SHA256 function of (seed, ledger id, packet ordinal). Treating the selections of different packets as independent events with probability 1/4 is the pseudorandom-function idealization. It is not proved. compute.py re-implements the selector and compares twelve aggregates with the model; two deviate at the 5% level.",
+    "the meter's record rule": "That retained packets of one 5-tuple form one record until a retained FIN or RST, the idle timeout, or the active timeout closes it (audited_policy_meter.py:180-185, 226-227) is not modeled. compute.py enumerates all retention patterns of the measured transactions and reproduces every benign pS record.",
+    "W-identity conditions": "Which retention patterns give a record equal to a B_STATE record on the twelve per-record entries (Section 3.2) is an argument about packet sizes, flags, and the port class, checked against the data by compute.py.",
+    "tightness of the ceiling": "That the Neyman-Pearson rule attains the ceiling is not formalized; compute.py computes the randomized and deterministic optima exactly for the measured counts.",
+    "measured values and intervals": "All counts, the Clopper-Pearson intervals, and the binomial tests are in compute.py and RESULTS.json.",
+    "the prefix-window context": "No statement is made about how often two records share the window totals.",
+    "timeouts": "No statement about timeout effects is formalized or measured."
+  },
+  "finding_status": "The exact statements of Sections 1.3, 3.2, and 4.1 of the analysis are proved as stated. The link between these statements and the implemented selector and meter rests on the idealizations listed under not_formalized."
+}
